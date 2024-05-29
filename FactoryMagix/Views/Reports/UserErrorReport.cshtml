@@ -1,0 +1,115 @@
+﻿@model IEnumerable<FactoryMagix.Models.spUserErrorLogReport_Result>
+@{
+    ViewBag.Title = "User Error Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).on("click", "#btnView", function () {
+        
+        var LoginId = $("#txtUserId").val();
+
+        if (LoginId.length > 0) {
+            var Url = '@Url.Action("_UserErrorReportLoginIdWise", "Reports")'
+            location.href = Url + "/?LoginID=" + LoginId;
+        }
+        else {
+            $("#txtUserId").focus();
+            alert("Please enter Login ID");
+        }
+
+    });
+
+
+    $(document).on("click", "#btnExportToExcel", function () {
+       
+        var LoginID = $("#txtUserId").val();
+
+        if (LoginID.length > 0) {
+
+            var Url = '@Url.Action("UserErrorReportExportToExcel", "Reports")'
+            location.href = Url + "/?LoginID=" + LoginID;
+        }
+        else if ('@Request.QueryString["LoginID"]' != '') {
+            LoginID = '@Request.QueryString["LoginID"]';
+            var Url = '@Url.Action("UserErrorReportExportToExcel", "Reports")'
+            location.href = Url + "/?LoginID=" + LoginID;
+
+        }
+        else {
+            $("#txtUserId").focus();
+            alert("Please enter Login ID");
+
+        }
+
+    });
+
+</script>
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Report</li>
+            <li><i class="fa fa-th-list"></i>User Error Report (Box)</li>
+        </ol>
+
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel-heading">
+ <header class="panel-heading">
+            <div class="form-group">
+
+                <div class="row">
+
+                    <div class="col-lg-12">
+
+                       
+                        <label class="col-lg-1 control-labe6">User ID</label>
+                        
+                        
+                        <div class="col-lg-2" >
+                            <input type="text" id="txtUserId" tabindex="2" maxlength="20" class="form-control"  />
+                        </div>
+                        <div class="col-lg-2" >
+                            <input type="button" id="btnView" tabindex="3" class="btn btn-default" title="View" value=" View  " />
+                            
+                        </div>
+                        <div class="right" >
+
+                            <input type="button" id="btnExportToExcel" tabindex="4" class="btn btn-default btn-sm" title="Export" value="Export" />
+                           
+                            <a class="btn btn-default btn-sm" href="~/" tabindex="5" title="Cancel">Cancel</a>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+</header>
+ @if (ViewData["GotoPageMessage"] != null)
+            {
+                <script language="javascript">
+                    alert('@ViewData["GotoPageMessage"] @ViewBag.PageCount');
+                </script>
+            }
+
+        </section>
+
+    </div>
+</div>
+
+
+@{
+    if (Model != null)
+    {
+        Html.RenderPartial("_UserErrorReport", Model);
+    }
+}

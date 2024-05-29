@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="8b4c62b64dcb429691db14334e8e4fb2" Name="Diagram1">
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.HST_TRN_BoxBarcodeDetails" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.HST_TRN_BoxSerialNo" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.HST_TRN_InvoiceDetails" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.HST_TRN_PalletSerialNo" Width="1.5" PointX="0.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.HST_TRN_ScanPartBarcode" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_BioMetric" Width="1.5" PointX="7.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_Customer" Width="1.5" PointX="5.25" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_Form" Width="1.5" PointX="7.5" PointY="16.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_Machine" Width="1.5" PointX="5.25" PointY="15.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_Module" Width="1.5" PointX="5.25" PointY="20" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_PartConfiguration" Width="1.5" PointX="7.5" PointY="11.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_Role" Width="1.5" PointX="0.75" PointY="13.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_SubModule" Width="1.5" PointX="7.5" PointY="21.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_User" Width="1.5" PointX="3" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.REL_UserForm" Width="1.5" PointX="8.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.TRN_BoxBarcodeDetails" Width="1.5" PointX="9.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.TRN_BoxSerialNo" Width="1.5" PointX="5.25" PointY="24.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.TRN_InvoiceDetails" Width="1.5" PointX="10.5" PointY="17.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.TRN_PalletSerialNo" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.TRN_ScanPartBarcode" Width="1.5" PointX="10.5" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.BoxSerialNo" Width="1.5" PointX="9.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.ErrorLog" Width="1.5" PointX="11.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.MST_Cust_Bosch_PartNo_Rel" Width="1.5" PointX="11.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.PalletSerialNo" Width="1.5" PointX="12.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.TRN_PalletLable_Verify" Width="1.5" PointX="13.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.vw_TRN_BoxBarcodeDetails" Width="1.5" PointX="13.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.vw_TRN_BoxSerialNo" Width="1.5" PointX="12.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.vw_TRN_InvoiceDetails" Width="1.5" PointX="14.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.vw_TRN_PalletSerialNo" Width="1.5" PointX="14.75" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BOSCH_PPTS_2021Model.vw_TRN_ScanPartBarcode" Width="1.5" PointX="15.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Customer_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Customer_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_PartConfiguration_MST_Customer" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Form_MST_Module" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Form_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Form_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Machine_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Machine_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_InvoiceDetails_MST_Machine" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_ScanPartBarcode_MST_Machine" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Module_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_Module_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_SubModule_MST_Module" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_PartConfiguration_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_PartConfiguration_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_User_MST_Role" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_SubModule_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_MST_SubModule_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_BoxSerialNo_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_BoxSerialNo_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_InvoiceDetails_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_InvoiceDetails_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_ScanPartBarcode_MST_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_ScanPartBarcode_MST_User1" ManuallyRouted="false" />
+        <AssociationConnector Association="BOSCH_PPTS_2021Model.FK_TRN_InvoiceDetails_TRN_BoxSerialNo" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

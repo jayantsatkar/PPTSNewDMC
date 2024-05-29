@@ -1,0 +1,187 @@
+﻿@model IEnumerable<FactoryMagix.Models.spUserErrorLogReport_2_Result>
+
+
+@using PagedList;
+@using PagedList.Mvc;
+
+
+@{
+    Layout = null;
+}
+
+
+@Html.ValidationMessage("ErrorEmail")
+
+<script>
+
+
+    $(document).ready(function () {
+        $("#btngotopage").click(function () {
+           
+            var goToValue = $("#ingoto").val();
+            var RecordsCount = '@ViewBag.RecordsCount';
+
+            if ('@Request.QueryString["LoginID"]' != '') {
+                var LoginID = '@Request.QueryString["LoginID"]';
+                var Url = '@Url.Action("_UserErrorReportGotoPage_2", "Reports")'
+                location.href = Url + "/?LoginID=" + LoginID + "&page=" + goToValue;
+            }
+            else {
+                var datedata = '@Request.QueryString["datedata"]';
+                var Url = '@Url.Action("TypeDatewiseReportpage", "Reports")'
+                location.href = Url + "/?page=" + goToValue + "&datedata=" + datedata;
+            }
+
+
+        });
+    });
+
+
+</script>
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+
+                <div class="table-responsive">
+                    <table class="table" id="tblReportDetails">
+                        <thead>
+                            <tr>
+
+                                <th>
+                                    Login ID
+                                </th>
+                                <th>
+                                    Login Name
+                                </th>
+                                <th>
+                                    Error Description
+                                </th>
+                                <th>
+                                    Part Config. No
+                                </th>
+                                <th>
+                                    CustPart_No
+                                </th>
+                                <th>
+                                    Approved_By ID
+                                </th>
+                                <th>
+                                   Approved_By Name
+                                </th>
+                                <th>
+                                    InvoiceNo
+                                </th>
+                                <th>
+
+                                    InvoiceDate
+                                </th>
+                                <th>
+
+                                    InvoiceQty
+                                </th>
+                                <th>
+                                    Created_On
+
+                                </th>
+                               
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Login_ID)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Login_Name)
+
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(modelItem => item.Error_Description)
+
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Part_Config__No)
+
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CustPart_No)
+
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(modelItem => item.Approved_By)
+                                        </td>
+                                        <td>
+
+                                           @Html.DisplayFor(modelItem => item.Approved_By_Name)
+                                        </td>
+                                        <td>
+                                           @Html.DisplayFor(modelItem => item.InvoiceNo)
+                                        </td>
+                                        <td>
+                                           @Html.DisplayFor(modelItem => item.InvoiceDate)
+                                        </td>
+                                        <td>
+                                           @Html.DisplayFor(modelItem => item.InvoiceQty)
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(modelItem => item.Created_On)
+                                        </td>
+                                       
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+
+                    <table class="table">
+
+
+                        <tr style="background-color: #E6E6E6;">
+                            <td style="border: none;padding-left:5em"></td>
+                            <td style="text-align:left; border: none">
+                                <span>
+                                    @{ 
+                                        if (Request.QueryString["LoginID"] != null)
+                                        {
+                                             @Html.PagedListPager((IPagedList)Model, page => Url.Action("_UserErrorReportPage_2", new { page, LoginID = Request.QueryString["LoginID"] }), PagedListRenderOptions.MinimalWithPageCountText)
+                                        }
+                                        else
+                                        {
+                                            @Html.PagedListPager((IPagedList)Model, page => Url.Action("TypeDatewiseReportpage", new { page, datedata = Request.QueryString["datedata"] }), PagedListRenderOptions.MinimalWithPageCountText)
+                                        }
+                                    }
+                                </span>
+                            </td>
+                            <td style="border: none;padding-left:10em"></td>
+                            <td style="border: none; text-align: left">@ViewBag.RecordsCount Record(s) found.</td>
+                            <td style="border: none; padding-left:28em"></td>
+                            <td style="border: none;text-align: left">
+
+                                <label>Go to page</label>
+                                <input type="text" id="ingoto" style="height: 20px; width: 25px;" />
+                                <input type="button" value=">" id="btngotopage" class="btn btn-default" />
+
+                                @*style="background: url('img/arrowright.png'); border: none; background-repeat: no-repeat; margin: 0px; height: 18px;"*@
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+
+            </section>
+        </div>
+    </div>
+}

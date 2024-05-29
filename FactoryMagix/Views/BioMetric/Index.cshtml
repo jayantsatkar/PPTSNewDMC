@@ -1,0 +1,188 @@
+﻿@model IEnumerable<FactoryMagix.Models.MST_BioMetric>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    string Status = "";
+}
+
+<script type="text/javascript"  language="javascript">
+
+    var parameter = "";
+    $(document).on("click", "#btnCreate", function () {
+        $.ajax({
+            url: '@Url.Action("GetuserData", "BioMetric")',
+            type: "POST",
+            data: {  },
+            "success": function (data) {
+                if (data != null) {
+                    if (data.length > 0) {
+                        
+                        var vdata = data;
+                        parameter = vdata;
+                        try {
+                            var shell = new ActiveXObject("WScript.shell");
+                            shell.run("C:\\Finger\\Debug\\ZK7500.exe " + parameter, 1, true);
+                            
+                            var userid = parameter.split(";");
+
+                            var Url = '@Url.Action("Index", "BioMetric")'
+
+                            location.href = Url + "/?=" + userid[1];
+
+               
+                        }
+                        catch (e) {
+                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+                            return 0;
+                        }
+                        
+                    }
+                }
+               
+
+
+            }
+        });
+
+
+
+        
+
+    });
+   
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Admin Utilities</li>
+            <li><i class="fa fa-th-list"></i>User</li>
+            <li><i class="fa fa-th-list"></i>BioMetric</li>
+        </ol>
+    </div>
+</div>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            @using (Html.BeginForm("Index", "BioMetric", FormMethod.Get))
+            {
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <header class="panel-heading">
+
+                    <table valign="middle">
+                        <tr>
+                            <th align="left" width="35%" style="font-size:18px; color:black; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ">
+                                User FingerPrint Details
+                            </th>
+                            
+                            <td align="center">
+                                <input type="button" id="btnBack" class="btn btn-default btn-sm" title="Back to List" hidden="hidden" value="Back to List" onclick="location.href='@Url.Action("Index","User")' " />
+                            </td>
+                            <td align="right" width="50%" valign="middle">
+                                <input type="button" id="btnCreate" class="btn btn-default btn-sm" title="Configer FingerPrint" value="Configer FingerPrint"  />
+                            </td>
+                            
+                            <td align="right" width="50%" valign="middle">
+                                <a class="btn btn-default btn-sm" href="~/Home/Index" title="Cancel">Cancel</a>
+                            </td>
+
+                        </tr>
+
+                    </table>
+                </header>
+
+            }
+            @{
+                @*if (Model.Count() == 0)
+                {
+
+                    <script language="javascript">
+                        // alert("Records not found. Please insert valid data.");
+                    </script>
+                }*@ }
+
+
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                Sr. No.
+                            </th>
+                            <th>
+                                User FingerPrint
+                            </th>
+                            <th>
+                                IsActive
+                            </th>
+                            <th>
+                                Created DateTime
+                            </th>
+
+                           
+
+
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{int i = 1;}
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.Label(i.ToString())
+                                </td>
+                                <td>
+                                    @Html.Label("Finger: "+i.ToString())
+                                </td>
+
+                                <td >
+                                    @if (item.IsActive == true)
+                                    {
+                                        Status = "Active";
+                                    }
+                                    else
+                                    {
+                                        Status = "InActive";
+                                    }
+                                    @Status
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Created_On)
+                                </td>
+
+                               
+
+
+                                
+                                <td></td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+
+
+
+            </div>
+
+        </section>
+    </div>
+</div>
+
+

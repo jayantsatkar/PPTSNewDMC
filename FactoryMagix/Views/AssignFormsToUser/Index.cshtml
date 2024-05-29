@@ -1,0 +1,304 @@
+﻿
+@model FactoryMagix.ViewModel.AssignFormsToUseViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    legend.scheduler-border {
+        width: inherit; /* Or auto */
+        padding: 0 10px; /* To give a bit of padding on the left and right */
+        border-bottom: none;
+    }
+</style>
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Admin Utilities</li>
+            <li><i class="fa fa-th-list"></i>Assign forms to User</li>
+        </ol>
+    </div>
+</div>
+
+<div class="form-horizontal">
+
+    <hr />
+    <p>
+        Mandatory Field *
+    </p>
+
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <form class="form-horizontal">
+
+        <div class="form-group">
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    @Html.Label("Select Role*", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-8">
+
+                        @*   @Html.DropDownListFor(Model => Model.MST_Role, new SelectList(ViewBag.MST_Role as System.Collections.IEnumerable, "Role_ID", "Role_Name"), "Select Role - ", new { id = "ddlRole" })*@
+                        @Html.ListBox("Role", new SelectList(ViewBag.MST_Role as System.Collections.IEnumerable, "Role_ID", "Role_Name"), new { id = "ddlRole" })
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+
+                    @Html.Label("Select User*", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-8">
+
+                        @*            @Html.DropDownListFor(Model => Model.MST_User, new SelectList(Enumerable.Empty<SelectListItem>(), "User_ID", "Login_ID"), "Select User -", new { id = "ddlUser" })*@
+                        @Html.ListBox("Role", new SelectList(Enumerable.Empty<SelectListItem>(), "User_ID", "Login_ID"), new { id = "ddlUser" })
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="form-group">
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    @Html.Label("Select Module*", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-8">
+
+                        @Html.ListBoxFor(model => model.MoludeList, new SelectList(Enumerable.Empty<SelectListItem>(), "Module_ID", "Module_Name"), new { id = "ddlModule" })
+
+                    </div>
+                </div>
+
+                <div id="loadCheck">
+
+
+
+
+                    <div id="cntMainContent_Master">
+                        <fieldset>
+                            <legend>
+                                Forms
+                            </legend>
+
+                            <input id="cntMainContent_chkSelectAll" value="-1" type="checkbox">
+                            <label for="cntMainContent_chkSelectAll"> Select All</label>
+
+                            <div id="FormsContainer">
+                                <fieldset>
+                                    <legend>
+                                        Master
+                                    </legend>
+                                </fieldset>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div>
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" id="addAssignForms" value="Save" class="btn btn-default" /> &nbsp; &nbsp;
+                            <input type="submit" id="" value="Clear" class="btn btn-default" />
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+
+
+
+<script type="text/javascript">
+
+
+                $(document).ready(function () {
+
+
+                    $("#addAssignForms").click(function () {
+                        var objForm = { Frm_Id: "", Flag_Visible: "" };
+                        var objModule = { Module_ID: "", Module_Name: "", Module_Description: "", Created_On: "", Created_By: "" };
+
+                        var Assign = { RoleID: "", FormList: [], UserID: "", MoludeList: [] };
+
+                        var Role = $("#ddlRole").val();
+                        var User = $("#ddlUser").val();
+
+                        Assign.RoleID = Role[0];
+                        Assign.UserID = User[0];
+
+
+                        var val = [];
+                        $(':checkbox').each(function (k) {
+
+                            if ($(this).val() != -1) {
+                                if ($(this).is(":checked")) {
+
+                                    objForm.Frm_Id = $(this).val();
+                                    objForm.Flag_Visible = 1
+                                }
+                                else
+                                {
+
+                                    objForm.Frm_Id = $(this).val();
+                                    objForm.Flag_Visible = 0
+                                }
+                                Assign.FormList.push(objForm);
+                                objForm = { Frm_Id: "", Flag_Visible: "" };
+                            }
+                        });
+
+
+
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("Index", "AssignFormsToUser")',
+                            data: JSON.stringify(Assign),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+
+                        });
+                    });
+
+                    $(document).on('change', '#ddlRole', function() {
+                       
+                        var RoleId = $(this).val();
+                        $.getJSON("@Url.Action("LoadUserByRoletId", "AssignFormsToUser")", { roleid: RoleId[0] },
+                               function (userData) {
+                                   var select = $("#ddlUser");
+                                   select.empty();
+                                   select.append($('<option/>', {
+                                       value: 0,
+                                       text: "Select User -"
+                                   }));
+                                   $.each(userData, function (index, itemData) {
+
+                                       select.append($('<option/>', {
+                                           value: itemData.Value,
+                                           text: itemData.Text
+                                       }));
+                                   });
+                               });
+                    });
+
+
+                     $(document).on('change', '#ddlUser', function() {
+
+                        var UserId = $(this).val();
+                        $.ajax({
+                            type: "GET",
+                            url: '@Url.Action("LoadModuleByUserId", "AssignFormsToUser")',
+                            data: { userid: UserId[0] },
+                            success: function (moduleData) {
+
+                                var selectedModuleList = moduleData;
+                                //var SelectedFormList = moduleData.FormList;
+                                var select = $("#ddlModule");
+                                select.empty();
+                                select.append($('<option/>', {
+                                    value: 0,
+                                    text: "Select Module-"
+                                }));
+                                $.each(moduleData.modules, function (index, itemData) {
+                                    select.append($('<option/>', {
+                                        value: itemData.Value,
+                                        text: itemData.Text
+                                    }));
+                                });
+                            },
+                            error: function (err) {
+
+                            }
+                        });
+
+                    });
+
+                    $(document).on('change', '#ddlModule', function() {
+
+                        var ModuleId = $(this).val();
+                        var UserId = $("#ddlUser").val();
+                        $.getJSON("@Url.Action("LoadFormsByModuleId", "AssignFormsToUser")", { moduleid: ModuleId[0] },
+                               function (data) {
+
+                                   var formList = $("#FormsContainer");
+                                   formList.empty();
+                                   $.each(data, function () {
+
+                                       var formid = this.Frm_Id;
+                                       var formname = this.Frm_Name
+
+                                       $.ajax({
+                                        url: '@Url.Action("GetFormsAccess", "AssignFormsToUser")',
+                                        type: "POST",
+                                        data: { "userid": UserId, "FormmId": this.Frm_Id },
+                                        "success": function (datagetform) {
+                                            if (datagetform != null) {
+                                                
+                                                
+
+                                                    if (datagetform ) {
+                                                       
+                                                        var $checkbox = "<input type='checkbox'    value=" + formid + " checked='checked'>" + formname + " </br>";
+                                                        formList.append($checkbox);
+                                                    }
+                                                    else
+                                                    {
+                                                        
+                                                        var $checkbox = "<input type='checkbox'    value=" + formid + " >" + formname + " </br>";
+                                                        formList.append($checkbox);
+                                                    }
+
+                                                
+                                            }
+                                            
+
+
+                                        }
+                                    });
+
+                                   });
+
+
+                               });
+                    });
+
+                });
+
+                $("#cntMainContent_chkSelectAll").on('change', function () {
+
+                    if ($(this).is(":checked")) {
+                        $(':checkbox').each(function (k) {
+                            if ($(this).val() != -1) {
+                                $(':checkbox').prop('checked', true);
+                            }
+                        });
+
+                    }
+                    else {
+                        $(':checkbox').each(function (k) {
+                            if ($(this).val() != -1) {
+                                $(':checkbox').prop('checked', false);
+                            }
+                        });
+                    }
+
+
+                });
+
+
+</script>

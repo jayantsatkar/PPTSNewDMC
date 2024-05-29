@@ -1,0 +1,305 @@
+﻿@model IEnumerable<FactoryMagix.Models.MST_User>
+
+@using PagedList;
+@using PagedList.Mvc;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    string Status = "";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $(document).on("click", "#btnSearch", function () {
+
+
+            var ddlsrnodata = $("#option").val();
+            var txtsrnodata = $("#Search").val();
+
+            if (ddlsrnodata != -1) {
+                if (txtsrnodata.length >= 3) {
+
+                    var Url = '@Url.Action("Index", "User")'
+                    location.href = Url + "/?option=" + ddlsrnodata + "&Search=" + txtsrnodata;
+                }
+                else {
+                    alert("Please enter min 3 char to search.");
+                    $("#txtPartSrNo").focus();
+                }
+            }
+            else {
+                alert("Please select search type.");
+                $("#option").focus();
+            }
+
+
+        });
+
+    });
+
+
+
+    function GotoPage() {
+
+        var pageno = $('#ingoto').val();
+        $.ajax({
+            type: "GET",
+            data: { page: pageno },
+            url: '@Url.Action("GotoPage", "User")',
+            success: function (result) {
+                $("#grid").html('');
+                $("#grid").html(result);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.debug(xhr); console.debug(thrownError);
+                alert('Failed to retrieve User records.');
+            }
+        });
+    }
+
+
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Admin Utilities</li>
+            <li><i class="fa fa-th-list"></i>User</li>
+        </ol>
+    </div>
+</div>
+
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            @using (Html.BeginForm("Index", "User", FormMethod.Get))
+            {
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <header class="panel-heading">
+
+                    <table valign="middle">
+                        <tr>
+                            <th align="left" width="35%" style="font-size:18px; color:black; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ">
+                                User Details
+                            </th>
+                            <td>
+                                <b align="center">
+                                    Search-
+                                </b>
+                            </td>
+                            <td align="center" width="20%">
+                                @Html.DropDownList("option", new List<SelectListItem>
+                             {
+                                new SelectListItem{ Text="Select--", Value = "Select" },
+                                new SelectListItem{ Text="Login Name", Value = "Login_ID" },
+                                new SelectListItem{ Text="User Name", Value = "First_Name" },
+                                new SelectListItem{ Text="Role", Value = "Role_Name" }
+
+                             }, htmlAttributes: new { @class = "form-control" })
+                                @* @Html.ValidationMessageFor(model => model.op , "", new { @class = "text-danger" })*@
+
+
+                            </td>
+                            <td align="center" width="17%">
+                                <input type="text" id="Search" name="Search" class="form-control" />
+                            </td>
+
+                            <td align="center">
+                                <input type="submit" name="submit" id="btnSearch" class="btn btn-default btn-sm" value="Show Result" />
+                            </td>
+                            <td align="center">
+                                <input type="button" id="btnBack" class="btn btn-default btn-sm" title="Back to List" hidden="hidden" value="Back to List" onclick="location.href='@Url.Action("Index","User")' " />
+                            </td>
+                            <td align="right" width="50%" valign="middle">
+                                <input type="button" id="btnCreate" class="btn btn-default btn-sm" title="Create User" value="Create User" onclick="location.href='@Url.Action("Create","User")' " />
+                            </td>
+                            <td align="right" width="50%" valign="middle">
+                                <input type="button" id="btnExportToExcel" class="btn btn-default btn-sm" title="Export" value="Export" onclick="location.href='@Url.Action("ExportToExcel","User")' " />
+                            </td>
+                            <td align="right" width="50%" valign="middle">
+                                <a class="btn btn-default btn-sm" href="~/Home/Index" title="Cancel">Cancel</a>
+                            </td>
+
+                        </tr>
+
+                    </table>
+                </header>
+
+            }
+            @{
+                if (Model.Count() == 0)
+                {
+                    @*<div style="text-align:center">
+                          <h5><b> Records not found. Please insert valid data.</b></h5>
+                        </div> <hr />*@
+
+                    <script language="javascript">
+                        alert("Records not found. Please insert valid data.");
+                    </script>
+                } }
+
+
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                Sr. No.
+                                @*@Html.DisplayNameFor(model => model.User_ID)*@
+                            </th>
+                            <th>
+                                Login Name
+                                @*@Html.DisplayNameFor(model => model.Login_ID)*@
+                            </th>
+                            <th>
+                                User Name
+                                @*  @Html.DisplayNameFor(model => model.First_Name)*@
+                            </th>
+                            <th>
+                                Role
+                                @*@Html.DisplayNameFor(model => model.MST_Role.Role_Name)*@
+                            </th>
+
+                            <th>
+                                Status
+                                @*@Html.DisplayNameFor(model => model.IsActive)*@
+                            </th>
+
+
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{int i = 1;}
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.Label(i.ToString())
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Login_ID)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.First_Name)
+
+                                    @Html.DisplayFor(modelItem => item.Last_Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MST_Role.Role_Name)
+                                </td>
+
+                                <td>
+                                    @if (item.IsActive == true)
+                                    {
+                                        Status = "Active";
+                                    }
+                                    else
+                                    {
+                                        Status = "InActive";
+                                    }
+                                    @Status
+
+                                    @* @Html.DisplayFor(modelItem => item.IsActive)*@
+                                </td>
+
+
+                                <td>
+                                    @Html.ActionLink("Edit", "Edit", new { id = item.User_ID })  |
+                                    @Html.ActionLink("Config FingerPrint", "BioMetric", new { id = item.User_ID })
+                                    @*FingerPrint
+                                        <input type="checkbox" name="CheckBox"  id="chkFingerPrint"  value="FingerPrint"  />*@
+
+                                </td>
+                                <td></td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+
+
+                <table class="table">
+
+                    <tr style="background-color: #E6E6E6;">
+                        <td style="border: none;padding-left:1em"></td>
+                        <td style="text-align:left; border: none">
+                            <span>
+                                @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new
+                           {
+                               page,
+                               option = Request.QueryString["option"],
+                               search = Request.QueryString["search"]
+                           }), PagedListRenderOptions.MinimalWithPageCountText)
+                            </span>
+                        </td>
+                        <td style="border: none;padding-left:10em"></td>
+                        <td style="border: none; text-align: left">@ViewBag.RecordsCount Records found.</td>
+                        <td style="border: none; padding-left:28em"></td>
+                        <td style="border: none;text-align: left">
+
+                            <label>Go to page</label>
+                            <input type="text" id="ingoto" style="height: 20px; width: 25px;" />
+                            <input type="submit" value=">" class="btn btn-default" onclick="location.href='@Url.Action("GotoPage", "User")?page=' + document.getElementById('ingoto').value" />
+
+                            @*style="background: url('img/arrowright.png'); border: none; background-repeat: no-repeat; margin: 0px; height: 18px;"*@
+                        </td>
+                    </tr>
+
+                </table>
+
+
+                @if (ViewData["GotoPageMessage"] != null)
+                {
+                    <script language="javascript">
+                        alert('@ViewData["GotoPageMessage"] @ViewBag.PageCount');
+                    </script>
+                }
+
+                @if (TempData["CreateMessage"] != null)
+                {
+
+                    <script language="javascript">
+                        alert('@TempData["CreateMessage"]');
+                    </script>
+                }
+
+                @if (TempData["EditMessage"] != null)
+                {
+
+                    <script language="javascript">
+                        alert('@TempData["EditMessage"]');
+                    </script>
+                }
+                @if (TempData["NoDatavalidationMessage"] != null)
+                {
+
+                    <script language="javascript">
+                                              alert('@TempData["NoDatavalidationMessage"]');
+                    </script>
+                }
+
+            </div>
+
+        </section>
+    </div>
+</div>

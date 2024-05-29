@@ -1,0 +1,98 @@
+'Seagull:2.1:DP
+INPUT OFF
+VERBOFF
+INPUT ON
+SYSVAR(48) = 0
+ERROR 15,"FONT NOT FOUND"
+ERROR 18,"DISK FULL"
+ERROR 26,"PARAMETER TOO LARGE"
+ERROR 27,"PARAMETER TOO SMALL"
+ERROR 37,"CUTTER DEVICE NOT FOUND"
+ERROR 1003,"FIELD OUT OF LABEL"
+SYSVAR(35)=0
+OPEN "tmp:setup.sys" FOR OUTPUT AS #1
+PRINT#1,"Printing,Media,Print Area,Media Margin (X),0"
+PRINT#1,"Printing,Media,Clip Default,On"
+CLOSE #1
+SETUP "tmp:setup.sys"
+KILL "tmp:setup.sys"
+CLL
+OPTIMIZE "BATCH" ON
+PP35,16:PX1152,742,3
+PP35,991:PL741,3
+PP42,1179:AN7
+NASC 8
+FT "Andale Mono Bold"
+FONTSIZE 20
+FONTSLANT 0
+PT "From :"
+PP49,1119:FT "Andale Mono Bold",12,0,118
+PT "Bosch Chassis system India Ltd"
+PP65,656:AN1
+PX93,691,3
+PP72,749:AN7
+FT "Andale Mono Bold"
+FONTSIZE 14
+FONTSLANT 0
+PT "Customer Part No :"
+PP54,1076:FT "Andale Mono Bold",11,0,118
+PT "Gate No :306,Village Nanekarwadi"
+PP186,1035:FT "Andale Mono Bold",11,0,118
+PT "TAL:Khed, Dist: Pune"
+PP42,1001:FT "Andale Mono Bold"
+FONTSIZE 20
+FONTSLANT 0
+PT "To :"
+PP174,985:FT "Andale Mono Bold",13,0,117
+PT "Name"
+PP121,944:FT "Andale Mono Bold",13,0,117
+PT "Address Line 1"
+PP35,854:AN1
+PL741,3
+PP168,861:AN7
+FT "Andale Mono Bold"
+FONTSIZE 12
+FONTSLANT 0
+PT "Date Time"
+PP499,861:PT "Box Serial No"
+PP499,810:PT "PalletNo"
+PP51,810:PT "Datetime"
+PP72,706:FONTSIZE 14
+PT "CustomerPartNo"
+PP60,545:AN1
+PX93,692,3
+PP72,639:AN7
+PT "Bosch Part No :"
+PP72,595:PT "BoschPartNo"
+PP60,439:AN1
+PX94,692,3
+PP68,533:AN7
+PT "Part Description :"
+PP68,490:PT "PartDesc"
+PP60,338:AN1
+PX93,692,3
+PP68,390:AN7
+PT "QtyB"
+PP68,431:PT "Quantity Per Box :"
+PP60,235:AN1
+PX93,692,3
+PP72,328:AN7
+PT "Invoice No"
+PP72,282:PT "InvoiceNo"
+PP69,30:AN1
+PX185,346,3
+PP455,79:PX104,279,3
+PP477,186:AN7
+FT "Andale Mono Bold",14,0,90
+PT "Invoice Qty"
+PP477,142:FT "Andale Mono Bold",14,0,90
+PT "InvoiceQty"
+PP177,201:BARSET "DATAMATRIX",1,1,9,126,0,3
+PB "PalletNo"
+PP150,78:FT "Andale Mono"
+FONTSIZE 12
+FONTSLANT 0
+PT "PalletNo"
+LAYOUT RUN ""
+PF
+PRINT KEY OFF

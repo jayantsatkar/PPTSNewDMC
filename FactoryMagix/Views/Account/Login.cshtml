@@ -1,0 +1,98 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Creative - Bootstrap 3 Responsive Admin Template">
+    <meta name="author" content="GeeksLabs">
+    <meta name="keyword" content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
+    <title>Login</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    
+
+<script type="text/javascript">
+    
+    if('@TempData["WronguserName"]'=="0")
+    {
+        alert("Wrong username or password");
+    }
+
+    
+    $(document).on("click", "#btnLogin", function () {
+         var Url = '@Url.Action("LoginDetails", "Account")'
+        location.href = Url + "/?UserId=" + document.getElementById('txtloginname').value + ';' + document.getElementById('txtPassword').value;
+
+    });
+   
+
+</script>
+
+
+<body class="login-img3-body">
+
+    <div class="container">
+        <form class="login-form" action="index.html">
+            <div class="login-wrap">
+                <p class="login-img"><i class="icon_lock_alt"></i></p>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="icon_key_alt"></i></span>
+                    <input type="text" class="form-control" id="txtloginname" placeholder="Username" autofocus>
+                </div>
+                <div class="input-group">
+                    <span >Please Login through Desktop PPTS Application icon</span>
+                    <input type="password" id="txtPassword" class="form-control" placeholder="Password">
+
+
+
+
+
+                </div>
+                <label class="checkbox">
+                    @*<input type="checkbox" value="remember-me"> Remember me*@
+                    @*<span class="pull-left"> <a href="#"> Forgot Password?</a></span>*@
+                </label>
+                @*<button class="btn btn-primary btn-lg btn-block" type="button" id="btnLogin"  >Login</button>*@
+                @*<button class="btn btn-primary btn-lg btn-block" type="button" id="btnLogin" >Login</button>*@
+
+
+
+
+                <button class="btn btn-primary btn-lg btn-block" type="button" id="btnLogin" onclick="location.href='@Url.Action("LoginDetails", "Account")?UserId=' + document.getElementById('txtloginname').value +';' +document.getElementById('txtPassword').value">Login</button>
+
+
+
+                @*<button class="btn btn-info btn-lg btn-block" type="submit" >Signup</button>*@
+            </div>
+            <footer >
+                <div id="Divfooter" style="width: 100%; height: 20px; position: fixed; bottom: 0px; left: 0px; background-color: #007acc; color: White; z-index: 0">
+                    <div class="pageheader" style="float: left; background-color: #007acc;">
+                        <span style="font-size: 11px;">
+                            &nbsp;&nbsp; Powered by Magnetivity Solutions &nbsp; <a style="color: White" href="https://www.magnetivity.net" target="_blank">www.magnetivity.net</a>&nbsp;
+                            FactoryMagix
+                        </span>
+                    </div>
+                    &nbsp;<span id="secondsIdle" style="color: #007acc; font-size: 12px; font-weight: bold;"></span>
+                    <div class="pageheader" style="float: right; background-color: #007acc;">
+                        <span style="font-size: 11px;">
+                            Copyright © 2020 - 2021 Magnetivity Solutions Pvt. Ltd. All rights
+                            reserved.&nbsp;&nbsp;
+                        </span>
+                    </div>
+                </div>
+            </footer>
+        </form>
+    </div>
+</body>
+
+
+</html>
+

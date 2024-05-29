@@ -1,0 +1,148 @@
+﻿
+@{
+    ViewBag.Title = "BarCodeReprint";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using FactoryMagix.Models;
+
+<script type="text/javascript">
+
+    var loginUser = '@(((MST_User)Session["UserInfo"]).Login_ID)';
+
+    $(document).on("click", "#btnView", function () {
+        var ddlsrnodata = $("#ddlType").val();
+        var txtsrnodata = $("#txtSrNo").val();
+        if (ddlsrnodata > -1) {
+            if (txtsrnodata.length > 0) {
+
+                
+               
+                $.ajax({
+                    url: '@Url.Action("GetBarCodeReprint", "BarCodeReprint")',
+                    type: "POST",
+                    data: { "SerialNo": txtsrnodata, "flag": ddlsrnodata },
+                    "success": function (sdata) {
+                        if (sdata != null) {
+                            if (sdata.length > 0) {
+                                var vdata = sdata;
+                                if (ddlsrnodata == 0)
+                                {
+                                    var parameter = "B" + ';' + vdata[0].Customer_Name + ';'
+                                    + vdata[0].partNo
+                                   + ';' + vdata[0].ActualPart_Qty + ';' + vdata[0].BoxBarcode + ';'
+                                   + vdata[0].BoschPart_Desc + ';' + vdata[0].Created_On + ';' + vdata[0].BoxSerial_No + ';' + loginUser;
+                                    alert(parameter);
+                                    var print = exec(parameter);
+                                }
+                                else if (ddlsrnodata == 1)
+                                {
+                                    var parameter = "P" + ';' + vdata[0].Customer_Name + ';' + vdata[0].BoschPart_No
+                                                        + ';' + vdata[0].NoOfPartQy_Box + ';' + vdata[0].PalletSrNo + ';'
+                                                        + vdata[0].BoschPart_Desc + ';' + vdata[0].createdon + ';' + vdata[0].custaddress
+                                                        + ';' + vdata[0].CustPart_No + ';' + vdata[0].InvoiceNo + ';' +
+                                                        vdata[0].InvoiceQty + ';' +
+                                        vdata[0].InvoiceDate + ';' + vdata[0].PalletBarcode + ';' + loginUser;
+                                    
+                                    var print = exec(parameter);
+                                }
+                              
+                                if (print == 1)
+                                {
+                                    alert("Barcode printed successfully");
+                                }
+                                
+                                $("#txtSrNo").val("");
+                                $("#ddlType").val("-1");
+                            }
+                        }
+                        $("#tblScanPartNo").empty();
+
+
+                    }
+                });
+            }
+            else {
+                alert("Please enter Serial No for reprint");
+                $("#txtPartSrNo").focus();
+            }
+        }
+        else {
+            alert("Please select proper type");
+            $("#ddlType").focus();
+        }
+    });
+
+
+    function exec(params) {
+
+
+        try {
+            var shell = new ActiveXObject("WScript.shell");
+            shell.run("C:\\PPTSPrint\\Debug\\PPTSPrinting.exe " + params, 1, true);
+            //shell.run("C:\\UserValidation\\Debug\\PrintingNET35\\LabelPrinting.exe " + params, 1, true);
+
+            return 1;
+        }
+        catch (e) {
+            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+            return 0;
+        }
+    }
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Report</li>
+            <li><i class="fa fa-th-list"></i>Box/Pallet Barcode Reprint</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel-heading">
+            <div class="form-group">
+
+                <div class="row">
+
+                    <div class="col-lg-12">
+
+
+                        <label class="col-lg-1 control-labe6">Reprint</label>
+                        <div class="col-lg-3">
+                            @Html.DropDownList("ddlType", new List<SelectListItem>
+
+                             {
+                               new SelectListItem{ Text="---Select---", Value = "-1" ,Selected=true},
+                                new SelectListItem{ Text="Box Barcode", Value = "0" },
+                                new SelectListItem{ Text="Pallet Barcode", Value = "1" }
+                             }, htmlAttributes: new { @class = "form-control", @tabindex = "1" })
+
+
+                        </div>
+
+                        <div class="col-lg-2">
+                            <input type="text" id="txtSrNo" tabindex="2" maxlength="20" class="form-control" />
+                        </div>
+                        <div class="col-lg-2">
+                            <input type="button" id="btnView" tabindex="3" class="btn btn-default" title="View" value=" View  " />
+                           
+                        </div>
+                        
+
+                    </div>
+
+
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+</div>
+
+

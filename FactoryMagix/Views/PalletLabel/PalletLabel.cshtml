@@ -1,0 +1,1162 @@
+﻿@model FactoryMagix.Models.spGetAllPartNowithIndex_Result
+@{
+    ViewBag.Title = "Pallet Label";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="~/Content/dateCalenderStyle.css" rel="stylesheet" />
+
+<style>
+    .ontop {
+        z-index: 999;
+        width: 100%;
+        height: 1000px;
+        top: 0;
+        left: 0;
+        display: none;
+        position: absolute;
+        background-color: white;
+        color: #aaaaaa;
+        opacity: .9;
+        filter: alpha(opacity = 50);
+    }
+
+    #popup {
+        width: 300px;
+        height: 400px;
+        position: absolute;
+        color: black;
+        background-color: gray;
+        /* To align popup window at the center of screen*/
+        top: 40%;
+        left: 50%;
+        margin-top: -100px;
+        margin-left: -150px;
+    }
+
+    /*added to make text blink*/
+    .blink_me {
+        animation: blinker 1s linear infinite;
+    }
+
+    @@keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
+
+
+    /*styling below to manage ddl parts on zoom in/out*/
+    .input-group {
+        display: inline-flex;
+        width: 100%;
+        text-align: left;
+        max-width: 280px;
+    }
+
+    /*styling below to manage ddl parts on zoom in/out*/
+    .input-group-addon {
+        width: 35px;
+        height: 34px;
+    }
+
+    /*change thead backgroud color-profile color-profile datepicker stop white*/
+    .ui-widget-content {
+        background: #fff !important;
+    }
+</style>
+
+<script type="text/javascript">
+    function pop(div) {
+        document.getElementById(div).style.display = 'block';
+    }
+    function hide(div) {
+        document.getElementById(div).style.display = 'none';
+    }
+    //To detect escape button
+    document.onkeydown = function (evt) {
+        evt = evt || window.event;
+        if (evt.keyCode == 27) {
+            hide('popDiv');
+        }
+    };
+</script>
+
+
+<script type="text/javascript">
+
+    var tblScanBox = document.getElementById("tblScanBox");
+    var pubbufferbarcode = "";
+    var rowcount, colcount;
+    var status = 0;
+    var BatchCode, Serial;
+    var totalPartCount = 0;
+    var globalpartQty = 0;
+    var Errordescription = "";
+
+    // Added by 92293
+    var totalBoxCount = 0;
+    //to hold key val pair of select ddl
+    var IdListforPallet = [];
+
+    // Added for Toyota
+    var toyotaPartInDB = "";
+    var boschPartNoInDB = "";
+    var kanbanId = "";
+    var supplierCode = "";
+    var ddlSelPartNo = "";
+
+    $("#hdnCustomerPartNo").val("");
+
+    $(document).ready(function () {
+        // Added by 92293
+        $('.combobox').combobox()
+        IdListforPallet.length = 0;
+        getPartNoList();
+
+        //$("#txtInvoiceDate").datepicker({ dateFormat: 'dd.mm.yy' });
+
+        // Added for toyota
+        $("#divCustomerPartNo").hide();
+        $("#txtScanCustPartBarcode").val("");
+        toyotaPartInDB = "";
+        boschPartNoInDB = "";
+        kanbanId = "";
+        supplierCode = "";
+
+        // To clear all textboxes on clear of ddl
+        $('.glyphicon-remove').on('click', function () {
+            $("#txtInvoieQty").val("");
+            $("#txtNoofBoxes").val("");
+            $("#txtCustName").val("");
+            $("#txtBoxesScanned").text('');
+            //$("#txtCustCode").val("");
+            //$("#txtCustIndex").val("");
+            $("#tblScanBox").empty();
+            totalPartCount = 0;
+
+            if (document.getElementById('btnVerify').disabled == false) {
+                document.getElementById('btnVerify').disabled = true;
+            }
+
+            // Added for toyota
+            // on clear, revert the changes made in txtInvoiceQty & txtNoOfBoxes text boxes...
+            if ($("#txtInvoieQty").prop('disabled')) {
+                $("#txtInvoieQty").removeAttr("disabled");
+            }
+
+            //$("#txtNoofBoxes").attr("disabled", "disabled");
+            //document.getElementById('txtNoofBoxes').disabled = true;
+            //$("#txtNoofBoxes").
+
+            if ($("#divCustomerPartNo").is(":visible")) {
+                $("#txtScanCustPartBarcode").val("");
+                $("#divCustomerPartNo").hide();
+
+                toyotaPartInDB = "";
+                boschPartNoInDB = "";
+                ddlSelPartNo = "";
+                globalpartQty = 0;
+            }
+
+            if ($("#divBoschPartNo").is(":hidden")) {
+                $("#divBoschPartNo").show();
+            }
+
+            $("#hdnCustomerPartNo").val("");
+            $("#hdnPallateDDLId").val("");
+            $("#hdnPallateDDLText").val("");
+
+        });
+
+        // To get the selected value of the ddl on the selected text
+        $("#MST_PartConfiguration_IDundefined").change(function () {
+            var ddlText = $(this).val();
+            for (i = 0; i < IdListforPallet.length; i++) {
+                if (ddlText.toUpperCase() == (IdListforPallet[i].name).toUpperCase()) {
+                    // Clear the previous value first before inserting new value
+                    $("#hdnPallateDDLId").val("");
+                    $("#hdnPallateDDLText").val("");
+
+                    $("#hdnPallateDDLId").val(IdListforPallet[i].id);
+                    $("#hdnPallateDDLText").val(IdListforPallet[i].name);
+
+                    Action(IdListforPallet[i].id);
+                    break;
+                }
+            }
+        });
+
+        // attaach calander to date text box
+        $(function () {
+            $("#txtInvoiceDate").datepicker({
+                dateFormat: 'dd.mm.yy',
+                changeMonth: true,
+                changeYear: true,
+            }).datepicker('setDate',new Date());
+        });
+    });
+
+
+    // Added by 92293
+    function getPartNoList() {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPartNos", "PalletLabel")',
+            data: "{}",
+            dataType: "json",
+            traditional: true,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#MST_PartConfiguration_ID").append('<option value=' + data[i].MST_PartConfiguration_ID + '>' + data[i].PartNo + '</option>');
+                    IdListforPallet.push({ id: data[i].MST_PartConfiguration_ID, name: data[i].PartNo });
+                }
+                $('#MST_PartConfiguration_ID').data('combobox').refresh();
+            },
+            error: function (result) {
+                alert(result.status + ' ' + result.statusText);
+            }
+        });
+    }
+
+    function exec(params) {
+        try {
+            var shell = new ActiveXObject("WScript.shell");
+            // shell.run("C:\\UserValidation\\Debug\\ZK7500.exe " + parameter, 1, true);
+            shell.run("C:\\Users\\jayan\\source\\repos\\TestApp\\bin\\Debug\\TestApp.exe " + parameter, 1, true);
+            return 1;
+        }
+        catch (e) {
+            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+            return 0;
+        }
+    }
+
+    function Action(code) {
+        $.ajax({
+            url: '@Url.Action("Action", "PalletLabel")',
+            type: "POST",
+            data: { "code": code },
+            success: function (data) {
+                if (data != null) {
+                    var vdata = data;
+
+                    if (vdata.query.length > 0) {
+                        // if it is toyota customer
+                        if (vdata.query[0].Customer_Code == vdata.Customer) {
+
+                            $("#hdnCustomerPartNo").val(vdata.query[0].CustPart_No);
+                            //globalpartQty = vdata.query[0].NoOfPartQy_Box;
+                            // Allow user to enter the quenty of boxes
+                            //$("#txtInvoieQty").attr("disabled", "disabled");
+                            //$("#txtNoofBoxes").removeAttr("disabled");
+                            //$("#txtNoofBoxes").val("");
+
+                            $("#divCustomerPartNo").show();
+                            $("#txtScanCustPartBarcode").focus();
+                            $("#txtInvoieQty").attr("disabled", "disabled");
+                            $("#divBoschPartNo").hide();
+                            $("#txtScanPartBarcode").val("");
+                        }
+                        else {
+                            globalpartQty = vdata.query[0].NoOfPartQy_Box;
+                            $("#txtScanPartBarcode").val("");
+                            $("#txtInvoieQty").removeAttr("disabled");
+                            $("#txtInvoiceNo").focus();
+                            $("#txtNoofBoxes").attr("disabled", "disabled");
+
+                            if ($("#divBoschPartNo").is(":hidden")) {
+                                $("#divBoschPartNo").show();
+                                $("#txtScanPartBarcode").val("");
+                            }
+                        }
+
+                        $("#txtCustName").val(vdata.query[0].Customer_Name);
+                        document.getElementById("txtScanBoxBarcode").disabled = false;
+                    }
+                }
+                $("#tblScanBox").empty();
+            }
+        });
+    }
+
+    $(document).on("focusout", '#txtInvoieQty', function () {
+        var tblScanBox = document.getElementById("tblScanBox");
+        var invoiceqty = document.getElementById('txtInvoieQty').value;
+        var qty = 0;
+        if ((document.getElementById('txtInvoiceNo').value).length > 0) {
+            if ((document.getElementById('txtInvoiceDate').value).length > 0) {
+                if (invoiceqty != "") {
+                    if (invoiceqty > 99999) {
+                        $("#txtInvoieQty").focus();
+                        alert("Please check invoice quantity");
+                    }
+                    else {
+                        qty = invoiceqty % globalpartQty   // ie. 5/2 = reminder 1
+                        if (qty == 0) {  // ie. if reminder == 0 then
+                            qty = invoiceqty / globalpartQty;
+                        }
+                        else {
+                            $("#txtNoofBoxes").val("");
+                            $("#txtInvoieQty").val("");
+                            alert("Invoice quantity not matching with multiples of box quantity");
+                        }
+
+                        $("#txtNoofBoxes").val(qty);
+
+                        if (tblScanBox.rows.length - 1 == document.getElementById('txtNoofBoxes').value) {
+                            document.getElementById('txtScanBoxBarcode').disabled = true;
+                            document.getElementById('btnVerify').disabled = false;
+                        }
+                        else if (tblScanBox.rows.length - 1 > document.getElementById('txtNoofBoxes').value) {
+                            $("#txtNoofBoxes").val("");
+                            $("#txtInvoieQty").val("");
+                            $("#txtInvoieQty").focus();
+                            document.getElementById('txtScanBoxBarcode').disabled = true;
+                            document.getElementById('btnVerify').disabled = true;
+                            alert("Please enter valid invoice quntity");
+                        }
+                        else {
+                            document.getElementById('txtScanBoxBarcode').disabled = false;
+                            $("#txtScanBoxBarcode").focus();
+                            document.getElementById('btnBarcodePrint').disabled = true;
+                            document.getElementById('btnVerify').disabled = true;
+                        }
+                    }  // else part of invoiceqty > 99999 complete
+                }
+                else {
+                    $("#txtNoofBoxes").val("");
+                    //document.getElementById('btnBarcodePrint').disabled = true;
+                    document.getElementById('btnVerify').disabled = true;
+                    alert("Please enter invoice quantity");
+                    $("#txtInvoiceDate").val("");
+                    $("#txtInvoieQty").focus();
+                }
+            }  //ie. txtInvoiceDate value.length not > 0
+            else {
+                alert("Please enter Invoice Date");
+                $("#txtInvoiceDate").focus();
+            }
+        }
+        else {
+            alert("Please enter Invoice no");
+            $("#txtInvoiceNo").focus();
+        }
+    });
+
+    //$(document).on("focusout", '#txtNoofBoxes', function () {
+    //    var tblScanBox = document.getElementById("tblScanBox");
+    //    var boxQty = document.getElementById('txtNoofBoxes').value;
+    //    //var qty = 0;
+    //    if ((document.getElementById('txtInvoiceNo').value).length > 0) {
+    //        if ((document.getElementById('txtInvoiceDate').value).length > 0) {
+
+    //            if ($("#txtInvoieQty").prop('disabled')) {
+    //                //alert('Textbox is disabled...')
+    //                if (boxQty != "") {
+    //                    if (boxQty > 99999) {
+    //                        $("#txtNoofBoxes").focus();
+    //                        alert("Please enter valid box quantity !");
+
+    //                    }
+    //                    else {
+    //                        if (tblScanBox.rows.length - 1 == document.getElementById('txtNoofBoxes').value) {
+    //                            document.getElementById('txtScanBoxBarcode').disabled = true;
+    //                            document.getElementById('btnVerify').disabled = false;
+    //                        }
+    //                        else if (tblScanBox.rows.length - 1 > document.getElementById('txtNoofBoxes').value) {
+    //                            $("#txtNoofBoxes").val("");
+    //                            $("#txtInvoieQty").val("");
+    //                            $("#txtInvoieQty").focus();
+    //                            document.getElementById('txtScanBoxBarcode').disabled = true;
+    //                            document.getElementById('btnVerify').disabled = true;
+    //                            alert("Please enter valid box quntity !");
+    //                        }
+    //                        else {
+    //                            document.getElementById('txtScanBoxBarcode').disabled = false;
+    //                            $("#txtScanBoxBarcode").focus();
+    //                            document.getElementById('btnBarcodePrint').disabled = true;
+    //                            document.getElementById('btnVerify').disabled = true;
+    //                        }
+    //                    }  // else part of invoiceqty > 99999 complete
+    //                }
+    //                else {
+    //                    $("#txtNoofBoxes").val("");
+    //                    $("#txtNoofBoxes").focus();
+    //                    document.getElementById('btnVerify').disabled = true;
+    //                    alert("Please enter valid box quantity");
+    //                }
+    //            }
+    //        }  //ie. txtInvoiceDate value.length not > 0
+    //        else {
+    //            $("#txtInvoiceDate").focus();
+    //            alert("Please enter Invoice Date");
+    //        }
+    //    }
+    //    else {
+    //        $("#txtInvoiceNo").focus();
+    //        alert("Please enter Invoice no");
+    //    }
+    //});
+
+
+    function keyuptext(Barcode) {  // <= Barcode example = 0204.842.987-7TY:022:B190620181436:B00133309
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == 13) {
+            //take Drop down selected Id and text
+            // debugger;
+            var partconfigurationID = $("#hdnPallateDDLId").val();
+            var ddlpartNoText = $("#hdnPallateDDLText").val();
+
+            var splitpartNo = "";
+
+            if ($('#txtNoofBoxes').val() != null && $('#txtNoofBoxes').val() != '') {
+                //scanned part no details
+                var splitstr = Barcode.split(":");  //splitstr[0] = 0204.842.987-7TY   splitstr[1] = 022   splitstr[2] = B190620181436  splitstr[3] = B00133309
+
+                //// **************** START For Toyota Customer ***************************
+                //// check whether the txtNoofBoxes text box is disabled or not for Toyota Cust
+                //if (!$("#txtNoofBoxes").prop('disabled')) {
+                //    if (splitstr.length === 4) {
+                //        if (splitstr[3].length === 9) {
+                //            //split dropdown details
+                //            if (ddlpartNoText) {   // ddlpartNoText = 0204.842.987-7TY-208240-Toyota India-472000DE50
+                //                splitpartNo = ddlpartNoText.split("-");   // splitpartNo[0] = 0204.842.987   splitpartNo[1] = 7TY   splitpartNo[2] = 208240  splitpartNo[3] = Toyota India    splitpartNo[3] = 472000DE50
+                //                //if (splitpartNo[0] + '-' + splitpartNo[1].toUpperCase() === splitstr[0].toUpperCase() || splitpartNo[4].toUpperCase() === splitstr[0].toUpperCase()) {
+                //            }
+                //        }
+                //        else {
+                //            //Wrong box barcode scanned
+                //            $("#txtScanBoxBarcode").val("");
+                //            $("#txtScanBoxBarcode").focus();
+                //            alert("Wrong box barcode scanned.");
+                //            Errordescription = "Barcode string, serial no. character length is not equal to 9";
+                //            SaveUserLogs();
+                //            return;
+                //        }
+                //    }
+                //    else {
+                //        //Wrong box barcode scanned
+                //        $("#txtScanBoxBarcode").val("");
+                //        $("#txtScanBoxBarcode").focus();
+                //        alert("Wrong box barcode scanned");
+                //        Errordescription = "Scanned barcode string length, after split, is not equal to 5 as aspected";
+                //        SaveUserLogs();
+                //        return;
+                //    }
+                //}
+                //// **************** END For Toyota Customer ***************************
+
+                // **************** START other than toyota Customer ***************************
+                if (splitstr.length === 4) {
+                    if (splitstr[3].length === 9) {
+                        //split dropdown details
+                        if (ddlpartNoText) {
+                            splitpartNo = ddlpartNoText.split("-");
+                        }
+                    }
+                    else {   // ie. splitstr[3].length != 9
+                        //Wrong box barcode scanned
+                        $("#txtScanBoxBarcode").val("");
+                        $("#txtScanBoxBarcode").focus();
+                        alert("Wrong box barcode scanned");
+                        Errordescription = "Scanned barcode, serial no character string is not equal to 9";
+                        SaveUserLogs();
+                        return;
+                    }
+                }
+                else {  //ie. splitstr.length === 4
+                    $("#txtScanBoxBarcode").val("");
+                    $("#txtScanBoxBarcode").focus();
+                    alert("Wrong box barcode scanned");
+                    Errordescription = "Scanned barcode string length, after split, not equal to 4 as aspected";
+                    SaveUserLogs();
+                    return;
+                }
+                // ****************  END other than toyota Customer ***************************
+
+                //Validate scanned part no with dropdown part no
+                //  0204.876.986      -     5W9                         === 0204.876.986-5W9          || 0204876986                   === 0204.876.986-5W9
+                if (splitpartNo[0].toUpperCase() + '-' + splitpartNo[1].toUpperCase() === splitstr[0].toUpperCase() || splitpartNo[4].toUpperCase() === splitstr[0].toUpperCase()) {
+                    $.ajax({
+                        url: '@Url.Action("ValidateBoxSerialNo", "PalletLabel")',
+                        type: "POST",
+                        //                    : B221120170858             : B00144581                  : $("#hdnPallateDDLId").val();
+                        data: { "Boxbatchcode": splitstr[2], "BoxSerialNo": splitstr[3], "partconfigid": partconfigurationID },
+                        success: function (data) {
+                            if (data != null) {
+                                var tempdate = data;
+                                if (tempdate === 1) {
+                                    tblScanBox = document.getElementById("tblScanBox");
+                                    //add first row of table
+                                    if (tblScanBox.rows.length == 0) {
+                                        //Add blank row
+                                        CreateBlankRow(tblScanBox, "Scanned Part No", "Part Qty", "Batch No", "Serial No");
+                                        //add one more data row
+                                        CreateBlankRow(tblScanBox, splitpartNo[0] + '-' + splitpartNo[1], globalpartQty, splitstr[2], splitstr[3]);
+
+                                        totalPartCount = totalPartCount + 1;
+
+                                        // Added by 92293 ************************
+                                        $('#txtBoxesScanned').html(totalPartCount);
+
+                                        // if the totalPartCount matches with the count from db in textbox
+                                        if (totalPartCount == document.getElementById('txtNoofBoxes').value) {
+                                            document.getElementById('txtScanBoxBarcode').disabled = true;
+                                            //document.getElementById('btnBarcodePrint').disabled = false;
+                                            document.getElementById('btnVerify').disabled = false;
+                                        }
+                                        //Set value to Scantextbox
+                                        $("#txtScanBoxBarcode").val("");
+                                        $("#txtScanBoxBarcode").focus();
+
+                                    }
+                                    else if (tblScanBox.rows.length > 1) {
+                                        //add row in the table
+                                        //check total scanned box against the Qty of box
+                                        if (totalPartCount <= document.getElementById('txtNoofBoxes').value) {
+                                            rowcount = 0;
+                                            colcount = 0;
+                                            status = 0;
+                                            BatchCode = "";
+                                            Serial = "";
+                                            //validate unique box serial no will scan
+                                            for (rowcount = 1; rowcount < tblScanBox.rows.length; rowcount++) {
+                                                BatchCode = tblScanBox.rows[rowcount].cells[2].innerHTML;
+                                                Serial = tblScanBox.rows[rowcount].cells[3].innerHTML;
+                                                if (BatchCode == (splitstr[2])) {
+                                                    if (Serial == splitstr[3]) {
+                                                        //duplicate box scanned
+                                                        status = 1;
+                                                        break;
+                                                    }
+                                                    else {
+                                                        status = 0;
+                                                    }
+                                                }
+                                            }
+                                            if (status == 0) {
+                                                // add scanned box
+                                                CreateBlankRow(tblScanBox, splitpartNo[0] + '-' + splitpartNo[1], globalpartQty, splitstr[2], splitstr[3]);
+
+                                                totalPartCount = totalPartCount + 1;
+
+                                                // Added by 92293 ************************
+                                                $('#txtBoxesScanned').html(totalPartCount);
+
+                                                if (totalPartCount == document.getElementById('txtNoofBoxes').value) {
+                                                    //document.getElementById('txtScanBoxBarcode').disabled = true;
+                                                    // document.getElementById('btnBarcodePrint').disabled = false;
+                                                    document.getElementById('btnVerify').disabled = false;
+                                                }
+
+                                                $("#txtScanBoxBarcode").val("");
+                                                $("#txtScanBoxBarcode").focus();
+                                            }
+                                            else if (status == 1) {
+                                                //Box already scanned
+                                                $("#txtScanBoxBarcode").val("");
+                                                $("#txtScanBoxBarcode").focus();
+                                                alert("Box already scanned. please scan another Box");
+                                                Errordescription = "Box already scanned";
+                                                SaveUserLogs();
+                                            }
+                                        }
+                                        else {
+                                            //actual and box quantity already matched
+                                            $("#txtScanBoxBarcode").val("");
+                                            document.getElementById('txtScanBoxBarcode').disabled = true;
+                                            totalPartCount = totalPartCount - 1;
+                                            alert("Total scanned boxes quantity exceded");
+                                            Errordescription = "Total scanned boxes quantity exceded";
+                                            SaveUserLogs();
+                                        }
+                                    }
+
+                                    $("#txtScanBoxBarcode").val("");
+                                    $("#txtScanBoxBarcode").focus();
+                                }
+                                else if (tempdate == 2) {
+                                    //Wrong box barcode scanned
+                                    $("#txtScanBoxBarcode").val("");
+                                    $("#txtScanBoxBarcode").focus();
+                                    alert("Wrong box barcode scanned.");
+                                    Errordescription = "Wrong box barcode scanned.";
+                                    SaveUserLogs();
+                                }
+                                else {
+                                    //Box packed already
+                                    $("#txtScanBoxBarcode").val("");
+                                    $("#txtScanBoxBarcode").focus();
+                                    alert("Box already packed. scan another box");
+                                    Errordescription = "Scanned Box is already packed.";
+                                    SaveUserLogs();
+                                }
+                            }
+                        }
+                    }) // AJAX call completed
+                }
+                else {
+                    //Wrong box barcode scanned
+                    $("#txtScanBoxBarcode").val("");
+                    $("#txtScanBoxBarcode").focus();
+                    alert("Wrong box barcode scanned");
+                    Errordescription = "Wrong box barcode scanned";
+                    SaveUserLogs();
+                }
+                //    }
+                //    else {   // ie. splitstr[3].length != 9
+                //        //Wrong box barcode scanned
+                //        $("#txtScanBoxBarcode").val("");
+                //        $("#txtScanBoxBarcode").focus();
+                //        alert("Wrong box barcode scanned");
+                //        Errordescription = "Wrong box barcode scanned";
+                //        SaveUserLogs();
+                //    }
+                //}
+                //else {  //ie. splitstr.length === 4
+                //    $("#txtScanBoxBarcode").val("");
+                //    $("#txtScanBoxBarcode").focus();
+                //    alert("Wrong box barcode scanned");
+                //    Errordescription = "Wrong box barcode scanned";
+                //    SaveUserLogs();
+                //}
+            }
+            else {
+                alert("Number of Boxes cannot be blank!");
+            }
+        }
+    }
+
+    // for Toyota changes
+    $(document).on("keyup", "#txtScanCustPartBarcode", function (event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == 13) {
+        var custScannedBarcode = document.getElementById('txtScanCustPartBarcode').value;
+        if ($("#txtInvoiceNo").val() != "" && $("#txtInvoiceDate").val() != "") {
+            if (custScannedBarcode.length == 87) {    // Actual length is of 87 characters
+                var splitCustStrbarcode = custScannedBarcode.split(",");
+                if (splitCustStrbarcode.length > 1 && splitCustStrbarcode.length == 11) {  // element having count 11 after split this should be fixed.
+
+                    var first = splitCustStrbarcode[0];
+                    supplierCode = splitCustStrbarcode[1];
+
+                    var getStrPart = first.substring(16, 27);  //get toyota part No
+                    toyotaPartInDB = getStrPart.replace(/[^a-z0-9\s]/gi, '').replace(/[-\s]/g, "");
+
+                    var boxQty = first.substring(37, 42);  //or  first.substring(31, 36); get box qty for pallet from Toyota barcode string
+
+                    globalpartQty = splitCustStrbarcode[6];  // No of parts in a Box picked from cust barcode string (to display in grid when Box barcode scan)
+
+                    var custPartNoDB = $("#hdnCustomerPartNo").val();
+                    ddlSelPartNo = custPartNoDB.substring(0, 10);
+
+                    if (ddlSelPartNo.toUpperCase() != "") {
+                        if (toyotaPartInDB.toUpperCase() == ddlSelPartNo.toUpperCase()) {
+                            var kanban = splitCustStrbarcode[5];
+                            $.ajax({
+                                url: '@Url.Action("VerifyCustomerPartNo", "PalletLabel")',
+                                type: "POST",
+                                data: { 'ToyotaPartInDB': toyotaPartInDB, 'Kanban': kanban },
+                                success: function (data) {
+                                    if (data.length > 0) {
+                                        boschPartNoInDB = data[0].Bosch_PartNo;
+                                        kanbanId = kanban;
+
+                                        $("#blinkCustomer").removeClass("blink_me");  // removed blinking
+                                        $("#blinkCustomer").css({ 'color': 'gray', 'font-weight': '300' });
+
+                                        //$("#txtNoofBoxes").removeAttr("disabled");
+                                        $("#txtNoofBoxes").val(boxQty);                     // dynamically assign value of Qty from cust barcode string
+
+                                        $("#divBoschPartNo").show();
+                                        if ($("#txtScanPartBarcode").prop('disabled')) {
+                                            $("#txtScanPartBarcode").removeAttr("disabled");
+                                        }
+                                        $("#txtScanPartBarcode").focus();
+                                    }
+                                },
+                                error: function (data) {
+                                    alert("Scanned customer barcode not matching with database...!");
+                                    $("#txtScanCustPartBarcode").val("");
+                                }
+                            });
+
+                        }
+                        else {
+                            alert("Scanned customer barcode not matching with selected customer from dropdownlist...!");
+                            $("#txtScanCustPartBarcode").val("");
+                        }
+                        $("#hdnCustomerPartNo").val("");
+                    }
+                }
+            }
+        }
+        else {
+            if ($("#txtInvoiceNo").val() == "") {
+                alert("Invoice No. can not be blank!");
+                $("#txtInvoiceNo").focus();
+            }
+            else if ($("#txtInvoiceDate").val() == "") {
+                alert("Please select invoice date!");
+                $("#txtInvoiceDate").focus();
+            }
+        }
+      } // If enter Key
+    });
+
+    function SaveUserLogs() {
+
+        //Added by 92293
+        var partconfigurationID = $("#hdnPallateDDLId").val();
+
+        var invoiceqty = document.getElementById('txtInvoieQty').value;
+        var invoicedate = document.getElementById('txtInvoiceDate').value;
+        var invoiceNo = document.getElementById('txtInvoiceNo').value;
+
+        $.ajax({
+            url: '@Url.Action("SaveUserLogs", "PalletLabel")',
+            type: "POST",
+            data: {
+                "PartConfigNo": partconfigurationID, "ErrorDescription": Errordescription, "invoiceNo": invoiceNo, "invoiceDate": invoicedate, "invoiceQty": invoiceqty
+            },
+            success: function (data) {
+                if (data != null) {
+                    var tempverify = data;
+
+                    parameter = "SupervisorLogin;" + tempverify[0] + ";Pallet";
+                    SuppervisorControll();
+                }
+            }
+        });
+    };
+
+    function SuppervisorControll() {
+        pop('popDiv');
+        //var result = getUserData();
+        var calllogin = callLogin();
+        if (calllogin == 1) {
+            hide('popDiv');
+        }
+        else if (calllogin == 0) {
+            alert("Problem in supervisor login");
+        }
+    };
+
+    function callLogin() {
+        try {
+            var shell = new ActiveXObject("WScript.shell");
+
+            shell.run("C:\\LoginWindow\\Debug\\ZK7500.exe " + parameter, 1, true);
+            return 1;
+        }
+        catch (e) {
+            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+            return 0;
+        }
+    };
+
+    function Clear() {
+        $("#tblScanBox").empty();
+        $("#txtCustName").val("");
+        $("#txtInvoieQty").val("");
+        $("#txtNoofBoxes").val("");
+        $("#txtScanBoxBarcode").val("");
+        $("#txtInvoiceNo").val("");
+        $("#txtInvoiceDate").val("");
+        document.getElementById('btnBarcodePrint').disabled = true;
+        document.getElementById("txtScanBoxBarcode").disabled = true;
+        $("#txtInvoiceNo").focus();
+        totalPartCount = 0;
+
+        // Added by 92293
+        $("#txtBoxesScanned").text("");
+        $("#hdnPallateDDLId").val("");
+        $("#hdnPallateDDLText").val("");
+
+        $("#MST_PartConfiguration_IDundefined").val('');
+        //$("#MST_PartConfiguration_IDundefined")[0].selectedIndex = -1;
+
+        // Added for toyota
+        // on clear, revert the changes made in txtInvoiceQty & txtNoOfBoxes text boxes...
+        if ($("#txtInvoieQty").prop('disabled')) {
+            $("#txtInvoieQty").removeAttr("disabled");
+        }
+        //$("#txtNoofBoxes").attr("disabled", "disabled");
+        $("#hdnCustomerPartNo").val("");
+
+        //Added for Toyota
+        if ($("#divCustomerPartNo").is(":visible")) {
+            $("#divCustomerPartNo").hide();
+
+            $("#txtScanCustPartBarcode").val("");
+            var toyotaPartInDB = "";
+            var boschPartNoInDB = "";
+            var kanbanId = "";
+            var supplierCode = "";
+        }
+    }
+
+    $(document).on("click", "#btnVerify", function () {
+
+        var invoiceNo = "";
+        var invoiceqty = 0;
+        var InvoiceDate = "";
+
+        // added by 92293 . changes here as used select ddl of bootstrap
+        //take Drop down selected Id and text
+        var partconfigurationID = $("#hdnPallateDDLId").val();
+        var ddlpartNoText = $("#hdnPallateDDLText").val();
+
+        var tblScanBox = document.getElementById("tblScanBox");
+        document.getElementById('btnBarcodePrint').disabled = true;
+
+        var uniqueId = 'id-' + Math.random().toString(36).substr(2, 16);
+        var flag = true;
+
+        for (rowcount = 1; rowcount < tblScanBox.rows.length; rowcount++) {
+            partNo = tblScanBox.rows[rowcount].cells[0].innerHTML;
+            BatchCode = tblScanBox.rows[rowcount].cells[2].innerHTML;
+            Serial = tblScanBox.rows[rowcount].cells[3].innerHTML;
+
+            //console.log(document.getElementById('txtInvoieQty').value);
+            invoiceNo = document.getElementById('txtInvoiceNo').value ? document.getElementById('txtInvoiceNo').value : '000000001';
+            invoiceqty = document.getElementById('txtInvoieQty').value ? document.getElementById('txtInvoieQty').value : 1;
+            InvoiceDate = document.getElementById('txtInvoiceDate').value ? document.getElementById('txtInvoiceDate').value : Date();
+
+            $.ajax({
+                url: '@Url.Action("SaveInTemp", "PalletLabel")',
+                type: "POST",
+                data: {
+                    "Invoice_No": invoiceNo,
+                    "PartConfig_Id": partconfigurationID,
+                    "InvoiceQty": invoiceqty,
+                    "InvoiceDate": InvoiceDate,
+                    "BoxBatchCode": BatchCode,
+                    "BoxSerialNo": Serial,
+                    "Code": uniqueId
+                },
+                success: function (data) {
+                    if (data != null) {
+                        var tempverify = data
+                        if (tempverify == 1) {
+                            // flag = true;
+                            document.getElementById('btnBarcodePrint').disabled = false;
+                            document.getElementById('btnVerify').disabled = true;
+                            var CustomerName = document.getElementById('txtCustName').value;
+
+                            parameter = partconfigurationID + ";" + uniqueId + ";" + CustomerName + ";" + partNo + ";" + ddlpartNoText + ";" + globalpartQty;
+                            //+ ";" + PartDescription;
+                        }
+                        else {
+                            //flag = false;
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+
+    function execFinger() {
+        Clear();
+
+        $.ajax({
+            url: '@Url.Action("GetuserData", "PalletLabel")',
+            type: "POST",
+            data: {},
+            success: function (data) {
+                if (data != null) {
+                    if (data.length > 0) {
+
+                        var vdata = data;
+                        //parameter = parameter +";"+vdata;
+                        try {
+                            parameter = vdata + ";FingerValidationPallet;" + parameter;
+                            //parameter="test"
+                            exec(parameter);
+                            return 1;
+                        }
+                        catch (e) {
+                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+                            return 0;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function printBarcodeFromWebApp() {
+        Clear();
+
+        $.ajax({
+            url: '@Url.Action("GetuserData", "PalletLabel")',
+            type: "POST",
+            data: {},
+            success: function (data) {
+                if (data != null) {
+                    if (data.length > 0) {
+
+                        var vdata = data;
+                        //parameter = parameter +";"+vdata;
+                        try {
+                            parameter = vdata + ";FingerValidationPallet;" + parameter;
+                            //parameter="test"
+                            //exec(parameter);
+                            CallLocalUSBPrinter(parameter);
+                            return 1;
+                        }
+                        catch (e) {
+                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+                            return 0;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function CallLocalUSBPrinter(params) {
+
+        try {
+
+            var shell = new ActiveXObject("WScript.shell");
+            shell.run("C:\\Users\\jayan\\source\\repos\\TestApp\\bin\\Debug\\TestApp.exe " + parameter, 1, true);
+
+            return 1;
+        }
+        catch (e) {
+            alert('Error : ' + e.message + '\n' + e.stack);
+            return 0;
+        }
+    }
+
+    $(document).on("click", "#btnBarcodePrint", function () {
+
+        var resultprinting = printBarcodeFromWebApp()//execFinger()
+        if (resultprinting != null) {
+            if (resultprinting == 1) {
+                // on data save success
+                document.getElementById('btnBarcodePrint').disabled = true;
+                Clear();
+                alert(boxbarcode[3] + " - Pallet packed succesfully");
+            }
+            else {
+                //On error
+                document.getElementById('btnBarcodePrint').disabled = true;
+                Clear();
+                alert("Error occured during barcode printing");
+            }
+        }
+    });
+
+    $(document).on("click", "#btnClear", function () {
+        Clear();
+    });
+
+    //to create row and populate data
+    function CreateBlankRow(tblScanBox, PartNo, PartQty, BoxSrNo, BoxBatchCode) {
+        var thead = document.createElement('thead');
+        var row = document.createElement('tr'); // create row node
+        var col = document.createElement('td'); // create column node
+        var col2 = document.createElement('td'); // create second column node
+        var col3 = document.createElement('td');
+        var col4 = document.createElement('td');
+        row.appendChild(col); // append first column to row
+        row.appendChild(col2); // append second column to row
+        row.appendChild(col3)
+        row.appendChild(col4);
+        row.appendChild(thead);
+
+        col.innerHTML = PartNo // put data in first column
+        col2.innerHTML = PartQty; // put data in second column
+        col3.innerHTML = BoxSrNo;
+        col4.innerHTML = BoxBatchCode;
+
+        tblScanBox.appendChild(row); // append row to table
+    }
+
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Barcode Generation</li>
+            <li><i class="fa fa-th-list"></i>Pallet Barcode Generation</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            <header class="panel-heading">
+                <table valign="middle">
+                    <tr>
+                        <td align="left" width="50%">
+                            Pallet Barcode Generation
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnClear" class="btn btn-default btn-sm" tabindex="9" title="Clear" value="Clear" />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnVerify" disabled="disabled" class="btn btn-default btn-sm" tabindex="9" title="Verify" value="Verify" />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnBarcodePrint" disabled="disabled" class="btn btn-default btn-sm" tabindex="8" title="Print Pallet Barcode" value="Print Barcode" onclick="" />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <a class="btn btn-default btn-sm" href="~/Home/Index" tabindex="10" title="Cancel">Cancel</a>
+                        </td>
+                    </tr>
+                </table>
+            </header>
+
+            <div class="panel-body">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="row">
+
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Invoice No</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtInvoiceNo" maxlength="20" tabindex="1" class="form-control" autofocus />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Invoice Date</label>
+                                    <div class="col-lg-12">
+                                        @*<input type="text" id="txtInvoiceDate" maxlength="20" tabindex="2" placeholder="MM-DD-YYYY" class="datepicker" data-date-format="mm/dd/yyyy" style="display: block; width: 100%; height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.428571429; color: #8e8e93; vertical-align: middle; background-color: #ffffff; border: 1px solid #c7c7cc; border-radius: 4px; -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;"/>*@
+                                        <input type="text" id="txtInvoiceDate" class="form-control" maxlength="20" tabindex="2" style="display: block; width: 100%; height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.428571429; color: #8e8e93; vertical-align: middle; background-color: #ffffff; border: 1px solid #c7c7cc; border-radius: 4px; -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;" placeholder="dd.mm.yyyy" />
+                                        @*<input type="text" id="txtInvoiceDate" class="form-control" maxlength="20" tabindex="2" style="display: block; width: 100%; height: 34px;"/>*@
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Part No</label>
+                                    @*<div class="col-xs-12 col-xm-12 col-md-12 col-lg-12">
+                                            <div <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7" style="padding-left:0px; padding-right:14px;">
+                                                <select id="MST_PartConfiguration_ID" class="combobox form-control">
+                                                    <option value="" selected="selected">-- Select --</option>
+                                                </select>
+                                            </div>
+                                        </div>*@
+                                    <div class="col-lg-9" style="padding-right:15px;padding-left:0px;">
+                                        <select id="MST_PartConfiguration_ID" class="combobox form-control">
+                                            <option value="" selected="selected">-- Select --</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                @*<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                        <label class="col-xs-4 col-sm-4 col-md-3 col-lg-3 control-label">Customer Name</label>
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                            <input type="text" id="txtCustName" disabled="disabled" tabindex="4" class="form-control" />
+                                        </div>
+                                    </div>*@
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Customer Name</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtCustName" tabindex="4" disabled="disabled" class="form-control" />
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Invoice Qty</label>
+                                    <div class="col-lg-12">
+                                        <input type="number" id="txtInvoieQty" maxlength="5" max="5" tabindex="5" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">No of Boxes</label>
+                                    <div class="col-lg-12">
+                                        <input type="number" id="txtNoofBoxes" disabled="disabled" tabindex="6" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* New Div Added For Toyota*@
+                        <div class="form-group" id="divCustomerPartNo">
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label id="lblCustPartNo" class="col-lg-3 control-label" style="color:firebrick; font-size:15px; font-weight:bold;"><span id="blinkCustomer" class="blink_me">Scan Customer Part No</span></label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtScanCustPartBarcode" tabindex="9" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="col-lg-12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="divBoschPartNo">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Scan Box</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtScanBoxBarcode" disabled="disabled" tabindex="7" class="form-control" onkeyup="keyuptext(this.value)" />
+                                    </div>
+                                </div>
+
+                                @*Start : 28 Sept 17 Added by 92293*@
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">No of Boxes Scanned</label>
+                                    <div class="col-lg-12">
+                                        <label class="col-lg-3 control-label" style="font-size: larger; font-weight: 500" id="txtBoxesScanned"></label>
+                                    </div>
+                                </div>
+                                @*End : 28 Sept 17 Added by 92293*@
+
+                            </div>
+                        </div>
+                    </form>
+                }
+
+            </div>
+            <div class="table-responsive">
+                <table class="table" id="tblScanBox"></table>
+            </div>
+
+        </section>
+
+    </div>
+</div>
+<input type="hidden" id="hdnPallateDDLId" />
+<input type="hidden" id="hdnPallateDDLText" />
+<input type="hidden" id="hdnCustomerPartNo" />
+
+<div id="popDiv" class="ontop" data-theme="c">
+</div>
+
+
+
+
+
+
+
+
+

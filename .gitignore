@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs/FactoryMagix/config/applicationhost.config
+/.vs/VSWorkspaceState.json
+*.suo
+*.sqlite

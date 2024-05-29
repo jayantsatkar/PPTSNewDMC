@@ -1,0 +1,116 @@
+﻿@model IEnumerable<FactoryMagix.Models.spGetPalletWiseReport_Result>
+@{
+    ViewBag.Title = "PalletWiseReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).on("click", "#btnView", function () {
+        
+        var PalletSrNo = $("#txtPallet").val();
+
+        if (PalletSrNo.length > 0) {
+
+            var Url = '@Url.Action("_PalletReport", "Reports")'
+            location.href = Url + "/?PalletNo=" + PalletSrNo;
+        }
+        else {
+            $("#txtPallet").focus();
+            alert("Please enter Pallet Sr No");
+
+        }
+
+    });
+
+
+    $(document).on("click", "#btnExportToExcel", function () {
+
+        var PalletSrNo = $("#txtPallet").val();
+
+        if (PalletSrNo.length > 0) {
+
+            var Url = '@Url.Action("PalletWiseExportToExcel", "Reports")'
+            location.href = Url + "/?PalletNo=" + PalletSrNo;
+        }
+        else if ('@Request.QueryString["PalletNo"]' != '') {
+            PalletSrNo = '@Request.QueryString["PalletNo"]';
+            var Url = '@Url.Action("PalletWiseExportToExcel", "Reports")'
+            location.href = Url + "/?PalletNo=" + PalletSrNo;
+
+        }
+        else {
+            $("#txtPallet").focus();
+            alert("Please enter Pallet serial no");
+
+        }
+
+    });
+
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table">Report</i></li>
+            <li><i class="fa fa-th-list"></i>Pallet Report</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+
+        <section class="panel">
+
+            <header class="panel-heading">
+                <div class="form-group">
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <label class="col-lg-2 control-labe6" style="padding-top:5px">Pallet Sr No-</label>
+                            <div class="col-lg-3" style="padding-top:15px">
+                                <input type="text" id="txtPallet" tabindex="1" class="form-control" autofocus />
+                            </div>
+
+                            <div class="col-lg-2" style="padding-top:8px">
+                                <input type="button" id="btnView"  tabindex="2" class="btn btn-default" title="View" value=" View  " />
+                                @*<input type="button" id="btnView" onclick="location.href='@Url.Action("_PalletReport", "Reports")?PalletNo=' + document.getElementById('txtPallet').value" tabindex="2" class="btn btn-default" title="View" value=" View  " />*@
+                            </div>
+                        </div>
+
+                        <div class="right" style="padding-left:50em; margin-top:5px">
+
+                            <input type="button" id="btnExportToExcel" class="btn btn-default btn-sm" title="Export" value="Export"  />
+                            <a class="btn btn-default btn-sm" href="~/" title="Cancel">Cancel</a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </header>
+            @if (ViewData["GotoPageMessage"] != null)
+            {
+                <script language="javascript">
+                     alert('@ViewData["GotoPageMessage"] @ViewBag.PageCount');
+                </script>
+            }
+
+
+        </section>
+
+
+            
+
+    </div>
+</div>
+
+@{ 
+    if (Model != null)
+    {
+        Html.RenderPartial("_PalletReport", Model);
+    }
+}
+
+
+

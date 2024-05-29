@@ -1,0 +1,119 @@
+﻿@model IEnumerable<FactoryMagix.Models.spGetInvoiceReport_Result>
+
+@{
+    ViewBag.Title = "InvoiceReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).on("click", "#btnView", function () {
+        var InvoiceNo = $("#txtPallet").val();
+
+        if (InvoiceNo.length > 0) {
+
+            var Url = '@Url.Action("_InvoiceReport", "Reports")'
+            location.href = Url + "/?InvoiceNo=" + InvoiceNo;
+        }
+        else {
+            $("#txtPallet").focus();
+            alert("Please enter invoice no");
+
+        }
+
+    });
+
+
+    $(document).on("click", "#btnExportToExcel", function () {
+       
+        var InvoiceNo = $("#txtPallet").val();
+
+        if (InvoiceNo.length > 0) {
+
+            var Url = '@Url.Action("InvoiceReportExportToExcel", "Reports")'
+            location.href = Url + "/?InvoiceNo=" + InvoiceNo;
+        }
+        else if ('@Request.QueryString["InvoiceNo"]' != '') {
+            InvoiceNo = '@Request.QueryString["InvoiceNo"]';
+            var Url = '@Url.Action("InvoiceReportExportToExcel", "Reports")'
+            location.href = Url + "/?InvoiceNo=" + InvoiceNo;
+
+        }
+        else {
+            $("#txtPallet").focus();
+            alert("Please enter invoice no");
+
+        }
+
+    });
+
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table">Report</i></li>
+            <li><i class="fa fa-th-list"></i>Invoice Report</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+
+
+        <section class="panel">
+
+            <header class="panel-heading">
+                <div class="form-group">
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <label class="col-lg-2 control-labe6" style="padding-top:5px">Invoice No-</label>
+                            <div class="col-lg-3" style="padding-top:15px">
+                                <input type="text" id="txtPallet" tabindex="1" class="form-control" autofocus />
+                            </div>
+
+                            <div class="col-lg-2" style="padding-top:8px">
+                                <input type="button" id="btnView" tabindex="2" class="btn btn-default" title="View" value=" View  " />
+                                @*<input type="button" id="btnView" onclick="location.href='@Url.Action("_InvoiceReport", "Reports")?InvoiceNo=' + document.getElementById('txtPallet').value" tabindex="2" class="btn btn-default" title="View" value=" View  " />*@
+                               
+                            </div>
+                        </div>
+
+                        <div class="right" style="padding-left:15em">
+                            <input type="button" id="btnExportToExcel" class="btn btn-default btn-sm" title="Export To Excel" value="Export To Excel"  />
+                            @*<input type="button" id="btnExportToExcel" class="btn btn-default btn-sm" title="Export To Excel" value="Export To Excel" onclick="location.href='@Url.Action("InvoiceReportExportToExcel","Reports",new { InvoiceNo=Request.QueryString["InvoiceNo"]})'" />*@
+                            <a class="btn btn-default btn-sm" href="~/" title="Cancel">Cancel</a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </header>
+            @if (ViewData["GotoPageMessage"] != null)
+            {
+                <script language="javascript">
+                     alert('@ViewData["GotoPageMessage"] @ViewBag.PageCount');
+                </script>
+            }
+
+
+        </section>
+
+
+    </div>
+</div>
+
+
+@{
+    if (Model != null)
+    {
+        Html.RenderPartial("_InvoiceDatewiseReport", Model);
+    }
+}
+
+
+

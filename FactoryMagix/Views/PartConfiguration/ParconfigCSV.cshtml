@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewBag.Title = "ParconfigCSV";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+    $(document).ready(function () {
+        
+        if ('@Session["csvresult"]' != '') {
+            alert('@Session["csvresult"]');
+
+            @{
+                Session["csvresult"] = "";
+            }
+
+        }
+    });
+
+    @*$(document).ready(function () {
+        $("#btnFileupload").click(function () {
+            $.each($('.file'), function () {
+                var filename = $(this).val();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("CSVFileupload", "PartConfiguration")',
+                    enctype: 'multipart/form-data',
+                    data: {
+                        file: filename
+                    },
+                    success: function () {
+                        //alert("Data Uploaded:");
+                        //return image link to user here...
+                    }
+                });
+            });
+        });
+    });*@
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Master</li>
+            <li><i class="fa fa-th-list"></i>Part</li>
+        </ol>
+    </div>
+</div>
+
+
+
+    @using (Html.BeginForm("ParconfigCSV", "PartConfiguration",  FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <label for="file">Upload CSV File:</label>
+        <input type="file" name="file" id="file" /><br><br>
+        <input type="submit" value="Upload" />
+        <br><br>
+        @ViewBag.Message
+    }
+
+
+   

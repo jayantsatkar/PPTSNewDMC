@@ -1,0 +1,112 @@
+﻿@model FactoryMagix.Models.MST_Customer
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+      
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Master</li>
+            <li><i class="fa fa-th-list"></i>Customer</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            @*<header class="panel-heading">
+                Edit Customer
+            </header>*@
+            <header class="panel-heading">
+
+                <table valign="middle">
+                    <tr>
+                        <th align="left" width="50%" style="font-size:18px; color:black; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ">
+                            Edit Customer
+                        </th>
+
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnBack" class="btn btn-default btn-sm" title="Back to List" value="Back to List" onclick="location.href='@Url.Action("Index","Customer")' " />
+                        </td>
+
+                        <td align="right" width="50%" valign="middle">
+                            <a class="btn btn-default btn-sm" href="~/Home/Index" title="Cancel">Cancel</a>
+
+                        </td>
+
+                    </tr>
+
+                </table>
+            </header>
+
+            <div class="panel-body">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                       
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.MST_Customer_ID)
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Customer Code</label>
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Customer_Code, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                 @Html.ValidationMessageFor(model => model.Customer_Code, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Customer Name</label>
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Customer_Name, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                 @Html.ValidationMessageFor(model => model.Customer_Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Customer Index</label>
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Customer_Index, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                 @Html.ValidationMessageFor(model => model.Customer_Index, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Customer AddressLine1</label>
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Address_Line1, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Address_Line1, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Customer AddressLine2</label>
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Address_Line2, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Address_Line2, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                      
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Save" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                </div>
+        </section>
+
+    </div>
+</div>
+
+

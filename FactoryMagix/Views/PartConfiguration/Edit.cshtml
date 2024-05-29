@@ -1,0 +1,254 @@
+﻿@model FactoryMagix.Models.MST_PartConfiguration
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        
+        $("#drMST_Customer_ID").change(function () {
+            var Customer_ID = $(this).val();
+            var Result;
+
+            $.ajax({
+                type: "POST",
+
+                url:  '/PartConfiguration/GetPartConfigurationData',
+                data: JSON.stringify({ MST_Customer_ID: Customer_ID }),
+                contentType: "application/json; charset=utf-8",
+                dataType: 'Json',
+                async: false,
+                success: function (result) {
+                    var Result = result;
+
+                    $("#txtCustomerCode").val(Result.Customer_Code);
+                    $("#txtCustomerIndex").val(Result.Customer_Index);
+
+
+                },
+                error: function (xhr, error) {
+                    console.debug(xhr);
+                    console.debug(error);
+                }
+
+            });
+
+        });
+
+
+    });
+
+
+</script>
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header">
+            <i class="fa fa-table"> EDIT</i>
+
+        </h3>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Master</li>
+            <li><i class="fa fa-th-list"></i>Part Configuration</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+
+
+            <header class="panel-heading">
+
+                <table valign="middle">
+                    <tr>
+                        <th align="left" width="50%" style="font-size:18px; color:black; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ">
+                            Edit Part
+                        </th>
+
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnBack" class="btn btn-default btn-sm" title="Back to List" value="Back to List" onclick="location.href='@Url.Action("Index","PartConfiguration")' " />
+                        </td>
+
+                        <td align="right" width="50%" valign="middle">
+                            <a class="btn btn-default btn-sm" href="~/Home/Index" title="Cancel">Cancel</a>
+
+                        </td>
+
+                    </tr>
+
+                </table>
+            </header>
+            <div class="panel-body">
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                      
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.MST_PartConfiguration_ID)
+
+                        <form class="form-horizontal">
+
+
+                            <div class="form-group">
+
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        @Html.LabelFor(model => model.BoschPart_No, "Bosch Part No", htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.BoschPart_No, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                            @Html.ValidationMessageFor(model => model.BoschPart_No, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+
+                                        @Html.LabelFor(model => model.CustPart_No, "Cust Part No", htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.CustPart_No, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.CustPart_No, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        @Html.LabelFor(model => model.BoschPart_Desc, "Bosch Part Desc", htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.BoschPart_Desc, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.BoschPart_Desc, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        @Html.LabelFor(model => model.MST_Customer_ID, "Customer Name", htmlAttributes: new { @class = "col-lg-3 control-label" })
+                                        <div class="col-md-8">
+                                            @Html.DropDownListFor(model => model.MST_Customer_ID, null, "Select Customer Name --", htmlAttributes: new { @class = "form-control", id = "drMST_Customer_ID" })
+                                            @Html.ValidationMessageFor(model => model.MST_Customer_ID, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*<div class="form-group">
+                                    @Html.LabelFor(model => model.MST_Customer_ID, "MST_Customer_ID", htmlAttributes: new { @class = "control-label col-md-3" })
+                                    <div class="col-md-10">
+                                        @Html.DropDownList("MST_Customer_ID", null, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.MST_Customer_ID, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>*@
+
+                            <div class="form-group">
+
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        @Html.Label("Customer Code", htmlAttributes: new { @class = "col-lg-3 control-label" })
+                                        <div class="col-md-8">
+                                            @*<input type="text" id="txtCustomerCode" disabled="disabled" class="form-control" />*@
+
+                                            @Html.EditorFor(model => model.MST_Customer.Customer_Code, new { htmlAttributes = new { @class = "form-control", id = "txtCustomerCode", disabled = "disabled" } })
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+
+                                        @Html.Label("Customer Index", htmlAttributes: new { @class = "col-lg-3 control-label", disabled = "disabled" })
+                                        <div class="col-md-8">
+                                            @*<input type="text" id="txtCustomerIndex" disabled="disabled" class="form-control" />*@
+                                            @Html.EditorFor(model => model.MST_Customer.Customer_Index, new { htmlAttributes = new { @class = "form-control", id = "txtCustomerIndex", disabled = "disabled" } })
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            @*<div class="form-group">
+                                  @Html.LabelFor(model => model.Customer_Index, "Customer Index", htmlAttributes: new { @class = "control-label col-md-3" })
+                                  <div class="col-md-10">
+                                      @Html.EditorFor(model => model.Customer_Index, new { htmlAttributes = new { @class = "form-control" } })
+                                      @Html.ValidationMessageFor(model => model.Customer_Index, "", new { @class = "text-danger" })
+                                  </div>
+                                </div>*@
+
+
+
+                            <div class="form-group">
+
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        @Html.LabelFor(model => model.Line_Id, "Line Id", htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.Line_Id, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Line_Id, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-6">
+
+                                        @Html.LabelFor(model => model.NoOfPartQy_Box, "Qty/Box", htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.NoOfPartQy_Box, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.NoOfPartQy_Box, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        @Html.LabelFor(model => model.Line_No, "Line No", htmlAttributes: new { @class = "control-label col-md-3" })
+                                        <div class="col-md-8">
+                                            @Html.EditorFor(model => model.Line_No, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Line_No, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Save" class="btn btn-default" />
+                                </div>
+                            </div>
+
+
+                        </form>
+                    </div>
+                }
+
+
+            </div>
+        </section>
+
+    </div>
+</div>

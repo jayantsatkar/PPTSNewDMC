@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Creative - Bootstrap 3 Responsive Admin Template">
+    <meta name="author" content="GeeksLabs">
+    <meta name="keyword" content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
+    <title>@ViewBag.Title - FactoryMagix</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+  
+</head>
+<body>
+   
+    <section id="container" class="">
+
+        <header class="header FM-bg">
+            <div class="toggle-nav">
+                <div class="icon-reorder tooltips" data-original-title="Toggle Navigation" data-placement="bottom"><i class="icon_menu"></i></div>
+            </div>
+
+            <!--logo start-->
+           &nbsp; &nbsp;&nbsp; &nbsp; <img id="Imglogo" width="85px" height="35px" style="margin-top:12px ; margin-left:22px" src="../img/FMLogo.jpg">
+           @* <a href="index.html" class="logo">Factory <span class="lite">Magix</span></a>*@
+            <!--logo end-->
+           
+
+            <div class="top-nav notification-row" style="padding-top:20px">
+                
+                @{ 
+                    var Login_ID = "";
+                    if (Session["UserInfo"] != null)
+                    {
+                        var mst_user = (FactoryMagix.Models.MST_User)Session["UserInfo"];
+                         Login_ID = mst_user.Login_ID; }
+
+                        
+                    }
+                <span style="color:white">[ Welcome- @Login_ID ] &nbsp; |</span> &nbsp;
+                 <a style="color:white" href="~/home/Index">Home | &nbsp;</a>
+                <a style="color:white" href="~/Account/ChangePassword">Change Password | &nbsp;</a>
+                <a style="color:white" href="~/Account/Logout"><i class="icon_key_alt"></i> Log out</a>
+                
+            </div>
+
+        </header>
+
+        <footer>
+            <div id="Divfooter" style="width: 100%; height: 20px; position: fixed; bottom: 0px; left: 0px; background-color: #007acc; color: White; z-index: 0">
+                <div class="pageheader" style="float: left; background-color: #007acc;">
+                    <span style="font-size: 11px;">
+                        &nbsp;&nbsp; Powered by Magnetivity Solutions Pvt Ltd &nbsp; <a style="color: White" href="https://www.magnetivity.net" target="_blank">www.magnetivity.net</a>&nbsp;
+                        Magatron
+                    </span>
+                </div>
+                &nbsp;<span id="secondsIdle" style="color: #007acc; font-size: 12px; font-weight: bold;"></span>
+                <div class="pageheader" style="float: right; background-color: #007acc;">
+                    <span style="font-size: 11px;">
+                        Copyright © 2020 - 2021 Magnetivity Solutions Pvt. Ltd. All rights
+                        reserved.&nbsp;&nbsp;
+                    </span>
+                </div>
+            </div>
+        </footer>
+        <aside>
+            @{ Html.RenderAction("_MenuLayout", "Partial"); }
+        </aside>
+
+        <section id="main-content">
+            <section class="wrapper">
+                
+                @RenderBody()
+
+            </section>
+        </section>
+</section>
+           
+            @Scripts.Render("~/bundles/bootstrap")
+            @RenderSection("scripts", required: false)
+</body>
+</html>

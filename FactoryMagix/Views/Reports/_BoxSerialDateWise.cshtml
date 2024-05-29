@@ -1,0 +1,226 @@
+﻿@model IEnumerable<FactoryMagix.Models.spGetBoxSerialNoReport_Result>
+@using PagedList;
+@using PagedList.Mvc;
+
+@{
+    Layout = null;
+}
+
+ 
+<script>
+
+    $(function () {
+
+        function groupTable($rows, startIndex, total) {
+            if (total === 0) {
+                return;
+            }
+            var i, currentIndex = startIndex, count = 1, lst = [];
+            var tds = $rows.find('td:eq(' + currentIndex + ')');
+            var ctrl = $(tds[0]);
+            lst.push($rows[0]);
+            for (i = 1; i <= tds.length; i++) {
+                if (ctrl.text() == $(tds[i]).text()) {
+                    count++;
+                    $(tds[i]).addClass('deleted');
+                    lst.push($rows[i]);
+                }
+                else {
+                    if (count > 1) {
+                        ctrl.attr('rowspan', count);
+                        groupTable($(lst), startIndex + 1, total - 1)
+                    }
+                    count = 1;
+                    lst = [];
+                    ctrl = $(tds[i]);
+                    lst.push($rows[i]);
+                }
+            }
+        }
+        groupTable($('#tblReportDetails tr:has(td)'), 1, 6);
+        $('#tblReportDetails .deleted').remove();
+    });
+
+
+
+    $(document).ready(function () {
+        $("#btngotopage").click(function () {
+            
+            var goToValue = $("#ingoto").val();
+            var RecordsCount = '@ViewBag.RecordsCount';
+            //if (goToValue > RecordsCount)
+            //{ alert("Please enter Page No. between " + RecordsCount + 1); }
+           
+            if ('@Request.QueryString["BoxSrNo"]'!='') {
+                
+                var BoxSrNo = '@Request.QueryString["BoxSrNo"]';
+                var Url = '@Url.Action("BoxSerialWiseGotoPage", "Reports")'
+                location.href = Url + "/?BoxSrNo=" + BoxSrNo + "&page=" + goToValue;
+            }
+            else
+            {
+                var datedata = '@Request.QueryString["datedata"]';
+
+                var Url = '@Url.Action("TypeDatewiseReportpage", "Reports")'
+               // location.href = Url + "/?datedata=" + datedata + "&page=" + goToValue;
+                location.href = Url + "/?page=" + goToValue + "&datedata=" + datedata;
+            }
+
+
+        });
+    });
+
+
+</script>
+    
+
+
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+
+                <div class="table-responsive">
+                    <table class="table" id="tblReportDetails">
+                        <thead>
+                            <tr>
+
+                                <th>
+                                    SrNo
+                                </th>
+                                <th>
+                                    Invoice No
+                                </th>
+
+                                <th>
+                                    Pallet Sr No
+                                </th>
+                                <th>
+                                    Pallet Batch Code
+                                </th>
+                                <th>
+                                    Box Sr No
+                                </th>
+
+                                <th>
+                                    Box Batch Code
+                                </th>
+                                <th>
+                                    Bosch Part No
+                                </th>
+
+                                <th>
+                                    Part Sr No
+                                </th>
+                                <th>
+                                    Part Batch Code
+                                </th>
+                                <th>
+                                    Box Packed By
+                                </th>
+                                
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SrNo)
+                                        </td>
+                                        <td>
+                                           
+                                                @Html.DisplayFor(modelItem => item.InvoiceNo)
+                                           
+                                      </td >
+                                        <td >
+                                          
+                                                @Html.DisplayFor(modelItem => item.PalletSerial_No)
+
+                                            
+                                     </td >
+                                        <td >
+                                       
+                                                @Html.DisplayFor(modelItem => item.PalletBatchCode)
+                                            
+                                    </td >
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.BoxSerialNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.BoxBatchCode)
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(modelItem => item.Boschpart_No)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.PartSerialNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.PartBatchCode)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Login_ID)
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+
+                    <table class="table table-responsive">
+
+
+                        <tr style="background-color: #E6E6E6;">
+                            <td style="border: none;padding-left:1em"></td>
+                            <td style="text-align:left; border: none">
+                                <span>
+                                    @{
+                                        if (Request.QueryString["BoxSrNo"] != null)
+                                        {
+                                            @Html.PagedListPager((IPagedList)Model, page => Url.Action("_BoxSerialDateWisePage", new { page, BoxSrNo = Request.QueryString["BoxSrNo"] }), PagedListRenderOptions.MinimalWithPageCountText)
+                                        }
+                                        else
+                                        {
+                                            @Html.PagedListPager((IPagedList)Model, page => Url.Action("TypeDatewiseReportpage", new { page, datedata = Request.QueryString["datedata"] }), PagedListRenderOptions.MinimalWithPageCountText)
+                                        }
+
+                                    }
+                                </span>
+                            </td>
+                            <td style="border: none;padding-left:10em"></td>
+                            <td style="border: none; text-align: left">@ViewBag.RecordsCount Record(s) found.</td>
+                            <td style="border: none; padding-left:28em"></td>
+                            <td style="border: none;text-align: left">
+
+                                <label>Go to page</label>
+                                <input type="text" id="ingoto" style="height: 20px; width: 25px;" />
+                                @*@{ var BoxSrNo = Request.QueryString["BoxSrNo"]; }*@
+                                @*<input type="submit" value=">" class="btn btn-default" onclick="location.href='@Url.Action("BoxSerialWiseGotoPage")?page=' + document.getElementById('ingoto').value  " />*@
+                                @*<input type="button" value=">" id="btngotopage" onclick="BoxSerialWiseGotoPage()" class="btn btn-default"  />*@
+                                @{
+                                   // var textBoxData = "xxx";
+                                    var a = Request.Form["ingoto"];
+                                }
+                                
+                                <input type="button" value=">" id="btngotopage" class="btn btn-default" />
+
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </section>
+        </div>
+    </div>
+}

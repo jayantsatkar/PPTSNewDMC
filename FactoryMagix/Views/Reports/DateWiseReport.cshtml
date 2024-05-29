@@ -1,0 +1,161 @@
+﻿@{
+    ViewBag.Title = "DateWiseReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+
+     $(document).ready(function () {
+         $('input[type=datetime]').datepicker({
+             dateFormat: "yy/mm/dd",
+             changeMonth: true,
+             changeYear: true,
+             yearRange: "-60:+0"
+         });
+
+     });
+
+     $(document).on("click", "#btnView", function () {
+   
+         var FromDate = $("#txtFromDate").val();
+         var toDate = $("#txtTodate").val();
+         var type = $("#ddlType").val();
+         if ((FromDate != '' && toDate != '' && type != 0) || (FromDate != null && toDate != null && type != 0)) {
+
+             var Url = '@Url.Action("TypeDatewiseReport", "Reports")'
+             location.href = Url + "/?datedata=" + FromDate+';'+toDate+';'+type;
+
+         }
+         else
+         {
+
+             $("#txtFromDate").focus();
+             alert("Please enter Start Date, End Date and Type");
+         }
+
+     });
+
+
+     $(document).on("click", "#btnExportToExcel", function () {
+      
+         var FromDate = $("#txtFromDate").val();
+         var toDate = $("#txtTodate").val();
+         var type = $("#ddlType").val();
+
+         if ((FromDate != '' && toDate != '' && type != 0) ) {
+
+              var Url = '@Url.Action("DateWiseReportExportToExcel", "Reports")'
+             location.href = Url + "/?datedata=" + FromDate+';'+toDate+';'+type;
+         }
+         else if ('@Request.QueryString["datedata"]' != '') {
+             var datedata = '@Request.QueryString["datedata"]';
+             var Url = '@Url.Action("DateWiseReportExportToExcel", "Reports")'
+             location.href = Url + "/?datedata=" + datedata;
+
+         }
+         else {
+             $("#txtPallet").focus();
+             alert("Please enter Start Date, End Date and Type");
+
+         }
+
+     });
+
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table">Report</i></li>
+            <li><i class="fa fa-th-list"></i>Pallet Report</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel-heading">
+            <div class="form-group">
+
+                <div class="row">
+
+                    <div class="col-lg-12">
+
+                        <label class="col-lg-1 control-labe6">From Date</label>
+                        <div class="col-lg-2">
+                            <input type="datetime" id="txtFromDate"  tabindex="1" class="form-control" autofocus />
+                        </div>
+                        <label class="col-lg-1 control-labe6">To Date</label>
+                        <div class="col-lg-2">
+                            <input type="datetime" id="txtTodate"  required tabindex="2" class="form-control" autofocus />
+                        </div>
+                        <label class="col-lg-1 control-labe6">Type</label>
+                        <div class="col-lg-2">
+                            @Html.DropDownList("ddlType", new List<SelectListItem>
+
+                             {
+                                new SelectListItem{ Text="---Select---", Value = "0" ,Selected=true},
+                                new SelectListItem{ Text="Invoice", Value = "I" },
+                                new SelectListItem{ Text="Pallet Sr No", Value = "P" },
+                                new SelectListItem{ Text="Box Sr No", Value = "B" }
+                             }, htmlAttributes: new { @class = "form-control", style = "width: 150px;",    @tabindex = "3" })
+                           
+                            
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="button" id="btnView"  tabindex="4" class="btn btn-default btn-sm" title="View" value=" View  " onclick="location.href='@Url.Action("TypeDatewiseReport", "Reports")?datedata='+ document.getElementById('txtFromDate').value+';'+document.getElementById('txtTodate').value+';'+document.getElementById('ddlType').value"/>
+                            <input type="button" id="btnExportToExcel" tabindex="4" class="btn btn-default btn-sm" title="Export" value="Export" />
+                            <a class="btn btn-default btn-sm" href="~/Home/Index" tabindex="5" title="Cancel">Cancel</a>
+                           
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            @if (ViewData["GotoPageMessage"] != null)
+            {
+                <script language="javascript">
+                     alert('@ViewData["GotoPageMessage"] @ViewBag.PageCount');
+                </script>
+            }
+
+        </section>
+
+
+
+    </div>
+</div>
+
+
+  @{
+      if (ViewBag.Invoice != null)
+      {
+
+          IEnumerable<FactoryMagix.Models.spGetInvoiceReport_Result> model  = ViewBag.Invoice  ;
+         
+          Html.RenderPartial("_InvoiceDatewiseReport", model);
+      }
+      else if(ViewBag.Pallet != null)
+      {
+          IEnumerable<FactoryMagix.Models.spGetPalletWiseReport_Result> objlist = ViewBag.Pallet;
+          Html.RenderPartial("_PalletReport", objlist);
+
+      }
+      else if (ViewBag.Boxlist != null)
+      {
+          IEnumerable<FactoryMagix.Models.spGetBoxSerialNoReport_Result> objlist = ViewBag.Boxlist;
+          Html.RenderPartial("_BoxSerialDateWise", objlist);
+
+      }
+      
+
+}
+
+

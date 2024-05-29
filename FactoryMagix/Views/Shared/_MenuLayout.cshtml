@@ -1,0 +1,56 @@
+﻿@model IEnumerable<FactoryMagix.Models.spGetFormsandModuleforUser_Result>
+
+@{
+    Layout = null;
+}
+
+@if (Model != null)
+{
+
+    var plist = Model.Where(m => m.Frm_Name == "0").ToList();
+
+    <div id="sidebar" class="nav-collapse ">
+        <!-- sidebar menu start-->
+        <ul class="sidebar-menu">
+            @foreach (var item in plist)
+            {
+                if (item.Frm_Name == "0")
+                {
+                    <li class="sub-menu">
+                        <a href="javascript:;" class="">
+                            @*<i class="icon_document_alt"></i>*@
+
+                            <span>@item.Module_Name</span>
+                            <span class="menu-arrow arrow_carrot-right"></span>
+
+                        </a>
+                       
+
+                        @{ var pChildlist = Model.Where(m => m.Module_Name == item.Module_Name).ToList();  }
+
+                            <ul class="sub">
+                                @foreach (var childitem in pChildlist)
+                                {
+                                    if (childitem.Frm_Name != "0")
+                                    {
+
+                                        <li><a class="" href ='@Url.Content("~/"+childitem.Frm_URL)'>@childitem.Frm_Name</a></li>
+                                    }
+                                }
+                            </ul>
+
+                    </li>
+                }
+
+            }
+
+        </ul>
+        <!-- sidebar menu end-->
+    </div>
+}
+
+ 
+
+
+
+

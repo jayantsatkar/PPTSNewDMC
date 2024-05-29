@@ -1,0 +1,117 @@
+﻿@model FactoryMagix.Models.MST_Role
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header">
+            <i class="fa fa-table"> EDIT</i>
+
+        </h3>
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Admin Utilities</li>
+            <li><i class="fa fa-th-list"></i>Role</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+            @*<header class="panel-heading">
+                Edit Role
+            </header>*@
+
+            <header class="panel-heading">
+
+                <table valign="middle">
+                    <tr>
+                        <th align="left" width="50%" style="font-size:18px; color:black; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ">
+                            Edit Role
+                        </th>
+
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnBack" class="btn btn-default btn-sm" title="Back to List" value="Back to List" onclick="location.href='@Url.Action("Index","Role")' " />
+                        </td>
+
+                        <td align="right" width="50%" valign="middle">
+                            <a class="btn btn-default btn-sm" href="~/Home/Index" title="Cancel">Cancel</a>
+                        </td>
+
+                    </tr>
+
+                </table>
+            </header>
+            <div class="panel-body">
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @*<h4>MST_Role</h4>*@
+                        <hr />
+                    @*    @Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+                        @Html.HiddenFor(model => model.Role_ID)
+                        @Html.HiddenFor(model=>model.Created_On)
+                    @*    @Html.HiddenFor(model => model.Role_Name)*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Role_Name, "Role Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Role_Name,  new { htmlAttributes = new { @class = "form-control", @data_Val = "false", @readonly = "readonly" } })
+                               @Html.ValidationMessageFor(model => model.Role_Name, "", new { @class = "text-danger" })
+                             </div>
+                        </div>
+
+                        @*<div class="form-group">
+                            @Html.LabelFor(model => model.Role_Name, "Role Name", htmlAttributes: new { @class = "control-label col-md-2", @data_val = "false" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Role_Name, new { htmlAttributes = new { @class = "form-control", @data_Val = "false", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.Role_Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>*@
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Role_Desc, "Role Description", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Role_Desc, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Role_Desc, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IsActive, "Active ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.IsActive)
+                                    @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Save" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

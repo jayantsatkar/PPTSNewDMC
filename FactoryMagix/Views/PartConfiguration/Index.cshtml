@@ -1,0 +1,326 @@
+﻿
+@model IEnumerable<FactoryMagix.Models.MST_PartConfiguration>
+
+@using PagedList;
+@using PagedList.Mvc;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        if ('@Session["csvresult"]' != '') {
+            alert('@Session["csvresult"]');
+
+            @{
+                Session["csvresult"] = "";
+            }
+
+        }
+    });
+
+
+    $(document).ready(function () {
+
+        $(document).on("click", "#btnSearch", function () {
+           
+            var ddlsrnodata = $("#option").val();
+            var txtsrnodata = $("#Search").val();
+
+            if (ddlsrnodata != -1) {
+                if (txtsrnodata.length >= 3) {
+
+                    var Url = '@Url.Action("Index", "PartConfiguration")'
+                    location.href = Url + "/?option=" + ddlsrnodata + "&Search=" + txtsrnodata;
+                }
+                else {
+                    alert("Please enter min 3 char to search.");
+                    $("#txtPartSrNo").focus();
+                }
+            }
+            else {
+                alert("Please select search type.");
+                $("#option").focus();
+            }
+
+
+        });
+
+    });
+
+    function GotoPage() {
+
+        var pageno = $('#ingoto').val();
+        $.ajax({
+            type: "GET",
+            data: { page: pageno },
+            url: '@Url.Action("GotoPage", "PartConfiguration")',
+            success: function (result) {
+                $("#grid").html('');
+                $("#grid").html(result);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.debug(xhr); console.debug(thrownError);
+                alert('Failed to retrieve PartConfiguration records.');
+            }
+        });
+    }
+
+
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+        
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Master</li>
+            <li><i class="fa fa-th-list"></i>Part Configuration</li>
+        </ol>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel">
+@using (Html.BeginForm("Index", "PartConfiguration", FormMethod.Get))
+{
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <header class="panel-heading">
+
+                <table valign="middle">
+                    <tr>
+                        <th align="left" width="35%" style="font-size:18px; color:black; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ">
+                            Part Details
+                        </th>
+
+                        <td align="center">
+                            <b>
+                                Search-
+                            </b>
+                        </td>
+                        <td align="center" width="20%">
+                            @Html.DropDownList("option", new List<SelectListItem>
+                             {
+                                new SelectListItem{ Text="Select--", Value = "Select" },
+                                new SelectListItem{ Text="Bosch Part No", Value = "BoschPart_No" },
+                                new SelectListItem{ Text="Cust Part No", Value = "CustPart_No" },
+                                
+                             }, htmlAttributes: new { @class = "form-control" })
+                            @* @Html.ValidationMessageFor(model => model.op , "", new { @class = "text-danger" })*@
+
+
+                        </td>
+                        <td align="center" width="17%">
+                            <input type="text" id="Search" name="Search" class="form-control" />
+                        </td>
+
+                        <td align="center">
+                            <input type="submit" name="submit" id="btnSearch" class="btn btn-default btn-sm" value="Show Result" />
+                        </td>
+                        <td align="center">
+                            <input type="button" id="btnBack" class="btn btn-default btn-sm" title="Back to List" value="Back to List" onclick="location.href='@Url.Action("Index","PartConfiguration")' " />
+                        </td>
+
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnCreate" class="btn btn-default btn-sm" title="Create Part" value="Create Part" onclick="location.href='@Url.Action("Create", "PartConfiguration")' " />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnExportToExcel" class="btn btn-default btn-sm" title="Export" value="Export" onclick="location.href='@Url.Action("ExportToExcel", "PartConfiguration")' " />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnImportCSV" class="btn btn-default btn-sm" title="Import CSV file" value="Import" onclick="location.href='@Url.Action("ParconfigCSV","PartConfiguration")' " />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <a class="btn btn-default btn-sm" href="~/Home/Index" title="Cancel">Cancel</a>
+                        </td>
+
+                    </tr>
+
+                </table>
+            </header>
+
+            }     
+              @{
+                if (Model.Count() == 0)
+                { <div style="text-align:center">
+                            <h5><b> Records not found. Please insert valid data.</b></h5>
+                        </div> <hr />
+                } }
+
+
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Bosch Part No.
+                                @*@Html.DisplayNameFor(model => model.BoschPart_No)*@
+                            </th>
+
+                            <th>
+                                Customer Part No.
+                                @*@Html.DisplayNameFor(model => model.CustPart_No)*@
+                            </th>
+                            <th>
+                                Part Description
+                                @*@Html.DisplayNameFor(model => model.BoschPart_Desc)*@
+                            </th>
+
+                            <th>
+                                Customer Name
+                            </th>
+
+                            <th>
+                                Customer Code
+                                @*@Html.DisplayNameFor(model => model.MST_Customer.Customer_Code)*@
+                            </th>
+
+                            <th>
+                                Customer Index
+                                @*@Html.DisplayNameFor(model => model.Customer_Index)*@
+                            </th>
+
+                            <th>
+                                Line Id
+                                @*@Html.DisplayNameFor(model => model.Line_Id)*@
+                            </th>
+
+                            <th>
+                                Qty/Box
+                                @*@Html.DisplayNameFor(model => model.NoOfPartQy_Box)*@
+                            </th>
+
+                            <th>
+                                Line No
+                                @*@Html.DisplayNameFor(model => model.Line_No)*@
+                            </th>
+
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BoschPart_No)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CustPart_No)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BoschPart_Desc)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MST_Customer.Customer_Name)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MST_Customer.Customer_Code)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Customer_Index)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Line_Id)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.NoOfPartQy_Box)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Line_No)
+                                </td>
+
+
+                                <td>
+                                    @Html.ActionLink("Edit", "Edit", new { id = item.MST_PartConfiguration_ID })
+                                    @*@Html.ActionLink("Details", "Details", new { id = item.MST_PartConfiguration_ID }) |
+                                @Html.ActionLink("Delete", "Delete", new { id = item.MST_PartConfiguration_ID })*@
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+                    <table class="table">
+
+
+                        <tr style="background-color: #E6E6E6;">
+                            <td style="border: none;padding-left:5em"></td>
+                            <td style="text-align:left; border: none">
+                                <span>
+                                    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page,
+                                   option = Request.QueryString["option"],
+                                   search = Request.QueryString["search"]
+                               }), PagedListRenderOptions.MinimalWithPageCountText)
+                                </span>
+                            </td>
+                            <td style="border: none;padding-left:10em"></td>
+                            <td style="border: none; text-align: left">@ViewBag.RecordsCount Records found.</td>
+                            <td style="border: none; padding-left:28em"></td>
+                            <td style="border: none;text-align: left">
+
+                                <label>Go to page</label>
+                                <input type="text" id="ingoto" style="height: 20px; width: 25px;" />
+                                <input type="submit" value=">" class="btn btn-default" onclick="location.href='@Url.Action("GotoPage", "PartConfiguration")?page=' + document.getElementById('ingoto').value" />
+
+                                @*style="background: url('img/arrowright.png'); border: none; background-repeat: no-repeat; margin: 0px; height: 18px;"*@
+                            </td>
+                        </tr>
+
+                    </table>
+
+
+                        @if (ViewData["GotoPageMessage"] != null)
+                        {
+                            <script language="javascript">
+                                      alert('@ViewData["GotoPageMessage"] @ViewBag.PageCount');
+                            </script>
+                        }
+
+                        @if (TempData["CreateMessage"] != null)
+                        {
+                            <script language="javascript">
+                                      alert('@TempData["CreateMessage"]');
+                            </script>
+                        }
+
+                        @if (TempData["EditMessage"] != null)
+                        {
+                          
+                            <script language="javascript">
+                                      alert('@TempData["EditMessage"]');
+                            </script>
+                        }
+
+                @if (TempData["NoDatavalidationMessage"] != null)
+                {
+                    
+                    <script language="javascript">
+                     alert('@TempData["NoDatavalidationMessage"]');
+                    </script>
+                }
+
+
+
+
+                </div>
+
+</section>
+    </div>
+</div>

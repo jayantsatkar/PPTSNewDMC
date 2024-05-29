@@ -1,0 +1,358 @@
+﻿@model IEnumerable<FactoryMagix.Models.spGetPartSerialNoReport_Result>
+
+@using PagedList;
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "PartSerialNoWise";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+
+
+    $(function () {
+
+        function groupTable($rows, startIndex, total) {
+            if (total === 0) {
+                return;
+            }
+            var i, currentIndex = startIndex, count = 1, lst = [];
+            var tds = $rows.find('td:eq(' + currentIndex + ')');
+            var ctrl = $(tds[0]);
+            lst.push($rows[0]);
+            for (i = 1; i <= tds.length; i++) {
+                if (ctrl.text() == $(tds[i]).text()) {
+                    count++;
+                    $(tds[i]).addClass('deleted');
+                    lst.push($rows[i]);
+                }
+                else {
+                    if (count > 1) {
+                        ctrl.attr('rowspan', count);
+                        groupTable($(lst), startIndex + 1, total - 1)
+                    }
+                    count = 1;
+                    lst = [];
+                    ctrl = $(tds[i]);
+                    lst.push($rows[i]);
+                }
+            }
+        }
+        groupTable($('#tblReportDetails tr:has(td)'), 1, 8);
+        $('#tblReportDetails .deleted').remove();
+    });
+
+    $(document).ready(function () {
+        //Set focus to dropdownlist
+        $("#ddlType").focus();
+    });
+
+
+     $(document).on("click", "#btnView", function () {
+
+        var ddlsrnodata = $("#ddlType").val();
+        var txtsrnodata = $("#txtPartSrNo").val();
+        if (ddlsrnodata > -1) {
+            if (txtsrnodata.length > 0) {
+
+                var Url = '@Url.Action("_PartSerialNoWise", "Reports")'
+                location.href = Url + "/?PartSrNo=" + txtsrnodata + "&Type=" + ddlsrnodata;
+            }
+            else {
+                alert("Please enter Part Sr No or part Batch code");
+                $("#txtPartSrNo").focus();
+            }
+        }
+        else {
+            alert("Please select type");
+            $("#ddlType").focus();
+        }
+     });
+
+    //For Export button click
+    $(document).on("click", "#btnExportToExcel", function () {
+       
+        var ddlsrnodata = $("#ddlType").val();
+        var txtsrnodata = $("#txtPartSrNo").val();
+        if (ddlsrnodata == -1) {
+            if ('@Request.QueryString["PartSrNo"]' != '') {
+                if ('@Request.QueryString["Type"]' != '') {
+
+                    var Url = '@Url.Action("PartSerialWiseExportToExcel", "Reports")'
+                    location.href = Url + "/?PartSrNo=" + '@Request.QueryString["PartSrNo"]' + "&Type=" + '@Request.QueryString["Type"]';
+                }
+                else {
+                    alert("Please enter Part Sr No or part Batch code");
+                    $("#txtPartSrNo").focus();
+                    $("#ddlType").focus();
+                }
+            }
+            else {
+
+                if (ddlsrnodata > -1) {
+                    if (txtsrnodata.length > 0) {
+
+                        var Url = '@Url.Action("PartSerialWiseExportToExcel", "Reports")'
+                        location.href = Url + "/?PartSrNo=" + txtsrnodata + "&Type=" + ddlsrnodata;
+                    }
+                    else {
+                        alert("Please enter Part Sr No or part Batch code");
+                        $("#txtPartSrNo").focus();
+                    }
+                }
+                else {
+                    alert("Please select type");
+                    $("#ddlType").focus();
+                }
+            }
+        }
+        else {
+
+            if (ddlsrnodata > -1) {
+                if (txtsrnodata.length > 0) {
+
+                    var Url = '@Url.Action("PartSerialWiseExportToExcel", "Reports")'
+                    location.href = Url + "/?PartSrNo=" + txtsrnodata + "&Type=" + ddlsrnodata;
+                }
+                else {
+                    alert("Please enter Part Sr No or part Batch code");
+                    $("#txtPartSrNo").focus();
+                }
+            }
+            else {
+                alert("Please select type");
+                $("#ddlType").focus();
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        $("#btngotopage").click(function () {
+            
+            var goToValue = $("#ingoto").val();
+            var RecordsCount = '@ViewBag.RecordsCount';
+            //if (goToValue > RecordsCount)
+            //{ alert("Please enter Page No. between " + RecordsCount + 1); }
+
+            if ('@Request.QueryString["PartSrNo"]' != '' && '@Request.QueryString["Type"]') {
+
+                var PartSrNo = '@Request.QueryString["PartSrNo"]';
+                var Type = '@Request.QueryString["Type"]';
+                var Url = '@Url.Action("PartSerialNoWisepage", "Reports")'
+                location.href = Url + "/?page=" + goToValue + "&PartSrNo=" + PartSrNo + "&Type=" + Type;
+               
+            }
+
+
+
+        });
+    });
+
+</script>
+<div class="row">
+    <div class="col-lg-12">
+
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Report</li>
+            <li><i class="fa fa-th-list"></i>Part Sr No Wise</li>
+        </ol>
+
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <section class="panel-heading">
+            <div class="form-group">
+
+                <div class="row">
+
+                    <div class="col-lg-12">
+
+                       
+                        <label class="col-lg-1 control-labe6">Type</label>
+                        <div class="col-lg-3">
+                            @Html.DropDownList("ddlType", new List<SelectListItem>
+
+                             {
+                               new SelectListItem{ Text="---Select---", Value = "-1" ,Selected=true},
+                                new SelectListItem{ Text="Part Sr No", Value = "1" },
+                                new SelectListItem{ Text="Part Batch Code", Value = "0" }
+                             }, htmlAttributes: new { @class = "form-control", @tabindex = "1"  })
+
+
+                        </div>
+                        
+                        <div class="col-lg-2" >
+                            <input type="text" id="txtPartSrNo" tabindex="2" maxlength="20" class="form-control"  />
+                        </div>
+                        <div class="col-lg-2" >
+                            <input type="button" id="btnView" tabindex="3" class="btn btn-default" title="View" value=" View  " />
+                            @*<input type="button" id="btnView" tabindex="3" onclick="location.href='@Url.Action("_PartSerialNoWise", "Reports")?PartSrNo='+ document.getElementById('txtPartSrNo').value+'&Type='+ document.getElementById('ddlType').value" tabindex="2" class="btn btn-default" title="View" value=" View  " />*@
+                        </div>
+                        <div class="right" >
+
+                            <input type="button" id="btnExportToExcel" tabindex="4" class="btn btn-default btn-sm" title="Export" value="Export" />
+                            @*<input type="button" id="btnExportToExcel" tabindex="4" class="btn btn-default btn-sm" title="Export" value="Export" onclick="location.href='@Url.Action("PartSerialWiseExportToExcel","Reports",new { PartSrNo=Request.QueryString["PartSrNo"],Type=Request.QueryString["Type"]})'" />*@
+                            <a class="btn btn-default btn-sm" href="~/" tabindex="5" title="Cancel">Cancel</a>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+
+                <div class="table-responsive">
+                    <table class="table" id="tblReportDetails">
+                        <thead>
+                            <tr>
+
+                                <th>
+                                    SrNo
+                                </th>
+                                <th>
+                                    Invoice No
+                                </th>
+
+                                <th>
+                                    Pallet Sr No
+                                </th>
+                                <th>
+                                    Pallet Batch Code
+                                </th>
+                                <th>
+                                    Box SrNo
+                                </th>
+
+                                <th>
+                                    Box BatchCode
+                                </th>
+                                <th>
+                                    Bosch PartNo
+                                </th>
+                                <th>
+                                    Part BatchCode
+                                </th>
+                                <th>
+                                    Part SrNo
+                                </th>
+                               
+                               
+
+
+                            </tr>
+                        </thead>
+                            <tbody>
+
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SrNo)
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(modelItem => item.InvoiceNo)
+
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(modelItem => item.PalletSerial_No)
+
+
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(modelItem => item.PalletBatchCode)
+
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.BoxSerialNo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.BoxBatchCode)
+                                        </td>
+                                        <td>
+
+                                            @Html.DisplayFor(modelItem => item.Boschpart_No)
+                                        </td>
+                                        
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.PartBatchCode)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.PartSerialNo)
+                                        </td>
+                                        
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                    <table class="table table-responsive">
+
+
+                        <tr style="background-color: #E6E6E6;">
+                            <td style="border: none;padding-left:1em"></td>
+                            <td style="text-align:left; border: none">
+                                <span>
+                                   
+                                            @Html.PagedListPager((IPagedList)Model, page => Url.Action("PartSerialNoWisepage", new { page, PartSrNo = Request.QueryString["PartSrNo"], Type=Request.QueryString["Type"] }), PagedListRenderOptions.MinimalWithPageCountText)
+
+                                </span>
+                            </td>
+                            <td style="border: none;padding-left:10em"></td>
+                            <td style="border: none; text-align: left">@ViewBag.RecordsCount Record(s) found.</td>
+                            <td style="border: none; padding-left:28em"></td>
+                            <td style="border: none;text-align: left">
+
+                                <label>Go to page</label>
+                                <input type="text" id="ingoto" style="height: 20px; width: 25px;" />
+                                @*@{ var BoxSrNo = Request.QueryString["BoxSrNo"]; }*@
+                                @*<input type="submit" value=">" class="btn btn-default" onclick="location.href='@Url.Action("BoxSerialWiseGotoPage")?page=' + document.getElementById('ingoto').value  " />*@
+                                @*<input type="button" value=">" id="btngotopage" onclick="BoxSerialWiseGotoPage()" class="btn btn-default"  />*@
+                                @{
+                                    //var textBoxData = "xxx";
+                                    var a = Request.Form["ingoto"];
+                                }
+
+                                <input type="button" value=">" id="btngotopage" class="btn btn-default" />
+
+                            </td>
+                        </tr>
+
+                    </table>
+                  
+
+                </div>
+                    @if (ViewData["GotoPageMessage"] != null)
+                    {
+                        <script language="javascript">
+                         alert('@ViewData["GotoPageMessage"] @ViewBag.PageCount');
+                        </script>
+                    }
+            </section>
+        </div>
+    </div>
+}
+
+
+
