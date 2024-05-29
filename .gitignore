@@ -7,3 +7,4 @@
 *.suo
 *.sqlite
 /FactoryMagix/bin
+/FactoryMagix/obj
