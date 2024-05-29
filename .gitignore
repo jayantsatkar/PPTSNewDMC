@@ -6,3 +6,4 @@
 /.vs/VSWorkspaceState.json
 *.suo
 *.sqlite
+/FactoryMagix/bin
