@@ -23,9 +23,9 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                MST_User objMST_User = new MST_User();
+                User objMST_User = new User();
 
-                objMST_User = (MST_User)Session["UserInfo"];
+                objMST_User = (User)Session["UserInfo"];
 
                 IList<spGetFormsandModuleforUser_Result> sp = context.spGetFormsandModuleforUser(objMST_User.User_ID).ToList();
                 return View(sp);

@@ -248,10 +248,11 @@
                                         data: { "userid": UserId, "FormmId": this.Frm_Id },
                                         "success": function (datagetform) {
                                             if (datagetform != null) {
+                                              //  debugger;
                                                 
                                                 
 
-                                                    if (datagetform ) {
+                                                if (datagetform[0].Flag_Visible ) {
                                                        
                                                         var $checkbox = "<input type='checkbox'    value=" + formid + " checked='checked'>" + formname + " </br>";
                                                         formList.append($checkbox);

@@ -9,3 +9,6 @@
 /FactoryMagix/bin
 /FactoryMagix/obj
 /FactoryMagix.Tests/
+*.user
+/.editorconfig
+/FactoryMagix/ErrorLog/errorlog.txt

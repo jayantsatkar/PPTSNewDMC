@@ -65,7 +65,7 @@ namespace FactoryMagix.Controllers
 
             password = Encryptdata(logindetails[1]);
             // spGetUserInfo_Result objspGetUserInfo_Result = new spGetUserInfo_Result();
-            MST_User user = new MST_User();
+            User user = new User();
 
             sqlParameters.Clear();
             DBHelper.AddSqlParameter("@pLogin_Id", userid, ref sqlParameters);
@@ -159,7 +159,7 @@ namespace FactoryMagix.Controllers
         //}
 
 
-        public ActionResult UpdatePassword(MST_User mST_User)
+        public ActionResult UpdatePassword(User mST_User)
         {
             if (Session["UserInfo"] == null)
             {

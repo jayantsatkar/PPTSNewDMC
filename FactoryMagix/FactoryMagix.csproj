@@ -187,6 +187,7 @@
     <Compile Include="Models\fnSplitString_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Form.cs" />
     <Compile Include="Models\HST_TRN_BoxBarcodeDetails.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -217,6 +218,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Model.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Module.cs" />
     <Compile Include="Models\MST_BioMetric.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -253,6 +255,7 @@
     <Compile Include="Models\REL_UserForm.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Role.cs" />
     <Compile Include="Models\spCheckPartconfiguration_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -313,6 +316,7 @@
     <Compile Include="Models\spValidateUserforLoginWithFinger_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\test.cs" />
     <Compile Include="Models\TRN_BoxBarcodeDetails.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -331,6 +335,8 @@
     <Compile Include="Models\TRN_ScanPartBarcode.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserForm.cs" />
     <Compile Include="Models\vw_TRN_BoxBarcodeDetails.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -347,6 +353,19 @@
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\ModuleRepository.cs" />
+    <Compile Include="Repository\RoleRepository.cs" />
+    <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="ViewModel\AssignFormsToUseViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -452,6 +471,10 @@
     <None Include="Properties\PublishProfiles\BOSCHPPTS.pubxml" />
     <None Include="Properties\PublishProfiles\PPTS.pubxml" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\calendar-custom.js" />
     <Content Include="Scripts\chartjs-custom.js" />
@@ -698,6 +721,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
