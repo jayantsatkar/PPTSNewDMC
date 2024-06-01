@@ -1,4 +1,4 @@
-﻿using log4net;
+﻿//using log4net;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -8,12 +8,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BarcodeScanningApplication
+namespace FactoryMagix
 {
     public static class DBHelper
     {
-        private static readonly ILog Logger =
-              LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+      //  private static readonly ILog Logger =
+        //      LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         //private static IConfiguration config;
         //public static IConfiguration Configuration
@@ -35,7 +35,7 @@ namespace BarcodeScanningApplication
             {
                 // return Configuration.GetConnectionString("DBConnection");
                 //return ConfigurationManager.AppSettings["apiUrl"].ToString();
-                return ConfigurationManager.ConnectionStrings["myDataBase"].ToString();
+                return ConfigurationManager.ConnectionStrings["Laser"].ToString();
             }
         }
 
@@ -102,7 +102,7 @@ namespace BarcodeScanningApplication
 
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                //Logger.Error(ex);
             }
             finally
             {

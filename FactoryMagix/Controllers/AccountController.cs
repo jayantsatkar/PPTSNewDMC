@@ -18,6 +18,7 @@ using System.ServiceModel.Channels;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Diagnostics;
+using System.Data.SqlClient;
 
 namespace FactoryMagix.Controllers
 {
@@ -25,7 +26,8 @@ namespace FactoryMagix.Controllers
     {
 
 
-        BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
+       // BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
+        List<SqlParameter> sqlParameters = new List<SqlParameter>();
         // GET: Account
 
         public void EndExe()
@@ -62,29 +64,43 @@ namespace FactoryMagix.Controllers
             userid = logindetails[0];
 
             password = Encryptdata(logindetails[1]);
-            spGetUserInfo_Result objspGetUserInfo_Result = new spGetUserInfo_Result();
-            MST_User objMST_User = new MST_User();
+            // spGetUserInfo_Result objspGetUserInfo_Result = new spGetUserInfo_Result();
+            MST_User user = new MST_User();
 
+            sqlParameters.Clear();
+            DBHelper.AddSqlParameter("@pLogin_Id", userid, ref sqlParameters);
+            DBHelper.AddSqlParameter("@pUser_PWD", password, ref sqlParameters);
 
-            var result = db.spValidateUserforLogin(userid, password).ToList();
-            if (result.Count > 0)
+            var result = DBHelper.ExecuteProcedure("spValidateUserforLogin", sqlParameters);
+            //var result = db.spValidateUserforLogin(userid, password).ToList();
+            //DBHelper.ExecuteProcedure("ExecuteQuery",)
+            if (result.Rows.Count > 0)
             {
-                if (Convert.ToInt64(result[0]) > 0)
+                if (Convert.ToInt64(result.Rows[0][0]) > 0)
                 {
-                    objspGetUserInfo_Result = (db.spGetUserInfo(userid, password).ToList())[0];
-                    objMST_User.User_ID = objspGetUserInfo_Result.User_ID;
-                    objMST_User.Login_ID = objspGetUserInfo_Result.Login_ID;
-                    objMST_User.Role_ID = objspGetUserInfo_Result.Role_ID;
-                    objMST_User.First_Name = objspGetUserInfo_Result.First_Name;
-                    //HttpCookie myCookie = new HttpCookie("UDID");
-                    //Response.Cookies.Clear();
-                    Session.Add("UserId", result[0]);
-                    Session.Add("UserInfo", objMST_User);
 
-                    FormsAuthentication.SetAuthCookie(objMST_User.Login_ID.ToUpper(), false);
+                    //objspGetUserInfo_Result = (db.spGetUserInfo(userid, password).ToList())[0];
+                    sqlParameters.Clear();
+                    DBHelper.AddSqlParameter("@pLoginID", userid, ref sqlParameters);
+                    DBHelper.AddSqlParameter("@pPass", password, ref sqlParameters);
 
-                    TempData["WronguserName"] = "2";
-                    return RedirectToAction("Index", "Home");
+                    var dataTableUser = DBHelper.ExecuteProcedure("spGetUserInfo", sqlParameters);
+                    if (dataTableUser.Rows.Count > 0)
+                    {
+                        user.User_ID = Convert.ToInt64(dataTableUser.Rows[0]["User_ID"]);
+                        user.Login_ID = Convert.ToString(dataTableUser.Rows[0]["Login_ID"]);
+                        user.Role_ID = Convert.ToInt64(dataTableUser.Rows[0]["Role_ID"]);  
+                        user.First_Name = Convert.ToString(dataTableUser.Rows[0]["First_Name"]);
+                        //HttpCookie myCookie = new HttpCookie("UDID");
+                        //Response.Cookies.Clear();
+                        Session.Add("UserId", Convert.ToInt64(result.Rows[0][0]));
+                        Session.Add("UserInfo", user);
+
+                        FormsAuthentication.SetAuthCookie(user.Login_ID.ToUpper(), false);
+
+                        TempData["WronguserName"] = "2";
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 else
                 {
@@ -101,6 +117,7 @@ namespace FactoryMagix.Controllers
                 Session["UserInfo"] = null;
                 return View("Login");
             }
+            return View("Login"); //Not accessible
         }
 
         public ActionResult LogOut()
@@ -123,21 +140,23 @@ namespace FactoryMagix.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        public ActionResult ChangePassword()
-        {
-            if (Session["UserInfo"] == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-            else
-            {
-                EndExe();
-                MST_User objMST_User = (MST_User)Session["UserInfo"];
-                var user = db.MST_User.Find(objMST_User.User_ID);
+        //public ActionResult ChangePassword()
+        //{
+        //    if (Session["UserInfo"] == null)
+        //    {
+        //        return RedirectToAction("Login", "Account");
+        //    }
+        //    else
+        //    {
+        //        EndExe();
+        //        MST_User objMST_User = (MST_User)Session["UserInfo"];
 
-                return View(user);
-            }
-        }
+
+        //        var user = db.MST_User.Find(objMST_User.User_ID);
+
+        //        return View(user);
+        //    }
+        //}
 
 
         public ActionResult UpdatePassword(MST_User mST_User)
