@@ -316,7 +316,6 @@
     <Compile Include="Models\spValidateUserforLoginWithFinger_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\test.cs" />
     <Compile Include="Models\TRN_BoxBarcodeDetails.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
