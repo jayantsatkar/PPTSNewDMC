@@ -68,17 +68,8 @@ namespace FactoryMagix
             
             DBHelper.AddSqlParameter("@JSON", JsonConvert.SerializeObject(role, Formatting.Indented), ref sqlParameters);
             DBHelper.ExecuteNonQuery("usp_AddUpdateRole", sqlParameters);
-           // Role role = new Role();
         }
 
-        //public static void AddUpdateRole(Role role)
-        //{
-        //    List<SqlParameter> sqlParameters = new List<SqlParameter>();
-
-        //    DBHelper.AddSqlParameter("@JSON", JsonConvert.SerializeObject(role, Formatting.Indented), ref sqlParameters);
-        //    DBHelper.ExecuteNonQuery("usp_AddUpdateRole", sqlParameters);
-        //    // Role role = new Role();
-        //}
 
         
 

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FactoryMagix.Models.MST_User>
+﻿@model IEnumerable<FactoryMagix.Models.User>
 
 @using PagedList;
 @using PagedList.Mvc;
@@ -205,7 +205,7 @@
                                     @Html.DisplayFor(modelItem => item.Last_Name)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.MST_Role.Role_Name)
+                                    @Html.DisplayFor(modelItem => item.Role_Name)
                                 </td>
 
                                 <td>

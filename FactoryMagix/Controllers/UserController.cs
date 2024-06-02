@@ -20,7 +20,7 @@ namespace FactoryMagix.Controllers
 {
     public class UserController : Controller
     {
-        private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
+        //private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
         const int pageSize = 10;
 
         public ActionResult Index(string option, string search, int? page)
@@ -33,10 +33,10 @@ namespace FactoryMagix.Controllers
             {
                 if (option == "Login_ID")
                 {
-                    List<MST_User> dataExist = db.MST_User.Where(x => x.Login_ID.Contains(search)).ToList();
+                    List<User> dataExist = UserRepository.GetUsers().Where(x => x.Login_ID.Contains(search)).ToList();// db.MST_User.Where(x => x.Login_ID.Contains(search)).ToList();
                     if (dataExist.Count == 0)
                     {
-                        var user = from c in db.MST_User
+                        var user = from c in UserRepository.GetUsers()// db.MST_User
                                    select c;
                         user = user.OrderBy(c => c.User_ID);
                         ViewBag.RecordsCount = user.Count();
@@ -47,15 +47,17 @@ namespace FactoryMagix.Controllers
 
                     }
 
-                    return View(db.MST_User.Where(x => x.Login_ID.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
-
+                    // return View(db.MST_User.Where(x => x.Login_ID.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    return View(UserRepository.GetUsers().Where(x => x.Login_ID.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    
                 }
                 else if (option == "First_Name")
                 {
-                    List<MST_User> dataExist = db.MST_User.Where(x => x.First_Name.Contains(search)).ToList();
+                    List<User> dataExist = UserRepository.GetUsers().Where(x => x.First_Name.Contains(search)).ToList();
+                    // db.MST_User.Where(x => x.First_Name.Contains(search)).ToList();
                     if (dataExist.Count == 0)
                     {
-                        var user = from c in db.MST_User
+                        var user = from c in UserRepository.GetUsers()//db.MST_User
                                    select c;
                         user = user.OrderBy(c => c.User_ID);
                         ViewBag.RecordsCount = user.Count();
@@ -65,28 +67,34 @@ namespace FactoryMagix.Controllers
                         return View(listPaged);
 
                     }
-                    return View(db.MST_User.Where(x => x.First_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    //return View(db.MST_User.Where(x => x.First_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    return View(UserRepository.GetUsers().Where(x => x.First_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    
                 }
-                else if (option == "Role_Name")
-                {
-                    List<MST_Role> dataExist = db.MST_Role.Where(x => x.Role_Name.Contains(search)).ToList();
-                    if (dataExist.Count == 0)
-                    {
-                        var user = from c in db.MST_User
-                                   select c;
-                        user = user.OrderBy(c => c.User_ID);
-                        ViewBag.RecordsCount = user.Count();
-                        var listPaged = user.ToPagedList(page ?? 1, pageSize);
-                        TempData["NoDatavalidationMessage"] = "No records found please enter valid data..!";
+                //else if (option == "Role_Name")
+                //{
+                //    List<Role> dataExist = RoleRepository.GetRoles().Where(x => x.Role_Name.Contains(search)).ToList();
 
-                        return View(listPaged);
-                    }
-                    return View(db.MST_Role.Where(x => x.Role_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
-                }
+                //    //db.MST_Role.Where(x => x.Role_Name.Contains(search)).ToList();
+                //    if (dataExist.Count == 0)
+                //    {
+                //        var user = from c in UserRepository.GetUsers()//db.MST_User
+                //                   select c;
+                //        user = user.OrderBy(c => c.User_ID);
+                //        ViewBag.RecordsCount = user.Count();
+                //        var listPaged = user.ToPagedList(page ?? 1, pageSize);
+                //        TempData["NoDatavalidationMessage"] = "No records found please enter valid data..!";
+
+                //        return View(listPaged);
+                //    }
+                //    //return View(db.MST_Role.Where(x => x.Role_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                //    return View(RoleRepository.GetRoles().Where(x => x.Role_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    
+                //}
 
                 else
                 {
-                    var user = from c in db.MST_User
+                    var user = from c in UserRepository.GetUsers() //db.MST_User
                                select c;
                     user = user.OrderBy(c => c.User_ID);
                     ViewBag.RecordsCount = user.Count();
@@ -110,7 +118,7 @@ namespace FactoryMagix.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                MST_User mST_User = db.MST_User.Find(id);
+                User mST_User = UserRepository.GetUser(Convert.ToInt32(id)); //db.MST_User.Find(id);
                 if (mST_User == null)
                 {
                     return HttpNotFound();
@@ -122,9 +130,10 @@ namespace FactoryMagix.Controllers
         // GET: User/Create
         public ActionResult Create()
         {
-            ViewBag.Role_ID = new SelectList(db.MST_Role, "Role_ID", "Role_Name");
+            ViewBag.Role_ID = new SelectList(RoleRepository.GetRoles(), "Role_ID", "Role_Name");//db.MST_Role
+            User user = new User();
             //  var model = new MST_User();
-            return View();
+            return View(user);
         }
 
         // POST: User/Create
@@ -134,7 +143,7 @@ namespace FactoryMagix.Controllers
         [ValidateAntiForgeryToken]
 
         // public ActionResult Create([Bind(Exclude = "User_ID")] MST_User mST_User, HttpPostedFileBase User_Image)
-        public ActionResult Create([Bind(Exclude = "User_ID")] MST_User mST_User)
+        public ActionResult Create([Bind(Exclude = "User_ID")] User mST_User)
         {
             if (Session["UserInfo"] == null)
             {
@@ -152,17 +161,19 @@ namespace FactoryMagix.Controllers
                         mST_User.Password = strPassword;
                         // mST_User.ConfirmPassword = strPassword;
 
-                        MST_User objUserSession = (MST_User)Session["UserInfo"];
+                        User objUserSession = (User)Session["UserInfo"];
                         mST_User.Created_By = objUserSession == null ? 0 : objUserSession.User_ID;
 
-                        db.MST_User.Add(mST_User);
-                        db.SaveChanges();
+                        //db.MST_User.Add(mST_User);
+                        //db.SaveChanges();
+                        UserRepository.AddUpdateUser(mST_User);
                         TempData["CreateMessage"] = "User created Successfully!";
 
                         return RedirectToAction("Index");
                     }
 
-                    ViewBag.Role_ID = new SelectList(db.MST_Role, "Role_ID", "Role_Name", mST_User.Role_ID);
+                    //ViewBag.Role_ID = new SelectList(db.MST_Role, "Role_ID", "Role_Name", mST_User.Role_ID);
+                    ViewBag.Role_ID = new SelectList(RoleRepository.GetRoles(), "Role_ID", "Role_Name", mST_User.Role_ID);
                 }
                 catch (DbEntityValidationException dbEx)
                 {
@@ -215,7 +226,7 @@ namespace FactoryMagix.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                MST_User mST_User = db.MST_User.Find(id);
+                User mST_User = UserRepository.GetUser(Convert.ToInt32(id)); //db.MST_User.Find(id);
                 if (mST_User == null)
                 {
                     return HttpNotFound();
@@ -232,7 +243,8 @@ namespace FactoryMagix.Controllers
                     // mST_User.ConfirmPassword = "";
                 }
 
-                ViewBag.Role_ID = new SelectList(db.MST_Role, "Role_ID", "Role_Name", mST_User.Role_ID);
+                //ViewBag.Role_ID = new SelectList(db.MST_Role, "Role_ID", "Role_Name", mST_User.Role_ID);
+                ViewBag.Role_ID = new SelectList(RoleRepository.GetRoles(), "Role_ID", "Role_Name", mST_User.Role_ID);
                 return View(mST_User);
             }
         }
@@ -255,7 +267,7 @@ namespace FactoryMagix.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         // public ActionResult Edit([Bind(Include = "User_ID,Role_ID,Login_ID,Password,First_Name,Last_Name,Middle_Name,EmailId,User_Image,Address,City,State,Country,Pincode,Mobile_No,EmployeeId,IsActive,Created_By,Created_On,Modified_By,Modified_On")] MST_User mST_User)
-        public ActionResult Edit(MST_User mST_User)
+        public ActionResult Edit(User user)
         {
             if (Session["UserInfo"] == null)
             {
@@ -265,16 +277,17 @@ namespace FactoryMagix.Controllers
             {
                 try
                 {
-                    string strPassword = mST_User.Password;
+                    string strPassword = user.Password;
 
-                    mST_User.Password = Encryptdata(strPassword);
+                    user.Password = Encryptdata(strPassword);
                     // mST_User.ConfirmPassword = Encryptdata(strPassword);
 
-                    mST_User.Modified_On = DateTime.Now;
-                    MST_User objUserSession = (MST_User)Session["UserInfo"];
-                    mST_User.Modified_By = objUserSession == null ? 0 : objUserSession.User_ID;
-                    db.Entry(mST_User).State = System.Data.Entity.EntityState.Modified;
-                    db.SaveChanges();
+                    user.Modified_On = DateTime.Now;
+                    User objUserSession = (User)Session["UserInfo"];
+                    user.Modified_By = objUserSession == null ? 0 : objUserSession.User_ID;
+                    //db.Entry(mST_User).State = System.Data.Entity.EntityState.Modified;
+                    //db.SaveChanges();
+                    UserRepository.AddUpdateUser(user);
                     TempData["EditMessage"] = "User edited Successfully!";
 
                     return RedirectToAction("Index");
@@ -295,7 +308,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var user = from c in db.MST_User
+                var user = from c in UserRepository.GetUsers() //db.MST_User
                            select c;
                 user = user.OrderBy(c => c.User_ID);
                 var listPaged = user.ToPagedList(page ?? 1, pageSize);
@@ -318,7 +331,7 @@ namespace FactoryMagix.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MST_User mST_User = db.MST_User.Find(id);
+            User mST_User = UserRepository.GetUser(Convert.ToInt32(id)); //db.MST_User.Find(id);
             if (mST_User == null)
             {
                 return HttpNotFound();
@@ -331,15 +344,18 @@ namespace FactoryMagix.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
-            MST_User mST_User = db.MST_User.Find(id);
-            db.MST_User.Remove(mST_User);
-            db.SaveChanges();
+            User user = UserRepository.GetUser(Convert.ToInt32(id)); // db.MST_User.Find(id);
+            //db.MST_User.Remove(mST_User);
+            //db.SaveChanges();
+            user.IsActive = false;
+            UserRepository.AddUpdateUser(user);
             return RedirectToAction("Index");
         }
 
         public JsonResult IsUserAvailable(string Login_ID)
         {
-            return Json(!db.MST_User.Any(user => user.Login_ID == Login_ID), JsonRequestBehavior.AllowGet);
+            // return Json(!db.MST_User.Any(user => user.Login_ID == Login_ID), JsonRequestBehavior.AllowGet);
+            return Json(!UserRepository.GetUsers().Any(user => user.Login_ID == Login_ID), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult ExportToExcel()
@@ -350,13 +366,13 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var UserDetail = (from e in db.MST_User
+                var UserDetail = (from e in  UserRepository.GetUsers() //db.MST_User
                                   select new
                                   {
                                       SrNo = e.User_ID,
                                       LoginName = e.Login_ID,
                                       UserName = e.First_Name + e.Last_Name,
-                                      Role = e.MST_Role.Role_Name,
+                                      //Role = e.Role_Name,
                                       Status = e.IsActive
 
                                   }).ToList();
@@ -381,13 +397,13 @@ namespace FactoryMagix.Controllers
         }
 
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }
