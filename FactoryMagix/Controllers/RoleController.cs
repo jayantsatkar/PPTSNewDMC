@@ -21,7 +21,7 @@ namespace FactoryMagix.Controllers
     public class RoleController : Controller
     {
 
-        private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
+       // private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
         const int pageSize = 10;
        
 
@@ -35,10 +35,10 @@ namespace FactoryMagix.Controllers
             {
                 if (option == "Role_Name")
                 {
-                    List<MST_Role> dataExist = db.MST_Role.Where(x => x.Role_Name.Contains(search)).ToList();
+                    List<Role> dataExist = RoleRepository.GetRoles().Where(x => x.Role_Name.Contains(search)).ToList(); //db.MST_Role.Where(x => x.Role_Name.Contains(search)).ToList();
                     if (dataExist.Count == 0)
                     {
-                        var role = from c in db.MST_Role
+                        var role = from c in RoleRepository.GetRoles()//db.MST_Role
                                    select c;
                         role = role.OrderBy(c => c.Role_ID);
                         // const int pageSize = 2;
@@ -49,16 +49,16 @@ namespace FactoryMagix.Controllers
                         return View(listPaged);
 
                     }
-                    return View(db.MST_Role.Where(x => x.Role_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    return View(RoleRepository.GetRoles().Where(x => x.Role_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
 
                 }
                 else if (option == "Role_Desc")
                 {
-                    List<MST_Role> dataExist = db.MST_Role.Where(x => x.Role_Desc.Contains(search)).ToList();
+                    List<Role> dataExist = RoleRepository.GetRoles().Where(x => x.Role_Desc.Contains(search)).ToList();
                     if (dataExist.Count == 0)
                     {
-                        var role = from c in db.MST_Role
-                               select c;
+                        var role = from c in RoleRepository.GetRoles() //db.MST_Role
+                                   select c;
                     role = role.OrderBy(c => c.Role_ID);
                     // const int pageSize = 2;
                     ViewBag.RecordsCount = role.Count();
@@ -66,14 +66,17 @@ namespace FactoryMagix.Controllers
                     TempData["NoDatavalidationMessage"] = "No records found please enter valid data..!";
 
                         return View(listPaged);
-                    } 
-                    return View(db.MST_Role.Where(x => x.Role_Desc.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    }
+                    // return View(db.MST_Role.Where(x => x.Role_Desc.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    return View(RoleRepository.GetRoles().Where(x => x.Role_Desc.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+
+                    
                 }
 
 
                 else
                 {
-                    var role = from c in db.MST_Role
+                    var role = from c in RoleRepository.GetRoles()//db.MST_Role
                                select c;
                     role = role.OrderBy(c => c.Role_ID);
                     // const int pageSize = 2;
@@ -98,12 +101,12 @@ namespace FactoryMagix.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                MST_Role mST_Role = db.MST_Role.Find(id);
-                if (mST_Role == null)
+                Role role = RoleRepository.GetRole(Convert.ToInt64(id));// db.MST_Role.Find(id);
+                if (role == null)
                 {
                     return HttpNotFound();
                 }
-                return View(mST_Role);
+                return View(role);
             }
         }
 
@@ -111,7 +114,8 @@ namespace FactoryMagix.Controllers
         // GET: Role/Create
         public ActionResult Create()
         {
-            return View();
+            Role role = new Role();
+            return View(role);
         }
 
         // POST: Role/Create
@@ -119,7 +123,7 @@ namespace FactoryMagix.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Role_ID,Role_Name,Role_Desc,IsActive")] MST_Role mST_Role)
+        public ActionResult Create([Bind(Include = "Role_ID,Role_Name,Role_Desc,IsActive")] Role role)
         {
             if (Session["UserInfo"] == null)
             {
@@ -127,21 +131,22 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                MST_User mST_User = (MST_User)Session["UserInfo"];
+                User user = (User)Session["UserInfo"];
 
                 if (ModelState.IsValid)
                 {
-                    mST_Role.Created_On = DateTime.Now;
+                    role.Created_On = DateTime.Now;
                     // MST_User objUserSession = (MST_User)Session["MST_User"];
-                    mST_Role.Created_By = mST_User.User_ID;
-                    db.MST_Role.Add(mST_Role);
-                    db.SaveChanges();
+                    role.Created_By = user.User_ID;
+                    //db.MST_Role.Add(mST_Role);
+                    //db.SaveChanges();
+                    RoleRepository.AddUpdateRole(role);
                     TempData["CreateMessage"] = "Role created Successfully!";
 
                     return RedirectToAction("Index");
                 }
 
-                return View(mST_Role);
+                return View(role);
             }
         }
 
@@ -158,12 +163,13 @@ namespace FactoryMagix.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                MST_Role mST_Role = db.MST_Role.Find(id);
-                if (mST_Role == null)
+                //MST_Role mST_Role = db.MST_Role.Find(id);
+                Role role = RoleRepository.GetRole(Convert.ToInt64(id));
+                if (role == null)
                 {
                     return HttpNotFound();
                 }
-                return View(mST_Role);
+                return View(role);
             }
         }
 
@@ -172,7 +178,7 @@ namespace FactoryMagix.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(MST_Role mST_Role)
+        public ActionResult Edit(Role role)
         {
             if (Session["UserInfo"] == null)
             {
@@ -182,20 +188,22 @@ namespace FactoryMagix.Controllers
             {
                 try
                 {
-                    MST_User mST_User = (MST_User)Session["UserInfo"];
+                    User user = (User)Session["UserInfo"];
 
                     if (ModelState.IsValid)
                     {
-                        db.Entry(mST_Role).State = System.Data.Entity.EntityState.Modified;
+                        //db.Entry(mST_Role).State = System.Data.Entity.EntityState.Modified;
 
-                        mST_Role.Modified_By = mST_User.User_ID;
-                        mST_Role.Modified_On = DateTime.Now;
-                        db.SaveChanges();
+                        role.Modified_By = user.User_ID;
+                        role.Modified_On = DateTime.Now;
+                        // db.SaveChanges();
+                        RoleRepository.AddUpdateRole(role);
+
                         TempData["EditMessage"] = "Role edited Successfully!";
 
                         return RedirectToAction("Index");
                     }
-                    return View(mST_Role);
+                    return View(role);
                 }
 
                 catch (DbEntityValidationException ex)
@@ -213,7 +221,8 @@ namespace FactoryMagix.Controllers
         public JsonResult IsRoleAvailable(string Role_Name)
         {
 
-            return Json(!db.MST_Role.Any(role => role.Role_Name == Role_Name), JsonRequestBehavior.AllowGet);
+            // return Json(!db.MST_Role.Any(role => role.Role_Name == Role_Name), JsonRequestBehavior.AllowGet);
+            return Json(!RoleRepository.GetRoles().Any(role => role.Role_Name == Role_Name), JsonRequestBehavior.AllowGet);
 
         }
 
@@ -225,7 +234,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var role = from c in db.MST_Role
+                var role = from c in RoleRepository.GetRoles() //db.MST_Role
                            select c;
                 role = role.OrderBy(c => c.Role_ID);
                 var listPaged = role.ToPagedList(page ?? 1, pageSize);
@@ -252,12 +261,12 @@ namespace FactoryMagix.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MST_Role mST_Role = db.MST_Role.Find(id);
-            if (mST_Role == null)
+            Role role = RoleRepository.GetRole(Convert.ToInt64(id)); // db.MST_Role.Find(id);
+            if (role == null)
             {
                 return HttpNotFound();
             }
-            return View(mST_Role);
+            return View(role);
         }
 
         // POST: Role/Delete/5
@@ -265,9 +274,11 @@ namespace FactoryMagix.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
-            MST_Role mST_Role = db.MST_Role.Find(id);
-            db.MST_Role.Remove(mST_Role);
-            db.SaveChanges();
+            Role role = RoleRepository.GetRole(id); //db.MST_Role.Find(id);
+            //db.MST_Role.Remove(mST_Role);
+            //db.SaveChanges();
+            role.IsActive = false;
+            RoleRepository.AddUpdateRole(role);
             return RedirectToAction("Index");
         }
 
@@ -279,7 +290,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var RoleDetail = (from e in db.MST_Role
+                var RoleDetail = (from e in RoleRepository.GetRoles() // db.MST_Role
                                   select new
                                   {
                                       SrNo = e.Role_ID,
@@ -316,13 +327,13 @@ namespace FactoryMagix.Controllers
 
 
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }

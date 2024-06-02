@@ -7,6 +7,11 @@ namespace FactoryMagix.Models
 {
     public class Role
     {
+        public Role()
+        {
+            Role_Name = string.Empty;
+            Role_Desc = string.Empty;
+        }
         public long Role_ID { get; set; }
         public string Role_Name { get; set; }
         public string Role_Desc { get; set; }
@@ -16,4 +21,6 @@ namespace FactoryMagix.Models
         public Nullable<long> Modified_By { get; set; }
         public Nullable<System.DateTime> Modified_On { get; set; }
     }
+
+    
 }
