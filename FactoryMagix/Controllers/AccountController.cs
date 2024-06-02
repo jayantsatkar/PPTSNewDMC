@@ -19,14 +19,17 @@ using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Diagnostics;
 using System.Data.SqlClient;
+using NLog;
 
 namespace FactoryMagix.Controllers
 {
     public class AccountController : Controller
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 
-       // BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
+
+        // BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
         List<SqlParameter> sqlParameters = new List<SqlParameter>();
         // GET: Account
 
@@ -44,8 +47,18 @@ namespace FactoryMagix.Controllers
         }
         public ActionResult Login()
         {
-            // TempData["WronguserName"] = "1";
+            try
+            {
+                throw new Exception("Test exception");
+            }
+
+            catch (Exception ex)
+            {
+                Logger.Error("Error",ex);
+            }
             return View();
+            // TempData["WronguserName"] = "1";
+
         }
 
         private string Encryptdata(string password)

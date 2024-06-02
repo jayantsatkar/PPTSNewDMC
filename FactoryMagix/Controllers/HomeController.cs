@@ -7,11 +7,14 @@ using FactoryMagix.Models;
 using System.Data.SqlClient;
 using System.Web.Security;
 using System.Diagnostics;
+using NLog; 
 
 namespace FactoryMagix.Controllers
 {
     public class HomeController : Controller
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
 
         public ActionResult Index()
         {

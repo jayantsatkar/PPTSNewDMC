@@ -12,3 +12,6 @@
 *.user
 /.editorconfig
 /FactoryMagix/ErrorLog/errorlog.txt
+*.log
+*.txt
+/FactoryMagix/Project_Readme.html
