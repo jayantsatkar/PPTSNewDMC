@@ -7,7 +7,7 @@ using FactoryMagix.Models;
 using FactoryMagix.ViewModel;
 using System.Data.SqlClient;
 using System.Data;
-//using FactoryMagix.Repository;
+using FactoryMagix.Repository;
 namespace FactoryMagix.Controllers
 {
     public class AssignFormsToUserController : Controller

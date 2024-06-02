@@ -7,7 +7,7 @@ using FactoryMagix.Models;
 using System.Data;
 using Newtonsoft.Json;
 
-namespace FactoryMagix
+namespace FactoryMagix.Repository
 {
     public class RoleRepository
     {

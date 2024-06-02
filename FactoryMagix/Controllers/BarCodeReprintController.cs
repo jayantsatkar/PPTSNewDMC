@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using FactoryMagix.Repository;
 
 namespace FactoryMagix.Controllers
 {
     public class BarCodeReprintController : Controller
     {
-        private FactoryMagix.Models.BOSCH_PPTSEntities db = new FactoryMagix.Models.BOSCH_PPTSEntities();
+      // private FactoryMagix.Models.BOSCH_PPTSEntities db = new FactoryMagix.Models.BOSCH_PPTSEntities();
         // GET: BarCodeReprint
         public ActionResult BarCodeReprint()
         {
@@ -38,12 +39,12 @@ namespace FactoryMagix.Controllers
                     //var loginUser = ((MST_User)Session["UserInfo"]).Login_ID;  
                     if (flag == 0)
                     {
-                        var query = db.spGetBarcodeDataprint(SerialNo, flag).ToList();
+                        var query = BoxRepository.GetBoxReprintDetails(SerialNo, Convert.ToInt32(flag)); ///db.spGetBarcodeDataprint(SerialNo, flag).ToList();
                         return Json(query);
                     }
                     else
                     {
-                        var query = db.spGetPalletBarcodeDataprint(SerialNo, flag).ToList();
+                        var query = PalletRepository.GetPalletReprintDetails(SerialNo, Convert.ToInt32(flag));//db.spGetPalletBarcodeDataprint(SerialNo, flag).ToList();
                         return Json(query);
                     }
                 }

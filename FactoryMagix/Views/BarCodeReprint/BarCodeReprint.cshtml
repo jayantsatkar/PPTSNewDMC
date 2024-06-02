@@ -7,7 +7,7 @@
 
 <script type="text/javascript">
 
-    var loginUser = '@(((MST_User)Session["UserInfo"]).Login_ID)';
+    var loginUser = '@(((User)Session["UserInfo"]).Login_ID)';
 
     $(document).on("click", "#btnView", function () {
         var ddlsrnodata = $("#ddlType").val();
@@ -79,7 +79,6 @@
         try {
             var shell = new ActiveXObject("WScript.shell");
             shell.run("C:\\PPTSPrint\\Debug\\PPTSPrinting.exe " + params, 1, true);
-            //shell.run("C:\\UserValidation\\Debug\\PrintingNET35\\LabelPrinting.exe " + params, 1, true);
 
             return 1;
         }

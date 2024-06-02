@@ -365,7 +365,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Repository\BoxRepository.cs" />
     <Compile Include="Repository\ModuleRepository.cs" />
+    <Compile Include="Repository\PalletRepository.cs" />
     <Compile Include="Repository\RoleRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="ViewModel\AssignFormsToUseViewModel.cs" />

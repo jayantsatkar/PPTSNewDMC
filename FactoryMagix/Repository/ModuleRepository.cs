@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 using FactoryMagix.Models;
 using System.Data;
 
-namespace FactoryMagix
+namespace FactoryMagix.Repository
 {
     public class ModuleRepository
     {

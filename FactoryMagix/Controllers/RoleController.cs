@@ -14,6 +14,7 @@ using System.Web.UI;
 using System.Drawing;
 using PagedList;
 using PagedList.Mvc;
+using FactoryMagix.Repository;
 
 namespace FactoryMagix.Controllers
 {

@@ -15,6 +15,7 @@ using System.Web.UI;
 using PagedList;
 using PagedList.Mvc;
 using System.Data.Entity.Validation;
+using FactoryMagix.Repository;
 
 namespace FactoryMagix.Controllers
 {
