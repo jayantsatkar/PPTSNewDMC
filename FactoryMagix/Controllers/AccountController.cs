@@ -49,16 +49,16 @@ namespace FactoryMagix.Controllers
         {
             try
             {
-                throw new Exception("Test exception");
+                return View();// throw new Exception("Test exception");
             }
 
             catch (Exception ex)
             {
                 Logger.Error("Error",ex);
             }
-            return View();
-            // TempData["WronguserName"] = "1";
 
+            // TempData["WronguserName"] = "1";
+            return View();
         }
 
         private string Encryptdata(string password)
