@@ -22,42 +22,42 @@
                     type: "POST",
                     data: { "SerialNo": txtsrnodata, "flag": ddlsrnodata },
                     "success": function (sdata) {
+                        
                         if (sdata != null) {
                             if (sdata.length > 0) {
                                 var vdata = sdata;
-                                if (ddlsrnodata == 0)
-                                {
-                                    var parameter = "B" + ';' + vdata[0].Customer_Name + ';'
-                                    + vdata[0].partNo
-                                   + ';' + vdata[0].ActualPart_Qty + ';' + vdata[0].BoxBarcode + ';'
-                                   + vdata[0].BoschPart_Desc + ';' + vdata[0].Created_On + ';' + vdata[0].BoxSerial_No + ';' + loginUser;
-                                    alert(parameter);
-                                    var print = exec(parameter);
-                                }
-                                else if (ddlsrnodata == 1)
-                                {
-                                    var parameter = "P" + ';' + vdata[0].Customer_Name + ';' + vdata[0].BoschPart_No
-                                                        + ';' + vdata[0].NoOfPartQy_Box + ';' + vdata[0].PalletSrNo + ';'
-                                                        + vdata[0].BoschPart_Desc + ';' + vdata[0].createdon + ';' + vdata[0].custaddress
-                                                        + ';' + vdata[0].CustPart_No + ';' + vdata[0].InvoiceNo + ';' +
-                                                        vdata[0].InvoiceQty + ';' +
-                                        vdata[0].InvoiceDate + ';' + vdata[0].PalletBarcode + ';' + loginUser;
+
+                                //if (ddlsrnodata == 0)
+                                //{
+                                //    var parameter = "B" + ';' + vdata[0].Customer_Name + ';'
+                                //    + vdata[0].partNo
+                                //   + ';' + vdata[0].ActualPart_Qty + ';' + vdata[0].BoxBarcode + ';'
+                                //   + vdata[0].BoschPart_Desc + ';' + vdata[0].Created_On + ';' + vdata[0].BoxSerial_No + ';' + loginUser;
+                                //    alert(parameter);
+                                //    var print = exec(parameter);
+                                //}
+                                //else if (ddlsrnodata == 1)
+                                //{
+                                //    var parameter = "P" + ';' + vdata[0].Customer_Name + ';' + vdata[0].BoschPart_No
+                                //                        + ';' + vdata[0].NoOfPartQy_Box + ';' + vdata[0].PalletSrNo + ';'
+                                //                        + vdata[0].BoschPart_Desc + ';' + vdata[0].createdon + ';' + vdata[0].custaddress
+                                //                        + ';' + vdata[0].CustPart_No + ';' + vdata[0].InvoiceNo + ';' +
+                                //                        vdata[0].InvoiceQty + ';' +
+                                //        vdata[0].InvoiceDate + ';' + vdata[0].PalletBarcode + ';' + loginUser;
                                     
-                                    var print = exec(parameter);
-                                }
-                              
-                                if (print == 1)
-                                {
-                                    alert("Barcode printed successfully");
-                                }
+                                //  //  var print = exec(parameter);
+                                //}
+                                alert("Barcode printed successfully");
+                                //if (print == 1)
+                                //{
+                                //    alert("Barcode printed successfully");
+                                //}
                                 
                                 $("#txtSrNo").val("");
                                 $("#ddlType").val("-1");
                             }
                         }
                         $("#tblScanPartNo").empty();
-
-
                     }
                 });
             }
@@ -73,20 +73,20 @@
     });
 
 
-    function exec(params) {
+    //function exec(params) {
 
 
-        try {
-            var shell = new ActiveXObject("WScript.shell");
-            shell.run("C:\\PPTSPrint\\Debug\\PPTSPrinting.exe " + params, 1, true);
+    //    try {
+    //        var shell = new ActiveXObject("WScript.shell");
+    //        shell.run("C:\\PPTSPrint\\Debug\\PPTSPrinting.exe " + params, 1, true);
 
-            return 1;
-        }
-        catch (e) {
-            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-            return 0;
-        }
-    }
+    //        return 1;
+    //    }
+    //    catch (e) {
+    //        alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+    //        return 0;
+    //    }
+    //}
 </script>
 
 

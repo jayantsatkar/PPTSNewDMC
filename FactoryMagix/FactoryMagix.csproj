@@ -76,6 +76,7 @@
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
@@ -176,9 +177,11 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DAL.cs" />
     <Compile Include="DAL\DBHelper.cs" />
+    <Compile Include="FolderHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="IpHelper.cs" />
     <Compile Include="Models\AssignFormsToUser.cs" />
     <Compile Include="Models\BoxlabelGenrationModelView.cs" />
     <Compile Include="Models\BoxSerialNo.cs">
@@ -206,6 +209,7 @@
     <Compile Include="Models\HST_TRN_ScanPartBarcode.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\LabelTypes.cs" />
     <Compile Include="Models\Model.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
