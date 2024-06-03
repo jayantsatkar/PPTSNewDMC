@@ -117,6 +117,7 @@ namespace FactoryMagix.Repository
 
                     user.User_ID = Convert.ToInt64(dr["User_ID"]);
                     user.Role_ID = Convert.ToInt64(dr["Role_ID"]);
+                    user.Role_Name = Convert.ToString(dr["Role_Name"]);
                     user.Login_ID = Convert.ToString(dr["Login_ID"]);
                     user.Password = Convert.ToString(dr["Password"]);
                     user.First_Name = Convert.ToString(dr["First_Name"]);
@@ -150,6 +151,51 @@ namespace FactoryMagix.Repository
             DBHelper.AddSqlParameter("@JSON", JsonConvert.SerializeObject(user, Formatting.Indented), ref sqlParameters);
             DBHelper.ExecuteNonQuery("usp_AddUpdateUser", sqlParameters);
         }
+
+        public static User GetUserByUserName(string UserName)
+        {
+
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@UserName", UserName, ref sqlParameters);
+
+
+            var dtUsers = DBHelper.ExecuteProcedure("usp_GetUserByUserName", sqlParameters);
+            User user = new User();
+
+            if (dtUsers.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dtUsers.Rows)
+                {
+
+                    user.User_ID = Convert.ToInt64(dr["User_ID"]);
+                    user.Role_ID = Convert.ToInt64(dr["Role_ID"]);
+                    user.Role_Name = Convert.ToString(dr["Role_Name"]);
+                    user.Login_ID = Convert.ToString(dr["Login_ID"]);
+                    user.Password = Convert.ToString(dr["Password"]);
+                    user.First_Name = Convert.ToString(dr["First_Name"]);
+                    user.Last_Name = Convert.ToString(dr["Last_Name"]);
+                    user.Middle_Name = Convert.ToString(dr["Middle_Name"]);
+                    user.EmailId = Convert.ToString(dr["EmailId"]);
+                    //user.//User_Image = (Byte[])(dr["User_Image"]);
+                    user.Address = Convert.ToString(dr["Address"]);
+                    user.City = Convert.ToString(dr["City"]);
+                    user.State = Convert.ToString(dr["State"]);
+                    user.Country = Convert.ToString(dr["Country"]);
+                    user.Pincode = Convert.ToString(dr["Pincode"]);
+                    user.Mobile_No = Convert.ToString(dr["Mobile_No"]);
+                    user.EmployeeId = Convert.ToString(dr["EmployeeId"]);
+                    user.IsFingerPrint = Convert.ToBoolean(dr["IsFingerPrint"]);
+                    user.IsActive = Convert.ToBoolean(dr["IsActive"]);
+                    user.Created_By = Convert.ToInt64(dr["Created_By"]);
+                    user.Created_On = Convert.ToDateTime(dr["Created_On"]);
+                }
+
+            }
+
+            return user;
+
+        }
+        
 
     }
 }

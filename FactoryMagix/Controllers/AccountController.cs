@@ -197,7 +197,10 @@ namespace FactoryMagix.Controllers
             return Name;
         }
 
-
+        public ActionResult Unauthorized()
+        {
+            return View();
+        }
 
     }
 }

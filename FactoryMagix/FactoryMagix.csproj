@@ -177,7 +177,6 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DAL.cs" />
     <Compile Include="DAL\DBHelper.cs" />
-    <Compile Include="FolderHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -343,6 +342,7 @@
     </Compile>
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserForm.cs" />
+    <Compile Include="Models\UserRoleProvider.cs" />
     <Compile Include="Models\vw_TRN_BoxBarcodeDetails.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -628,6 +628,7 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Reports\PartSerialNoWise.cshtml" />
     <Content Include="Views\DDL\DDL.cshtml" />
+    <Content Include="Views\Account\Unauthorized.cshtml" />
     <None Include="Views\Reports\UserErrorReport.cshtml" />
     <None Include="Views\Reports\UserErrorReport_2.cshtml" />
     <Content Include="Web.config">

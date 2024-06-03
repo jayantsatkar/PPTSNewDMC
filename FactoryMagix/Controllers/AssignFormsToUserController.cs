@@ -15,6 +15,7 @@ namespace FactoryMagix.Controllers
         // private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
 
         // GET: AssignFormsToUser
+        [Authorize(Roles = "Super Administrator")]
         public ActionResult Index()
         {
             if (Session["UserInfo"] == null)
