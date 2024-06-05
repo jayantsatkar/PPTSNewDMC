@@ -186,6 +186,7 @@
     <Compile Include="Models\BoxSerialNo.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\ErrorLog.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -258,6 +259,7 @@
     <Compile Include="Models\PalletSerialNo.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PartResult.cs" />
     <Compile Include="Models\REL_UserForm.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -370,8 +372,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Repository\BoxRepository.cs" />
+    <Compile Include="Repository\CustomerRepository.cs" />
     <Compile Include="Repository\ModuleRepository.cs" />
     <Compile Include="Repository\PalletRepository.cs" />
+    <Compile Include="Repository\PartRepository.cs" />
     <Compile Include="Repository\RoleRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="ViewModel\AssignFormsToUseViewModel.cs" />

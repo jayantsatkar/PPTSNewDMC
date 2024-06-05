@@ -34,3 +34,7 @@ ALTER TABLE [dbo].[Logs] ADD  DEFAULT (newid()) FOR [Id]
 GO
 ALTER TABLE [dbo].[Logs] ADD  CONSTRAINT [DEFAULT_Logs_Date]  DEFAULT (getdate()) FOR [Date]
 GO
+
+
+
+UPDATE MST_Customer SET Created_By = 1, Created_On= GETDATE() WHERE Created_By IS NULL

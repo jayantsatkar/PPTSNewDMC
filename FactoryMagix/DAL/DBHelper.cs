@@ -102,7 +102,7 @@ namespace FactoryMagix
 
             catch (Exception ex)
             {
-                //Logger.Error(ex);
+                throw ex;
             }
             finally
             {

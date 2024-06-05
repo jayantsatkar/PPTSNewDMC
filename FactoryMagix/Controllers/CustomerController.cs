@@ -13,16 +13,14 @@ using PagedList.Mvc;
 using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
+using FactoryMagix.Repository;
 
 namespace FactoryMagix.Controllers
 {
     public class CustomerController : Controller
     {
-        private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
+        // private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
         const int pageSize = 10;
-
-       
 
         public ActionResult Index(string option, string search, int? page)
         {
@@ -34,29 +32,11 @@ namespace FactoryMagix.Controllers
             {
                 if (option == "CustomerCode")
                 {
-                    List< MST_Customer> dataExist = db.MST_Customer.Where(x => x.Customer_Code.Contains(search)).ToList();
+                    List<Customer> dataExist = CustomerRepository.GetCustomers().Where(x => x.Customer_Code.Contains(search)).ToList(); // db.MST_Customer.Where(x => x.Customer_Code.Contains(search)).ToList();
                     if (dataExist.Count == 0)
                     {
 
-                        var customer = from c in db.MST_Customer
-                                   select c;
-                        customer = customer.OrderBy(c => c.Customer_Name);
-                        ViewBag.RecordsCount = customer.Count();
-                        var listPaged = customer.ToPagedList(page ?? 1, pageSize);
-                        TempData["NoDatavalidationMessage"] = "No records found please enter valid data..!";
-
-                        return View(listPaged);
-                    }
-
-                    return View(db.MST_Customer.Where(x => x.Customer_Code.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
-
-                }
-                else if (option == "CustomerName")
-                {
-                    List<MST_Customer> dataExist = db.MST_Customer.Where(x => x.Customer_Name.Contains(search)).ToList();
-                    if (dataExist.Count == 0)
-                    {
-                        var customer = from c in db.MST_Customer
+                        var customer = from c in  CustomerRepository.GetCustomers()//db.MST_Customer
                                        select c;
                         customer = customer.OrderBy(c => c.Customer_Name);
                         ViewBag.RecordsCount = customer.Count();
@@ -65,14 +45,33 @@ namespace FactoryMagix.Controllers
 
                         return View(listPaged);
                     }
-                    return View(db.MST_Customer.Where(x => x.Customer_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+
+                    // return View(db.MST_Customer.Where(x => x.Customer_Code.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    return View(CustomerRepository.GetCustomers().Where(x => x.Customer_Code.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+
+                }
+                else if (option == "CustomerName")
+                {
+                    List<Customer> dataExist = CustomerRepository.GetCustomers().Where(x => x.Customer_Name.Contains(search)).ToList();
+                    if (dataExist.Count == 0)
+                    {
+                        var customer = from c in CustomerRepository.GetCustomers()//db.MST_Customer
+                                       select c;
+                        customer = customer.OrderBy(c => c.Customer_Name);
+                        ViewBag.RecordsCount = customer.Count();
+                        var listPaged = customer.ToPagedList(page ?? 1, pageSize);
+                        TempData["NoDatavalidationMessage"] = "No records found please enter valid data..!";
+
+                        return View(listPaged);
+                    }
+                    return View(CustomerRepository.GetCustomers().Where(x => x.Customer_Name.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
                 }
                 else if(option== "CustomerIndex")
                 {
-                    List<MST_Customer> dataExist = db.MST_Customer.Where(x => x.Customer_Index.Contains(search)).ToList();
+                    List<Customer> dataExist = CustomerRepository.GetCustomers().Where(x => x.Customer_Index.Contains(search)).ToList();
                     if (dataExist.Count == 0)
                     {
-                        var customer = from c in db.MST_Customer
+                        var customer = from c in CustomerRepository.GetCustomers() //db.MST_Customer
                                        select c;
                         customer = customer.OrderBy(c => c.Customer_Name);
                         ViewBag.RecordsCount = customer.Count();
@@ -82,13 +81,15 @@ namespace FactoryMagix.Controllers
                         return View(listPaged);
                     }
 
-                    return View(db.MST_Customer.Where(x => x.Customer_Index.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
-                }
+                    return View(CustomerRepository.GetCustomers().Where(x => x.Customer_Index.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                
+                //return View(db.MST_Customer.Where(x => x.Customer_Index.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+            }
 
                 else
                 { 
 
-                    var customer = from c in db.MST_Customer
+                    var customer = from c in CustomerRepository.GetCustomers()//db.MST_Customer
                                    select c;
                 customer = customer.OrderBy(c => c.Customer_Name);
                 ViewBag.RecordsCount = customer.Count();
@@ -99,15 +100,13 @@ namespace FactoryMagix.Controllers
             }
         }
 
-
-
         public ActionResult SearchText(string strSearchText, string strToSearch, int? page)
         {
-            var customer = from c in db.MST_Customer
+            var customer = from c in CustomerRepository.GetCustomers()//db.MST_Customer
                            select c;
             // customer = customer.OrderBy(c => c.Customer_Name);
 
-           List<MST_Customer>  SearchResultRoles = customer.AsQueryable().Where(c => c.Customer_Name.ToLower().Contains(strSearchText.ToLower())).ToList();
+           List<Customer>  SearchResultRoles = customer.AsQueryable().Where(c => c.Customer_Name.ToLower().Contains(strSearchText.ToLower())).ToList();
             ViewBag.RecordsCount = SearchResultRoles.Count();
             var listPaged = SearchResultRoles.ToPagedList(page ?? 1, pageSize);
 
@@ -130,19 +129,21 @@ namespace FactoryMagix.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                MST_Customer mST_Customer = db.MST_Customer.Find(id);
-                if (mST_Customer == null)
+                // MST_Customer customer = db.MST_Customer.Find(id);
+                Customer customer = CustomerRepository.GetCustomer(Convert.ToInt64(id));
+                if (customer == null)
                 {
                     return HttpNotFound();
                 }
-                return View(mST_Customer);
+                return View(customer);
             }
         }
 
         // GET: Customer/Create
         public ActionResult Create()
         {
-            return View();
+            Customer customer = new Customer();
+            return View(customer);
         }
 
         // POST: Customer/Create
@@ -150,7 +151,7 @@ namespace FactoryMagix.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "MST_Customer_ID,Customer_Code,Customer_Name,Customer_Index,Address_Line1,Address_Line2,PhoneNo,FaxNo,EmailId,Created_By,Created_On,Modified_By,Modified_On")] MST_Customer mST_Customer)
+        public ActionResult Create([Bind(Include = "MST_Customer_ID,Customer_Code,Customer_Name,Customer_Index,Address_Line1,Address_Line2,PhoneNo,FaxNo,EmailId,Created_By,Created_On,Modified_By,Modified_On")] Customer customer)
         {
             if (Session["UserInfo"] == null)
             {
@@ -158,12 +159,12 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                MST_User mST_User = (MST_User)Session["UserInfo"];
+                User mST_User = (User)Session["UserInfo"];
 
                 if (ModelState.IsValid)
                 {
-                    //  bool doesExistAlready = db.MST_Customer.Where(c => c.Customer_Code = mST_Customer.Customer_Code && c.Customer_Index= mST_Customer.Customer_Index && c.Customer_Name = mST_Customer.Customer_Name );
-                    if (db.MST_Customer.Any(cust => cust.Customer_Code == mST_Customer.Customer_Code && cust.Customer_Index == mST_Customer.Customer_Index && cust.Customer_Name == mST_Customer.Customer_Name))
+                    //  bool doesExistAlready = db.MST_Customer.Where(c => c.Customer_Code = customer.Customer_Code && c.Customer_Index= customer.Customer_Index && c.Customer_Name = customer.Customer_Name );
+                    if (CustomerRepository.GetCustomers().Any(cust => cust.Customer_Code == customer.Customer_Code && cust.Customer_Index == customer.Customer_Index && cust.Customer_Name == customer.Customer_Name))
                     {
                         TempData["validationMessage"] = "Customer Code, Name, Index must be different..!";
 
@@ -171,27 +172,28 @@ namespace FactoryMagix.Controllers
 
                     }
 
-                    if (mST_Customer.Address_Line2 == null)
+                    if (customer.Address_Line2 == null)
                     {
-                        mST_Customer.Address_Line2 = string.Empty;
+                        customer.Address_Line2 = string.Empty;
                     }
 
-                   // if(db.MST_Customer.Any(cust => cust.Customer_Code == mST_Customer.Customer_Code))
+                   // if(db.MST_Customer.Any(cust => cust.Customer_Code == customer.Customer_Code))
 
 
 
 
-                    mST_Customer.Created_By = mST_User.User_ID;
-                    mST_Customer.Created_On = DateTime.Now;
+                    customer.Created_By = mST_User.User_ID;
+                    customer.Created_On = DateTime.Now;
 
-                    db.MST_Customer.Add(mST_Customer);
+                    CustomerRepository.AddUpdateCustomer(customer);
+                    //db.MST_Customer.Add(customer);
                     TempData["CreateMessage"] = "Customer created Successfully!";
 
-                    db.SaveChanges();
+                   // db.SaveChanges();
                     return RedirectToAction("Index");
                 }
 
-                return View(mST_Customer);
+                return View(customer);
             }
         }
 
@@ -208,12 +210,13 @@ namespace FactoryMagix.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                MST_Customer mST_Customer = db.MST_Customer.Find(id);
-                if (mST_Customer == null)
+                Customer customer = CustomerRepository.GetCustomer(Convert.ToInt64(id));
+                //MST_Customer customer = db.MST_Customer.Find(id);
+                if (customer == null)
                 {
                     return HttpNotFound();
                 }
-                return View(mST_Customer);
+                return View(customer);
             }
         }
 
@@ -222,7 +225,7 @@ namespace FactoryMagix.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "MST_Customer_ID,Customer_Code,Customer_Name,Customer_Index,Address_Line1,Address_Line2,PhoneNo,FaxNo,EmailId,Created_By,Created_On,Modified_By,Modified_On")] MST_Customer mST_Customer)
+        public ActionResult Edit([Bind(Include = "MST_Customer_ID,Customer_Code,Customer_Name,Customer_Index,Address_Line1,Address_Line2,PhoneNo,FaxNo,EmailId,Created_By,Created_On,Modified_By,Modified_On")] Customer customer)
         {
             if (Session["UserInfo"] == null)
             {
@@ -235,17 +238,18 @@ namespace FactoryMagix.Controllers
                 if (ModelState.IsValid)
                 {
                     
-                    mST_Customer.Modified_On = DateTime.Now;
-                    MST_User objUserSession = (MST_User)Session["UserInfo"];
-                    mST_Customer.Modified_By = objUserSession == null ? 0 : objUserSession.User_ID;
+                    customer.Modified_On = DateTime.Now;
+                    User objUserSession = (User)Session["UserInfo"];
+                    customer.Modified_By = objUserSession == null ? 0 : objUserSession.User_ID;
 
-                    db.Entry(mST_Customer).State = System.Data.Entity.EntityState.Modified;
-                    db.SaveChanges();
+                    CustomerRepository.AddUpdateCustomer(customer);
+                   // db.Entry(customer).State = System.Data.Entity.EntityState.Modified;
+                   // db.SaveChanges();
                     TempData["EditMessage"] = "Customer edited Successfully!";
 
                     return RedirectToAction("Index");
                 }
-                return View(mST_Customer);
+                return View(customer);
             }
         }
         
@@ -258,7 +262,7 @@ namespace FactoryMagix.Controllers
             else
             {
 
-                var customer = from c in db.MST_Customer
+                var customer = from c in CustomerRepository.GetCustomers() //db.MST_Customer
                                select c;
                 customer = customer.OrderBy(c => c.MST_Customer_ID);
                 var listPaged = customer.ToPagedList(page ?? 1, pageSize);
@@ -287,7 +291,7 @@ namespace FactoryMagix.Controllers
             else
             {
 
-                var CustomerDetail = (from e in db.MST_Customer
+                var CustomerDetail = (from e in CustomerRepository.GetCustomers() //db.MST_Customer
                                       select new
                                       {
                                           CustomerCode = e.Customer_Code,
@@ -317,10 +321,6 @@ namespace FactoryMagix.Controllers
             }
         }
 
-
-
-
-
         // GET: Customer/Delete/5
         public ActionResult Delete(long? id)
         {
@@ -328,12 +328,13 @@ namespace FactoryMagix.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MST_Customer mST_Customer = db.MST_Customer.Find(id);
-            if (mST_Customer == null)
+            Customer customer = CustomerRepository.GetCustomer(Convert.ToInt64(id));
+            //MST_Customer customer = db.MST_Customer.Find(id);
+            if (customer == null)
             {
                 return HttpNotFound();
             }
-            return View(mST_Customer);
+            return View(customer);
         }
 
         // POST: Customer/Delete/5
@@ -341,19 +342,22 @@ namespace FactoryMagix.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(long id)
         {
-            MST_Customer mST_Customer = db.MST_Customer.Find(id);
-            db.MST_Customer.Remove(mST_Customer);
-            db.SaveChanges();
+            Customer customer = CustomerRepository.GetCustomer(Convert.ToInt64(id));
+            // MST_Customer customer = db.MST_Customer.Find(id);
+            // db.MST_Customer.Remove(customer);
+           // customer.IsActive = false;
+            CustomerRepository.AddUpdateCustomer(customer);
+           // db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }

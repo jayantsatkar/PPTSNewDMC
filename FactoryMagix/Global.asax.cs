@@ -20,5 +20,14 @@ namespace FactoryMagix
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             Logger.Info("Application started");
         }
+
+        protected void Application_Error()
+        {
+            Exception exception = Server.GetLastError();
+            //log4net.ILog log = log4net.LogManager.GetLogger(typeof(MvcApplication));
+            Logger.Error(exception);
+            Server.ClearError();
+            // Response.Redirect("~/Error/GeneralError");
+        }
     }
 }
