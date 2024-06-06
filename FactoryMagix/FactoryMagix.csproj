@@ -259,6 +259,7 @@
     <Compile Include="Models\PalletSerialNo.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PartConfiguration.cs" />
     <Compile Include="Models\PartResult.cs" />
     <Compile Include="Models\REL_UserForm.cs">
       <DependentUpon>Model.tt</DependentUpon>

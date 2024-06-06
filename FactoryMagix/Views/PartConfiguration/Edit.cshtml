@@ -1,4 +1,4 @@
-﻿@model FactoryMagix.Models.MST_PartConfiguration
+﻿@model FactoryMagix.Models.PartConfiguration
 
 @{
     ViewBag.Title = "Edit";
@@ -166,7 +166,7 @@
                                         <div class="col-md-8">
                                             @*<input type="text" id="txtCustomerCode" disabled="disabled" class="form-control" />*@
 
-                                            @Html.EditorFor(model => model.MST_Customer.Customer_Code, new { htmlAttributes = new { @class = "form-control", id = "txtCustomerCode", disabled = "disabled" } })
+                                            @Html.EditorFor(model => model.Customer_Code, new { htmlAttributes = new { @class = "form-control", id = "txtCustomerCode", disabled = "disabled" } })
 
                                         </div>
                                     </div>
@@ -176,7 +176,7 @@
                                         @Html.Label("Customer Index", htmlAttributes: new { @class = "col-lg-3 control-label", disabled = "disabled" })
                                         <div class="col-md-8">
                                             @*<input type="text" id="txtCustomerIndex" disabled="disabled" class="form-control" />*@
-                                            @Html.EditorFor(model => model.MST_Customer.Customer_Index, new { htmlAttributes = new { @class = "form-control", id = "txtCustomerIndex", disabled = "disabled" } })
+                                            @Html.EditorFor(model => model.Customer_Index, new { htmlAttributes = new { @class = "form-control", id = "txtCustomerIndex", disabled = "disabled" } })
 
 
                                         </div>

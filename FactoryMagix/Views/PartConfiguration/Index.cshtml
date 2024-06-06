@@ -1,5 +1,5 @@
 ﻿
-@model IEnumerable<FactoryMagix.Models.MST_PartConfiguration>
+@model IEnumerable<FactoryMagix.Models.PartConfiguration>
 
 @using PagedList;
 @using PagedList.Mvc;
@@ -223,11 +223,11 @@
                                     @Html.DisplayFor(modelItem => item.BoschPart_Desc)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.MST_Customer.Customer_Name)
+                                    @Html.DisplayFor(modelItem => item.Customer_Name)
                                 </td>
 
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.MST_Customer.Customer_Code)
+                                    @Html.DisplayFor(modelItem => item.Customer_Code)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Customer_Index)

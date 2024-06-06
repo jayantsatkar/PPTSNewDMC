@@ -38,3 +38,10 @@ GO
 
 
 UPDATE MST_Customer SET Created_By = 1, Created_On= GETDATE() WHERE Created_By IS NULL
+ALTER TABLE MST_Customer 
+ALTER COLUMN [Created_By] [bigint] NOT NULL 
+
+UPDATE MST_PartConfiguration SET Created_By = 1 WHERE Created_By IS NULL 
+
+ALTER TABLE MST_PartConfiguration 
+ALTER COLUMN [Created_By] [bigint] NOT NULL 
