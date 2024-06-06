@@ -170,7 +170,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PartailBoxSerialNoController.cs" />
     <Compile Include="Controllers\PartConfigurationController.cs" />
-    <Compile Include="Controllers\Reports.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\PalletLabelController.cs" />
     <Compile Include="Controllers\PartialController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
