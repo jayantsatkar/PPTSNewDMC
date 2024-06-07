@@ -138,19 +138,19 @@
       if (ViewBag.Invoice != null)
       {
 
-          IEnumerable<FactoryMagix.Models.spGetInvoiceReport_Result> model  = ViewBag.Invoice  ;
+          IEnumerable<FactoryMagix.Models.PartSerialNoReport> model  = ViewBag.Invoice  ;
          
           Html.RenderPartial("_InvoiceDatewiseReport", model);
       }
       else if(ViewBag.Pallet != null)
       {
-          IEnumerable<FactoryMagix.Models.spGetPalletWiseReport_Result> objlist = ViewBag.Pallet;
+          IEnumerable<FactoryMagix.Models.PalletReport> objlist = ViewBag.Pallet;
           Html.RenderPartial("_PalletReport", objlist);
 
       }
       else if (ViewBag.Boxlist != null)
       {
-          IEnumerable<FactoryMagix.Models.spGetBoxSerialNoReport_Result> objlist = ViewBag.Boxlist;
+          IEnumerable<FactoryMagix.Models.BoxSerialNoReport> objlist = ViewBag.Boxlist;
           Html.RenderPartial("_BoxSerialDateWise", objlist);
 
       }

@@ -264,6 +264,7 @@
     <Compile Include="Models\REL_UserForm.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Report.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\spCheckPartconfiguration_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
@@ -377,6 +378,7 @@
     <Compile Include="Repository\ModuleRepository.cs" />
     <Compile Include="Repository\PalletRepository.cs" />
     <Compile Include="Repository\PartRepository.cs" />
+    <Compile Include="Repository\ReportRepository.cs" />
     <Compile Include="Repository\RoleRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="ViewModel\AssignFormsToUseViewModel.cs" />

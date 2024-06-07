@@ -8,12 +8,13 @@ using PagedList;
 using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using FactoryMagix.Repository;
 
 namespace FactoryMagix.Controllers
 {
     public class ReportsController : Controller
     {
-        private FactoryMagix.Models.BOSCH_PPTSEntities db = new FactoryMagix.Models.BOSCH_PPTSEntities();
+        //private FactoryMagix.Models.BOSCH_PPTSEntities db = new FactoryMagix.Models.BOSCH_PPTSEntities();
         const int pageSize = 6;
         public ActionResult UserErrorReport()
         {
@@ -36,7 +37,7 @@ namespace FactoryMagix.Controllers
             else
             {
 
-                IList<spUserErrorLogReport_Result> userError = db.spUserErrorLogReport(LoginID).ToList();
+                IList<ErrorLogReport> userError = ReportRepository.GetUserErrorLogReport(LoginID); // db.spUserErrorLogReport(LoginID).ToList();
                 ViewBag.RecordsCount = userError.Count();
                 int? page = null;
                 var listPaged = userError.ToPagedList(page ?? 1, pageSize);
@@ -54,7 +55,8 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                IList<spUserErrorLogReport_Result> userError = db.spUserErrorLogReport(LoginID).ToList();
+                //IList<spUserErrorLogReport_Result> userError = db.spUserErrorLogReport(LoginID).ToList();
+                IList<ErrorLogReport> userError = ReportRepository.GetUserErrorLogReport(LoginID); // db.spUserErrorLogReport(LoginID).ToList();
                 ViewBag.RecordsCount = userError.Count();
                 
                 var listPaged = userError.ToPagedList(page ?? 1, pageSize);
@@ -71,7 +73,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var usererrorlidt = db.spUserErrorLogReport(LoginID).ToList();
+                var usererrorlidt = ReportRepository.GetUserErrorLogReport(LoginID);  //db.spUserErrorLogReport(LoginID).ToList();
                 var listPaged = usererrorlidt.ToPagedList(page ?? 1, pageSize); 
                 ViewBag.RecordsCount = usererrorlidt.Count();
                 if (listPaged.PageNumber != 1 && page.HasValue && page > listPaged.PageCount)
@@ -95,8 +97,8 @@ namespace FactoryMagix.Controllers
             else
             {
                 // BoxSrNo = "B00000047";
-                var UserErrorReportDetails = (from e in db.spUserErrorLogReport(LoginID)
-                                            select new
+                var UserErrorReportDetails = (from e in ReportRepository.GetUserErrorLogReport(LoginID)//db.spUserErrorLogReport(LoginID)
+                select new
                                             {
                                                 Login_ID = e.Login_ID,
                                                 Login_Name = e.Login_Name,
@@ -152,7 +154,7 @@ namespace FactoryMagix.Controllers
             else
             {
 
-                IList<spUserErrorLogReport_2_Result> userError = db.spUserErrorLogReport_2(LoginID).ToList();
+                IList<ErrorLogReport2> userError = ReportRepository.GetUserErrorLogReport2(LoginID); //db.spUserErrorLogReport_2(LoginID).ToList();
                 ViewBag.RecordsCount = userError.Count();
                 int? page = null;
                 var listPaged = userError.ToPagedList(page ?? 1, pageSize);
@@ -170,7 +172,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                IList<spUserErrorLogReport_2_Result> userError = db.spUserErrorLogReport_2(LoginID).ToList();
+                IList<ErrorLogReport2> userError = ReportRepository.GetUserErrorLogReport2(LoginID); //db.spUserErrorLogReport_2(LoginID).ToList();
                 ViewBag.RecordsCount = userError.Count();
 
                 var listPaged = userError.ToPagedList(page ?? 1, pageSize);
@@ -187,7 +189,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var usererrorlidt = db.spUserErrorLogReport_2(LoginID).ToList();
+                var usererrorlidt = ReportRepository.GetUserErrorLogReport2(LoginID);// db.spUserErrorLogReport_2(LoginID).ToList();
                 var listPaged = usererrorlidt.ToPagedList(page ?? 1, pageSize);
                 ViewBag.RecordsCount = usererrorlidt.Count();
                 if (listPaged.PageNumber != 1 && page.HasValue && page > listPaged.PageCount)
@@ -211,7 +213,7 @@ namespace FactoryMagix.Controllers
             else
             {
                 // BoxSrNo = "B00000047";
-                var UserErrorReportDetails = (from e in db.spUserErrorLogReport_2(LoginID)
+                var UserErrorReportDetails = (from e in ReportRepository.GetUserErrorLogReport2(LoginID) //db.spUserErrorLogReport_2(LoginID)
                                               select new
                                               {
                                                   Login_ID = e.Login_ID,
@@ -266,7 +268,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                IList<spGetPalletWiseReport_Result> invoicelist = db.spGetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false).ToList();
+                IList<PalletReport> invoicelist = ReportRepository.GetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false); //db.spGetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false).ToList();
                 ViewBag.RecordsCount = invoicelist.Count();
                 int? page = null;
                 var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
@@ -283,7 +285,9 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                IList<spGetPalletWiseReport_Result> invoicelist = db.spGetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false).ToList();
+                //IList<spGetPalletWiseReport_Result> invoicelist = db.spGetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false).ToList();
+                IList<PalletReport> invoicelist = ReportRepository.GetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false); 
+
                 ViewBag.RecordsCount = invoicelist.Count();
                 //int? page = null;
                 var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
@@ -301,8 +305,9 @@ namespace FactoryMagix.Controllers
             else
             {
 
-                var invoicelist = db.spGetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false).ToList();
+                // var invoicelist = db.spGetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false).ToList();
 
+                var invoicelist = ReportRepository.GetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false); 
 
                 var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
 
@@ -342,7 +347,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                IList<spGetBoxSerialNoReport_Result> invoicelist = db.spGetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false).ToList();
+                IList<BoxSerialNoReport> invoicelist = ReportRepository.GetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false); //db.spGetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false).ToList();
                 ViewBag.RecordsCount = invoicelist.Count();
                 int? page = null;
                 var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
@@ -359,7 +364,10 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                IList<spGetBoxSerialNoReport_Result> invoicelist = db.spGetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false).ToList();
+                //IList<spGetBoxSerialNoReport_Result> invoicelist = db.spGetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false).ToList();
+
+                IList<BoxSerialNoReport> invoicelist = ReportRepository.GetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false);
+
                 ViewBag.RecordsCount = invoicelist.Count();
                 //int? page = null;
                 var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
@@ -376,7 +384,8 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var invoicelist = db.spGetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false).ToList();
+                //var invoicelist = db.spGetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false).ToList();
+                var invoicelist = ReportRepository.GetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false);
 
 
                 var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
@@ -394,8 +403,6 @@ namespace FactoryMagix.Controllers
 
             }
         }
-
-
 
         public ActionResult InvoiceReport()
         {
@@ -420,8 +427,8 @@ namespace FactoryMagix.Controllers
             {
                
                 if (InvoiceNo != String.Empty || InvoiceNo != "")
-                { 
-                    IList<spGetInvoiceReport_Result> invoicelist = db.spGetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false).ToList();
+                {
+                    IList<PartSerialNoReport> invoicelist = ReportRepository.GetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false);  //db.spGetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false).ToList();
                     ViewBag.RecordsCount = invoicelist.Count();
                     int? page = null;
                     var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
@@ -447,7 +454,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                IList<spGetInvoiceReport_Result> invoicelist = db.spGetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false).ToList();
+                IList<PartSerialNoReport> invoicelist = ReportRepository.GetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false);  // db.spGetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false).ToList();
                 ViewBag.RecordsCount = invoicelist.Count();
                 //int? page = null;
                 var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
@@ -464,7 +471,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var invoicelist = db.spGetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false).ToList();
+                var invoicelist = ReportRepository.GetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false);  // 
 
 
                 var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
@@ -534,7 +541,10 @@ namespace FactoryMagix.Controllers
                 {
                     return View("PartSerialNoWise");
                 }
-                IList<spGetPartSerialNoReport_Result> list = db.spGetPartSerialNoReport(PartSrNo, type).ToList();
+                //IList<spGetPartSerialNoReport_Result> list = db.spGetPartSerialNoReport(PartSrNo, type).ToList();
+                IList<PartSerialNoReport> list = ReportRepository.GetPartSerialNoReport(PartSrNo, type); //db.spGetPartSerialNoReport(PartSrNo, type).ToList();
+
+
                 ViewBag.RecordsCount = list.Count();
                 int? page = null;
                 var listPaged = list.ToPagedList(page ?? 1, pageSize);
@@ -565,7 +575,8 @@ namespace FactoryMagix.Controllers
                     return View("PartSerialNoWise");
                 }
 
-                IList<spGetPartSerialNoReport_Result> list = db.spGetPartSerialNoReport(PartSrNo, type).ToList();
+               // IList<spGetPartSerialNoReport_Result> list = db.spGetPartSerialNoReport(PartSrNo, type).ToList();
+                IList<PartSerialNoReport> list = ReportRepository.GetPartSerialNoReport(PartSrNo, type); //db.spGetPartSerialNoReport(PartSrNo, type).ToList();
                 ViewBag.RecordsCount = list.Count();
                 
                 var listPaged = list.ToPagedList(page ?? 1, pageSize);
@@ -600,9 +611,9 @@ namespace FactoryMagix.Controllers
                 int? page = null;
                 if (date[2].ToString() == "I")
                 {
-                    var invoicelist = db.spGetInvoiceReport("", fromdate, todate, true).ToList();
-
-                    IList<spGetInvoiceReport_Result> olist = (IList<spGetInvoiceReport_Result>)invoicelist;
+                    //var invoicelist = db.spGetInvoiceReport("", fromdate, todate, true).ToList();
+                    var invoicelist = ReportRepository.GetInvoiceReport("", fromdate, todate, true);
+                    //IList<spGetInvoiceReport_Result> olist = (IList<spGetInvoiceReport_Result>)invoicelist;
                     
                    
                     //int? page = null;
@@ -611,17 +622,18 @@ namespace FactoryMagix.Controllers
                 }
                 else if (date[2].ToString() == "P")
                 {
-                    var Palletlist = db.spGetPalletWiseReport("", fromdate, todate, true).ToList();
-                    
-                  //  int? page = null;
+                    var Palletlist = ReportRepository.GetPalletWiseReport("", fromdate, todate, true); // ReportRepository.CommonReport("", fromdate, todate, true, "spGetPalletWiseReport");//db.spGetPalletWiseReport("", fromdate, todate, true).ToList();
+
+                    //  int? page = null;
                     var listPaged = Palletlist.ToPagedList(page ?? 1, pageSize);
                     ViewBag.Pallet = listPaged;
                 }
                 else if (date[2].ToString() == "B")
                 {
-                    var Boxlist = db.spGetBoxSerialNoReport("", fromdate, todate, true).ToList();
-                 
-                   
+                    var Boxlist = ReportRepository.GetBoxSerialNoReport("", fromdate, todate, true); //db.spGetBoxSerialNoReport("", fromdate, todate, true).ToList();
+
+
+
                     var listPaged = Boxlist.ToPagedList(page ?? 1, pageSize);
                     ViewBag.Boxlist = listPaged;
                 }
@@ -651,12 +663,8 @@ namespace FactoryMagix.Controllers
                // int? page = null;
                 if (date[2].ToString() == "I")
                 {
-                    var invoicelist = db.spGetInvoiceReport("", fromdate, todate, true).ToList();
+                    var invoicelist = ReportRepository.GetInvoiceReport("", fromdate, todate, true); //db.spGetInvoiceReport("", fromdate, todate, true).ToList();
 
-                    IList<spGetInvoiceReport_Result> olist = (IList<spGetInvoiceReport_Result>)invoicelist;
-
-
-                    //int? page = null;
                     var listPaged = invoicelist.ToPagedList(page ?? 1, pageSize);
 
                     if (listPaged.PageNumber != 1 && page.HasValue && page > listPaged.PageCount)
@@ -668,12 +676,11 @@ namespace FactoryMagix.Controllers
                          return View("DateWiseReport");
                     }
 
-
                     ViewBag.Invoice = listPaged;
                 }
                 else if (date[2].ToString() == "P")
                 {
-                    var Palletlist = db.spGetPalletWiseReport("", fromdate, todate, true).ToList();
+                    var Palletlist = ReportRepository.GetPalletWiseReport("", fromdate, todate, true); //db.spGetPalletWiseReport("", fromdate, todate, true).ToList();
 
                     //  int? page = null;
                     var listPaged = Palletlist.ToPagedList(page ?? 1, pageSize);
@@ -689,7 +696,7 @@ namespace FactoryMagix.Controllers
                 }
                 else if (date[2].ToString() == "B")
                 {
-                    var Boxlist = db.spGetBoxSerialNoReport("", fromdate, todate, true).ToList();
+                    var Boxlist = ReportRepository.GetBoxSerialNoReport("", fromdate, todate, true); //db.spGetBoxSerialNoReport("", fromdate, todate, true).ToList();
 
                     var listPaged = Boxlist.ToPagedList(page ?? 1, pageSize);
                     if (listPaged.PageNumber != 1 && page.HasValue && page > listPaged.PageCount)
@@ -720,20 +727,20 @@ namespace FactoryMagix.Controllers
             else
             {
                 //BoxSrNo = "B00000047";
-                var BoxSerialWiseDetails = (from e in db.spGetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false)
+                var BoxSerialWiseDetails = (from e in ReportRepository.GetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false) // db.spGetBoxSerialNoReport(BoxSrNo, DateTime.Now, DateTime.Now, false)
                                             select new
                                             {
                                                 SrNo = e.SrNo,
-                                                Invoiceno=e.InvoiceNo,
-                                                PalletserialNo=e.PalletSerial_No,
-                                                PalletBatchCode=e.PartBatchCode,
-                                                BoxSerialNo=e.BoxSerialNo,
-                                                BoxBatchCode=e.BoxBatchCode,
+                                                Invoiceno = e.InvoiceNo,
+                                                PalletserialNo = e.PalletSerial_No,
+                                                PalletBatchCode = e.PartBatchCode,
+                                                BoxSerialNo = e.BoxSerialNo,
+                                                BoxBatchCode = e.BoxBatchCode,
                                                 Boschpart_No = e.Boschpart_No,
                                                 PartSerialNo = e.PartSerialNo,
                                                 PartBatchCode = e.PartBatchCode,
 
-                                            }).ToList();
+                                            });
 
                 GridView gv = new GridView();
                 gv.DataSource = BoxSerialWiseDetails.ToList();  // db.MST_Role.ToList();
@@ -763,20 +770,20 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var PalletWiseWiseDetails = (from e in db.spGetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false)
+                var PalletWiseWiseDetails = (from e in ReportRepository.GetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false) //db.spGetPalletWiseReport(PalletNo, DateTime.Now, DateTime.Now, false)
                                              select new
                                              {
                                                  SrNo = e.SrNo,
-                                                 Invoiceno=e.InvoiceNo,
-                                                 PalletSrNo=e.PalletSerial_No,
-                                                 PalletBatchCode=e.PartBatchCode,
+                                                 Invoiceno = e.InvoiceNo,
+                                                 PalletSrNo = e.PalletSerial_No,
+                                                 PalletBatchCode = e.PartBatchCode,
                                                  BoxSerialNo = e.BoxSerialNo,
                                                  BoxBatchCode = e.BoxBatchCode,
                                                  Boschpart_No = e.Boschpart_No,
                                                  PartSerialNo = e.PartSerialNo,
                                                  PartBatchCode = e.PartBatchCode,
-                                                 Paker=e.Login_ID
-                                             }).ToList();
+                                                 Paker = e.Login_ID
+                                             });
 
                 GridView gv = new GridView();
                 gv.DataSource = PalletWiseWiseDetails.ToList();  // db.MST_Role.ToList();
@@ -807,7 +814,7 @@ namespace FactoryMagix.Controllers
             else
             {
                 // BoxSrNo = "B00000047";
-                var InvoiceReportDetails = (from e in db.spGetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false)
+                var InvoiceReportDetails = (from e in ReportRepository.GetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false) //db.spGetInvoiceReport(InvoiceNo, DateTime.Now, DateTime.Now, false)
                                             select new
                                             {
                                                 SrNo = e.SrNo,
@@ -863,7 +870,7 @@ namespace FactoryMagix.Controllers
                     return View("PartSerialNoWise");
                 }
                 //BoxSrNo = "B00000047";
-                var PartSerialWiseDetails = (from e in db.spGetPartSerialNoReport(PartSrNo, type)
+                var PartSerialWiseDetails = (from e in ReportRepository.GetPartSerialNoReport(PartSrNo, type) // db.spGetPartSerialNoReport(PartSrNo, type)
                                             select new
                                             {
                                                 SrNo = e.SrNo,
@@ -913,8 +920,8 @@ namespace FactoryMagix.Controllers
                 if (date[2].ToString() == "I")
                 {
                     
-                      var invoicelist = (from e in db.spGetInvoiceReport("", fromdate, todate, true)
-                                                select new
+                      var invoicelist = (from e in ReportRepository.GetInvoiceReport("", fromdate, todate, true) //db.spGetInvoiceReport("", fromdate, todate, true)
+                                         select new
                                                 {
                                                     SrNo = e.SrNo,
                                                     InvoiceNo = e.InvoiceNo,
@@ -948,8 +955,8 @@ namespace FactoryMagix.Controllers
                 }
                 else if (date[2].ToString() == "P")
                 {
-                    var Palletlist = (from e in db.spGetPalletWiseReport("", fromdate, todate, true)
-                                       select new
+                    var Palletlist = (from e in ReportRepository.GetPalletWiseReport("", fromdate, todate, true) //db.spGetPalletWiseReport("", fromdate, todate, true)
+                                      select new
                                        {
                                            SrNo = e.SrNo,
                                            InvoiceNo = e.InvoiceNo,
@@ -983,8 +990,8 @@ namespace FactoryMagix.Controllers
                 }
                 else if (date[2].ToString() == "B")
                 {
-                     var Boxlist = (from e in db.spGetBoxSerialNoReport("", fromdate, todate, true)
-                                       select new
+                     var Boxlist = (from e in ReportRepository.GetBoxSerialNoReport("", fromdate, todate, true) //db.spGetBoxSerialNoReport("", fromdate, todate, true)
+                                    select new
                                        {
                                            SrNo = e.SrNo,
                                            InvoiceNo = e.InvoiceNo,
