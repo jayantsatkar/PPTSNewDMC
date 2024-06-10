@@ -7,12 +7,14 @@ namespace FactoryMagix.Models
 {
     public class PartResult
     {
-        public int RESULT { get; set; }
+        public int Result { get; set; }
         public string PartNo { get; set; }
         public string PartBatchCode { get; set; }
         public string PartSerialNo { get; set; }
 
         public int PartId { get; set; }
+
+        public int MST_PartConfiguration_ID { get; set; }
 
         public PartResult()
         {
@@ -21,4 +23,18 @@ namespace FactoryMagix.Models
             PartSerialNo = string.Empty;
         }
     }
+    //public class PartResult
+    //{
+    //    public int Result { get; set; }
+    //    public string PartNo { get; set; }
+    //    public string PartBatchCode { get; set; }
+    //    public string PartSerialNo { get; set; }
+
+    //    public PartResult()
+    //    {
+    //        PartNo = string.Empty;
+    //        PartBatchCode = string.Empty;
+    //        PartSerialNo = string.Empty;
+    //    }
+    //}
 }

@@ -16,17 +16,17 @@ namespace FactoryMagix.Repository
     {
         public static DataTable GetBoxReprintDetails(string serialNo, int flag)
         {
-           
-            List <SqlParameter> sqlParameters = new List<SqlParameter>();
+
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
             DBHelper.AddSqlParameter("@SerialNo", serialNo, ref sqlParameters);
             DBHelper.AddSqlParameter("@FlagforPalletorBox", flag, ref sqlParameters);
 
 
             var dtUsers = DBHelper.ExecuteProcedure("spGetBarcodeDataprint", sqlParameters);
-                       
-                      
+
+
             return dtUsers;
-                    
+
         }
 
         public static void CreatePRNFile(string DestinationFolderPath, DataTable dt, int labeltype, string UserName)
@@ -36,8 +36,8 @@ namespace FactoryMagix.Repository
                 Directory.CreateDirectory(DestinationFolderPath);
             }
 
-            
-            if( (int)LabelType.Box == labeltype && dt.Rows.Count>0)
+
+            if ((int)LabelType.Box == labeltype && dt.Rows.Count > 0)
             {
 
                 string CustomerName1;
@@ -54,12 +54,12 @@ namespace FactoryMagix.Repository
                     PartQty = Convert.ToString(dt.Rows[0]["ActualPart_Qty"]),
                     UserLoginId = UserName,//Convert.ToString(dt.Rows[0]["UserLoginId"]),
                     Shift = GetShift(); //Convert.ToString(dt.Rows[0]["Shift"]);
-                
+
 
                 try
                 {
                     long result = 0;
-                    
+
                     string prnPath = @ConfigurationManager.AppSettings["BoxLabelPrn"].ToString();
                     if (File.Exists(prnPath))
                     {
@@ -132,7 +132,7 @@ namespace FactoryMagix.Repository
                 }
                 catch (Exception exception)
                 {
-                  //  Logger.Fatal("Error", exception);
+                    //  Logger.Fatal("Error", exception);
                 }
 
             }
@@ -164,7 +164,7 @@ namespace FactoryMagix.Repository
         private static string GetShift()
         {
             string shift = "";
-            if(DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 15)
+            if (DateTime.Now.Hour >= 7 && DateTime.Now.Hour < 15)
             {
                 shift = "A";
             }
@@ -181,6 +181,133 @@ namespace FactoryMagix.Repository
             return shift;
 
 
+
+        }
+
+        public static DataTable SaveBoxDetailsTemporaryNewDMC(long PartConfigId, long partqty, int MachineId, int UserId, string PartNo, string partbatchcode, string partserialno, string Code)
+        {
+            //var partConfig_IdParameter = partConfig_Id.HasValue ?
+            //    new ObjectParameter("PartConfig_Id", partConfig_Id) :
+            //    new ObjectParameter("PartConfig_Id", typeof(long));
+
+            //var partActualQtyParameter = partActualQty.HasValue ?
+            //    new ObjectParameter("PartActualQty", partActualQty) :
+            //    new ObjectParameter("PartActualQty", typeof(long));
+
+            //var machineIdParameter = machineId.HasValue ?
+            //    new ObjectParameter("MachineId", machineId) :
+            //    new ObjectParameter("MachineId", typeof(long));
+
+            //var created_ByParameter = created_By.HasValue ?
+            //    new ObjectParameter("created_By", created_By) :
+            //    new ObjectParameter("created_By", typeof(long));
+
+            //var boschPartNoParameter = boschPartNo != null ?
+            //    new ObjectParameter("BoschPartNo", boschPartNo) :
+            //    new ObjectParameter("BoschPartNo", typeof(string));
+
+            //var partBatchCodeParameter = partBatchCode != null ?
+            //    new ObjectParameter("PartBatchCode", partBatchCode) :
+            //    new ObjectParameter("PartBatchCode", typeof(string));
+
+            //var partSerialNoParameter = partSerialNo != null ?
+            //    new ObjectParameter("PartSerialNo", partSerialNo) :
+            //    new ObjectParameter("PartSerialNo", typeof(string));
+
+            //var codeParameter = code != null ?
+            //    new ObjectParameter("Code", code) :
+            //    new ObjectParameter("Code", typeof(string));
+
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@PartConfig_Id", PartConfigId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartActualQty", partqty, ref sqlParameters);
+            DBHelper.AddSqlParameter("@MachineId", MachineId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@created_By", UserId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@BoschPartNo", PartNo, ref sqlParameters);
+
+            DBHelper.AddSqlParameter("@BoschPartNo", partbatchcode, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartSerialNo", partserialno, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Code", Code, ref sqlParameters);
+
+            DataTable dt = DBHelper.ExecuteProcedure("spInsertBoxLable_Verify", sqlParameters);
+
+            return dt;
+
+        }
+
+        public static DataTable SaveBoxDetailsNewDMC(int PartId, int Qty, int MachineId, int UserId) {
+            //{
+            //    new ObjectParameter("PartConfig_Id", partConfig_Id) :
+            //        new ObjectParameter("PartConfig_Id", typeof(long));
+
+            //    var partActualQtyParameter = partActualQty.HasValue ?
+            //        new ObjectParameter("PartActualQty", partActualQty) :
+            //        new ObjectParameter("PartActualQty", typeof(long));
+
+            //    var machineIdParameter = machineId.HasValue ?
+            //        new ObjectParameter("MachineId", machineId) :
+            //        new ObjectParameter("MachineId", typeof(long));
+
+            //    var created_ByParameter = created_By.HasValue ?
+            //        new ObjectParameter("created_By", created_By) :
+            //        new ObjectParameter("created_By", typeof(long));
+
+            //    return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<spInsertBoxSerialData_Result>("spInsertBoxSerialData
+
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@PartConfig_Id", PartId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartActualQty", Qty, ref sqlParameters);
+            DBHelper.AddSqlParameter("@MachineId", MachineId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@created_By", UserId, ref sqlParameters);
+           
+            DataTable dt = DBHelper.ExecuteProcedure("spInsertBoxSerialData", sqlParameters);
+
+            return dt;
+        }
+
+
+        public static DataTable SaveBoxDetails(int PartId, string BoschPartNo, int tRN_BoxSerialNo_ID, string partBatchCode, string partSerialNo,int actualQty, int machineId, int created_By)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@PartConfig_Id", PartId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@BoschPartNo", BoschPartNo, ref sqlParameters);
+            DBHelper.AddSqlParameter("@TRN_BoxSerialNo_ID", tRN_BoxSerialNo_ID, ref sqlParameters);
+            DBHelper.AddSqlParameter("@partBatchCode", partBatchCode, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartSerialNo", partSerialNo, ref sqlParameters);
+
+            DBHelper.AddSqlParameter("@ActualQty", actualQty, ref sqlParameters);
+            DBHelper.AddSqlParameter("@MachineId", machineId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@created_By", created_By, ref sqlParameters);
+
+            DataTable dt = DBHelper.ExecuteProcedure("spInsertBoxDetails", sqlParameters);
+
+            return dt;
+
+        }
+
+        public static DataTable SaveErrorLogs( string LoginId, int PartId, string Approved_By, string ErrorDescription)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@LoginUserId", LoginId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartConfigNo", PartId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Approved_By", Approved_By, ref sqlParameters);
+            DBHelper.AddSqlParameter("@ErrorDescription", ErrorDescription, ref sqlParameters);
+            
+
+            DataTable dt = DBHelper.ExecuteProcedure("spInsertUserErrorLog", sqlParameters);
+
+            return dt;
+
+        }
+
+        public static DataTable GetBoschPartNoFromCustPartNo(string ToyotaPartInDB, string Kanban)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@custPartNo", ToyotaPartInDB, ref sqlParameters);
+            DBHelper.AddSqlParameter("@kanbanId", Kanban, ref sqlParameters);
+            DataTable dt = DBHelper.ExecuteProcedure("spGetBoschPartNoFromCustPartNo", sqlParameters);
+
+            return dt;
 
         }
     }

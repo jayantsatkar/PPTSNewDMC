@@ -10,11 +10,14 @@ using System.Configuration;
 using System.Data;
 using Newtonsoft.Json;
 using FactoryMagix;
+using FactoryMagix.Repository;
+using System.Collections.Generic;
+
 namespace FactoryMagix.Controllers
 {
     public class BoxLabelController : Controller
     {
-        BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
+        //BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
         // GET: BoxLabel
         public ActionResult BoxLabel()
         {
@@ -31,14 +34,14 @@ namespace FactoryMagix.Controllers
         [HttpPost]
         public JsonResult GetPartNos()
         {
-            var query = context.spGetAllPartNowithIndex().ToList();
+            var query = PartRepository.GetPartsWithKeyValue(); //context.spGetAllPartNowithIndex().ToList();
             return Json(query, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
         public ActionResult GetuserData()
         {
-            MST_User objUserSession = (MST_User)Session["UserInfo"];
+            User objUserSession = (User)Session["UserInfo"];
             return Json(objUserSession.User_ID + ";" + objUserSession.Login_ID);
         }
 
@@ -51,7 +54,10 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var query = context.spGetPartDetails(Convert.ToInt64(code)).ToList();
+                List<PartConfiguration> query = new List<PartConfiguration>();
+                PartConfiguration partConfiguration = PartRepository.GetPartDetails(Convert.ToInt32(code));// context.spGetPartDetails(Convert.ToInt64(code)).ToList();
+                query.Add(partConfiguration); // Code to be optimised. as single part is returned in list
+
                 var CustCode = System.Configuration.ConfigurationManager.AppSettings["Customer_Code"].ToString();
 
                 return Json(new { query, Customer = CustCode }, JsonRequestBehavior.AllowGet);
@@ -67,8 +73,14 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var query = context.spCheckPartNoScaned(PartNo, batchcode, partSerialNo, partconfigid).ToList();
-                var result = query[0].Value;
+                int result = 0;
+                //var query = context.spCheckPartNoScaned(PartNo, batchcode, partSerialNo, partconfigid).ToList();
+                //var result = query[0].Value;
+                DataTable dt = PartRepository.ValidatePartNumber(PartNo, batchcode, partSerialNo, Convert.ToInt32(partconfigid));
+                if(dt != null && dt.Rows.Count > 0)
+                {
+                    result = Convert.ToInt32(dt.Rows[0][0]);
+                }
                 return Json(result);
             }
 
@@ -83,27 +95,29 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                DataTable dt = new DataTable();
-                SqlConnection conn = new SqlConnection(ConfigurationManager.AppSettings["SQLConnection"].ToString());
-                SqlCommand cmd = new SqlCommand("usp_CheckPartNoScaned", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@SCANNEDBARCODE", ScannedBarcode);
-                cmd.Parameters.AddWithValue("@PartNo", PartNo);
-                conn.Open();
+                //DataTable dt = new DataTable();
+                //SqlConnection conn = new SqlConnection(ConfigurationManager.AppSettings["SQLConnection"].ToString());
+                //SqlCommand cmd = new SqlCommand("usp_CheckPartNoScaned", conn);
+                //cmd.CommandType = CommandType.StoredProcedure;
+                //cmd.Parameters.AddWithValue("@SCANNEDBARCODE", ScannedBarcode);
+                //cmd.Parameters.AddWithValue("@PartNo", PartNo);
+                //conn.Open();
 
-                SqlDataAdapter sda = new SqlDataAdapter(cmd);
-                sda.Fill(dt);
-                conn.Close();
-                PartResult result = new PartResult();
-                
-                if (dt!=null && dt.Rows.Count>0)
-                {
-                    
-                    result.Result = Convert.ToInt32(dt.Rows[0]["Result"]);
-                    result.PartNo = Convert.ToString(dt.Rows[0]["PartNo"]);
-                    result.PartBatchCode= Convert.ToString(dt.Rows[0]["PartBatchCode"]);
-                    result.PartSerialNo = Convert.ToString(dt.Rows[0]["PartSerialNo"]);
-                }
+                //SqlDataAdapter sda = new SqlDataAdapter(cmd);
+                //sda.Fill(dt);
+                //conn.Close();
+                //PartResult result = new PartResult();
+
+                //if (dt!=null && dt.Rows.Count>0)
+                //{
+
+                //    result.Result = Convert.ToInt32(dt.Rows[0]["Result"]);
+                //    result.PartNo = Convert.ToString(dt.Rows[0]["PartNo"]);
+                //    result.PartBatchCode= Convert.ToString(dt.Rows[0]["PartBatchCode"]);
+                //    result.PartSerialNo = Convert.ToString(dt.Rows[0]["PartSerialNo"]);
+                //}
+                PartResult result = PartRepository.ValidatePartNumberNewDMC(ScannedBarcode, PartNo);
+
                 return Json(result);
             }
 
@@ -131,45 +145,52 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                MST_User objuser = (MST_User)Session["UserInfo"];
-                var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
-                var result = query[0].Value;
-                return Json(query);
+                int result = 0;
+                User objuser = (User)Session["UserInfo"];
+                //var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
+                var query = PartRepository.SaveInTemp(Convert.ToInt32(PartConfigId), Convert.ToInt32(partqty), 1, Convert.ToInt32(objuser.User_ID), partno, partbatchcode, partserialno, Code);
+                if(query != null && query.Rows.Count > 0)
+                {
+                     result = Convert.ToInt32(query.Rows[0][0]);
+                }
+                    
+                return Json(result);
             }
         }
 
-        [HttpPost]
-        public ActionResult Save(long PartConfigId, long partqty)
-        {
-            if (Session["UserInfo"] == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-            else
-            {
-                MST_User objuser = (MST_User)Session["UserInfo"];
-                var query = context.spInsertBoxSerialData(PartConfigId, partqty, 1, objuser.User_ID).ToList();
+        // BELOW  METHODS NOT IN USE SO IT IS COMMENTED
+        //[HttpPost]
+        //public ActionResult Save(long PartConfigId, long partqty)
+        //{
+        //    if (Session["UserInfo"] == null)
+        //    {
+        //        return RedirectToAction("Login", "Account");
+        //    }
+        //    else
+        //    {
+        //        User objuser = (User)Session["UserInfo"];
+        //        var query = context.spInsertBoxSerialData(PartConfigId, partqty, 1, objuser.User_ID).ToList();
 
-                return Json(query);
-            }
-        }
+        //        return Json(query);
+        //    }
+        //}
 
-        [HttpPost]
-        public ActionResult SaveBarCodeDetails(long PartConfigId, long partqty, string partbatchcode, string partserialno, string partno, long boxserialno)
-        {
-            if (Session["UserInfo"] == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-            else
-            {
-                MST_User objMST_User = new MST_User();
-                objMST_User = (MST_User)Session["UserInfo"];
-                var query = context.spInsertBoxDetails(PartConfigId, partno, boxserialno, partbatchcode, partserialno, partqty, 1, objMST_User.User_ID);
+        //[HttpPost]
+        //public ActionResult SaveBarCodeDetails(long PartConfigId, long partqty, string partbatchcode, string partserialno, string partno, long boxserialno)
+        //{
+        //    if (Session["UserInfo"] == null)
+        //    {
+        //        return RedirectToAction("Login", "Account");
+        //    }
+        //    else
+        //    {
+        //        User objMST_User = new User();
+        //        objMST_User = (User)Session["UserInfo"];
+        //        var query = context.spInsertBoxDetails(PartConfigId, partno, boxserialno, partbatchcode, partserialno, partqty, 1, objMST_User.User_ID);
 
-                return Json(query);
-            }
-        }
+        //        return Json(query);
+        //    }
+        //}
 
         [HttpPost]
         public ActionResult PrintBarcode(string CustomerName, string PartNo, long PartQty, string BoxSerialNo, string ParTDesc, string Createddate)
@@ -322,9 +343,10 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                MST_User objuser = (MST_User)Session["UserInfo"];
-                var query = context.spInsertUserErrorLog(objuser.Login_ID, PartConfigNo, "", ErrorDescription).ToList();
-                var result = query[0].Value;
+                User objuser = (User)Session["UserInfo"];
+                //var query = context.spInsertUserErrorLog(objuser.Login_ID, PartConfigNo, "", ErrorDescription).ToList();
+                var query = PartRepository.SaveUserLogs(objuser.Login_ID, Convert.ToInt32(PartConfigNo), "", ErrorDescription);
+                var result = query.Rows[0][0];
                 return Json(query);
             }
         }
@@ -338,24 +360,39 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var query = context.spGetBoschPartNoFromCustPartNo(ToyotaPartInDB, Kanban);
+                var query = PartRepository.GetBoschPartNoFromCustPartNo(ToyotaPartInDB, Kanban); // context.spGetBoschPartNoFromCustPartNo(ToyotaPartInDB, Kanban);
                 return Json(query, JsonRequestBehavior.AllowGet);
             }
         }
-    }
 
-    public class PartResult
-    {
-        public int Result { get; set; }
-        public string PartNo { get; set; }
-        public string PartBatchCode { get; set; }
-        public string PartSerialNo { get; set; }
-
-        public PartResult()
+        [HttpPost]
+        public ActionResult PrintBarcodeAndCreatePRN()
         {
-            PartNo = string.Empty;
-            PartBatchCode = string.Empty;
-            PartSerialNo = string.Empty;
+            List<int> dt = new List<int>();
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                /// to be implemented
+            }
+            return Json(dt);
         }
     }
+
+    //public class PartResult
+    //{
+    //    public int Result { get; set; }
+    //    public string PartNo { get; set; }
+    //    public string PartBatchCode { get; set; }
+    //    public string PartSerialNo { get; set; }
+
+    //    public PartResult()
+    //    {
+    //        PartNo = string.Empty;
+    //        PartBatchCode = string.Empty;
+    //        PartSerialNo = string.Empty;
+    //    }
+    //}
 }

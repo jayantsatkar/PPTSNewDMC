@@ -14,12 +14,25 @@ namespace FactoryMagix.Repository
 {
     public class PartRepository
     {
-        public static DataTable GetPartsWithKeyValue()
+        public static List<PartResult> GetPartsWithKeyValue()
         {
             List<SqlParameter> sqlParameters = new List<SqlParameter>();
-            var dtUsers = DBHelper.ExecuteProcedure("spGetAllPartNowithIndex", sqlParameters);
-
-            return dtUsers;
+            var dataTable = DBHelper.ExecuteProcedure("spGetAllPartNowithIndex", sqlParameters);
+            List<PartResult> partResults = new List<PartResult>();
+            
+            if(dataTable != null && dataTable.Rows.Count > 0)
+            {
+                foreach(DataRow dr in dataTable.Rows)
+                {
+                    partResults.Add(new PartResult
+                    {
+                        MST_PartConfiguration_ID = Convert.ToInt32(dr["MST_PartConfiguration_ID"]),
+                        PartNo = Convert.ToString(dr["PartNo"])
+                    });
+                }
+                
+            }
+            return partResults;
 
         }
 
@@ -88,6 +101,7 @@ namespace FactoryMagix.Repository
                     partConfiguration.Created_By = Convert.ToInt32(dr["Created_By"]);
                     partConfiguration.Customer_Name = Convert.ToString(dr["Customer_Name"]);
                     partConfiguration.Customer_Code = Convert.ToString(dr["Customer_Code"]);
+                    partConfiguration.Customer_Index = Convert.ToString(dr["Customer_Index"]);
                 }
 
             }
@@ -135,7 +149,7 @@ namespace FactoryMagix.Repository
 
             if (dt != null && dt.Rows.Count > 0)
             {
-                result.RESULT = Convert.ToInt32(dt.Rows[0]["Result"]);
+                result.Result = Convert.ToInt32(dt.Rows[0]["Result"]);
                 result.PartNo = Convert.ToString(dt.Rows[0]["PartNo"]);
                 result.PartBatchCode = Convert.ToString(dt.Rows[0]["PartBatchCode"]);
                 result.PartSerialNo = Convert.ToString(dt.Rows[0]["PartSerialNo"]);
@@ -193,6 +207,57 @@ namespace FactoryMagix.Repository
             DBHelper.AddSqlParameter("@PartNo", PartNo, ref sqlParameters);
             DataTable dt = DBHelper.ExecuteProcedure("spCheckPartconfiguration", sqlParameters);
             return dt;
+        }
+
+        public static DataTable SaveInTemp(int PartConfigId, int Partqty,int MachineId, int UserId,string PartNo, string PartBatchCode, string PartSerialNo,string Code)
+        {
+
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@PartConfig_Id", PartConfigId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartActualQty", Partqty, ref sqlParameters);
+            DBHelper.AddSqlParameter("@MachineId", MachineId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@created_By", UserId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@BoschPartNo", PartNo, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartBatchCode", PartBatchCode, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartSerialNo", PartSerialNo, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Code", Code, ref sqlParameters);
+            DataTable dt = DBHelper.ExecuteProcedure("spCheckPartconfiguration", sqlParameters);
+            return dt;
+        }
+
+        public static List<ToyotaPart> GetBoschPartNoFromCustPartNo(string ToyotaPartInDB, string Kanban)
+        {
+
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@custPartNo", ToyotaPartInDB, ref sqlParameters);
+            DBHelper.AddSqlParameter("@kanbanId", Kanban, ref sqlParameters);
+            List<ToyotaPart> toyotaParts = new List<ToyotaPart>();
+             DataTable dataTable = DBHelper.ExecuteProcedure("spGetBoschPartNoFromCustPartNo", sqlParameters);
+
+            if(dataTable != null && dataTable.Rows.Count>0){
+                toyotaParts.Add(new ToyotaPart
+                {
+                    Bosch_PartNo = Convert.ToString(dataTable.Rows[0]["Bosch_PartNo"]),
+                    Customer_PartNo = Convert.ToString(dataTable.Rows[0]["Customer_PartNo"]),
+                    Kanban_ID = Convert.ToString(dataTable.Rows[0]["Kanban_ID"])
+                });
+            }
+            return toyotaParts;
+        }
+
+        public static DataTable SaveUserLogs(string LoginId,int PartConfigNo, string ApprovedBy, string ErrorDescription)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+      
+            DBHelper.AddSqlParameter("@LoginUserId", LoginId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartConfigNo", PartConfigNo, ref sqlParameters);
+            DBHelper.AddSqlParameter("@ApprovedBy", ApprovedBy, ref sqlParameters);
+            DBHelper.AddSqlParameter("@ErrorDescription", ErrorDescription, ref sqlParameters);
+           
+            DataTable dataTable = DBHelper.ExecuteProcedure("spInsertUserErrorLog", sqlParameters);
+
+           
+            return dataTable;
         }
 
 

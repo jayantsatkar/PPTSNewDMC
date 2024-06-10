@@ -326,6 +326,7 @@
     <Compile Include="Models\spValidateUserforLoginWithFinger_Result.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ToyotaPart.cs" />
     <Compile Include="Models\TRN_BoxBarcodeDetails.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -636,6 +637,7 @@
     <Content Include="Views\Reports\PartSerialNoWise.cshtml" />
     <Content Include="Views\DDL\DDL.cshtml" />
     <Content Include="Views\Account\Unauthorized.cshtml" />
+    <Content Include="Views\BoxLabel\BoxLabel.cshtml" />
     <None Include="Views\Reports\UserErrorReport.cshtml" />
     <None Include="Views\Reports\UserErrorReport_2.cshtml" />
     <Content Include="Web.config">
@@ -663,7 +665,7 @@
     <Content Include="Views\Customer\Edit.cshtml" />
     <Content Include="Views\Customer\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutA.cshtml" />
-    <Content Include="Views\BoxLabel\BoxLabel.cshtml" />
+    <Content Include="Views\BoxLabel\BoxLabelRef.cshtml" />
     <Content Include="Views\PalletLabel\PalletLabel.cshtml" />
     <Content Include="Views\Reports\InvoiceReport.cshtml" />
     <Content Include="Scripts\jtable\themes\basic\jtable_basic.less" />
