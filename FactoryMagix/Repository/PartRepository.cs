@@ -245,13 +245,13 @@ namespace FactoryMagix.Repository
             return toyotaParts;
         }
 
-        public static DataTable SaveUserLogs(string LoginId,int PartConfigNo, string ApprovedBy, string ErrorDescription)
+        public static DataTable SaveBoxErrorLogs(string LoginId,int PartConfigNo, string ApprovedBy, string ErrorDescription)
         {
             List<SqlParameter> sqlParameters = new List<SqlParameter>();
       
             DBHelper.AddSqlParameter("@LoginUserId", LoginId, ref sqlParameters);
             DBHelper.AddSqlParameter("@PartConfigNo", PartConfigNo, ref sqlParameters);
-            DBHelper.AddSqlParameter("@ApprovedBy", ApprovedBy, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Approved_By", ApprovedBy, ref sqlParameters);
             DBHelper.AddSqlParameter("@ErrorDescription", ErrorDescription, ref sqlParameters);
            
             DataTable dataTable = DBHelper.ExecuteProcedure("spInsertUserErrorLog", sqlParameters);
@@ -259,6 +259,26 @@ namespace FactoryMagix.Repository
            
             return dataTable;
         }
+
+        public static DataTable SavePalletErrorLogs(string LoginId, int PartConfigNo, string ApprovedBy, string ErrorDescription, string invoiceNo, string invoiceDate, int invoiceQty)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+
+            DBHelper.AddSqlParameter("@LoginUserId", LoginId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartConfigNo", PartConfigNo, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Approved_By", ApprovedBy, ref sqlParameters);
+            DBHelper.AddSqlParameter("@ErrorDescription", ErrorDescription, ref sqlParameters);
+            DBHelper.AddSqlParameter("@InvoiceNo", invoiceNo, ref sqlParameters);
+            DBHelper.AddSqlParameter("@InvoiceDate", invoiceDate, ref sqlParameters);
+            DBHelper.AddSqlParameter("@InvoiceQty", invoiceQty, ref sqlParameters);
+
+            DataTable dataTable = DBHelper.ExecuteProcedure("spInsertUserErrorLog_2", sqlParameters);
+
+
+            return dataTable;
+        }
+
+
 
 
     }
