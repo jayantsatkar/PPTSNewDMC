@@ -347,7 +347,7 @@ namespace FactoryMagix.Controllers
             {
                 User objuser = (User)Session["UserInfo"];
                 //var query = context.spInsertUserErrorLog(objuser.Login_ID, PartConfigNo, "", ErrorDescription).ToList();
-                var query = PartRepository.SaveUserLogs(objuser.Login_ID, Convert.ToInt32(PartConfigNo), "", ErrorDescription);
+                var query = PartRepository.SaveBoxErrorLogs(objuser.Login_ID, Convert.ToInt32(PartConfigNo), "", ErrorDescription);
                 var result = query.Rows[0][0];
                 return Json(query);
             }
