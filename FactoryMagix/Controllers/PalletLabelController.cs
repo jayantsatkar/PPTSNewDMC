@@ -5,12 +5,18 @@ using FactoryMagix.Models;
 using PRNPrintFile;
 using System.IO;
 using System.Text;
+using FactoryMagix.Repository;
+using System.Collections.Generic;
+using System.Data;
+using NLog;
+using System.Configuration;
 
 namespace FactoryMagix.Controllers
 {
     public class PalletLabelController : Controller
     {
-        BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        // BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
         public ActionResult PalletLabel()
         {
             if (Session["UserInfo"] == null)
@@ -19,7 +25,6 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                //ViewBag.MST_PartConfiguration_ID = new SelectList(context.spGetAllPartNowithIndex(), "MST_PartConfiguration_ID", "PartNo");
                 return View();
             }
         }
@@ -28,7 +33,7 @@ namespace FactoryMagix.Controllers
         [HttpPost]
         public JsonResult GetPartNos()
         {
-            var query = context.spGetAllPartNowithIndex().ToList();
+            var query = PartRepository.GetPartsWithKeyValue();  //context.spGetAllPartNowithIndex().ToList();
             return Json(query, JsonRequestBehavior.AllowGet);
         }
 
@@ -36,7 +41,7 @@ namespace FactoryMagix.Controllers
         [HttpPost]
         public ActionResult GetuserData()
         {
-            MST_User objUserSession = (MST_User)Session["UserInfo"];
+            User objUserSession = (User)Session["UserInfo"];
             return Json(objUserSession.User_ID + ";" + objUserSession.Login_ID);
         }
 
@@ -50,7 +55,10 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var query = context.spGetPartDetails(Convert.ToInt64(code)).ToList();
+                //var query = context.spGetPartDetails(Convert.ToInt64(code)).ToList();
+                List<PartConfiguration> query = new List<PartConfiguration>();
+                PartConfiguration partConfiguration = PartRepository.GetPartDetails(Convert.ToInt32(code));
+                query.Add(partConfiguration);
                 var CustCode = System.Configuration.ConfigurationManager.AppSettings["Customer_Code"].ToString();
 
                 // return Json(query);
@@ -67,9 +75,9 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var query = context.spCheckBoxScanedSrNo(Boxbatchcode, BoxSerialNo, partconfigid).ToList();
+                var query = BoxRepository.ValidateBoxSerialNo(Boxbatchcode, BoxSerialNo, Convert.ToInt32(partconfigid)); // context.spCheckBoxScanedSrNo(Boxbatchcode, BoxSerialNo, partconfigid).ToList();
 
-                var result = query[0].Value;
+                var result = Convert.ToInt32(query.Rows[0][0]);
                 return Json(result);
             }
 
@@ -93,12 +101,13 @@ namespace FactoryMagix.Controllers
             else
             {
                 // string userIpAddress = this.Request.UserHostAddress;
-                MST_User objMST_User = (MST_User)Session["UserInfo"];
+                User user = (User)Session["UserInfo"];
                 //need to replace machineid and userid
 
-                var query = context.spInsertPalletLable_Verify(Invoice_No, PartConfig_Id, InvoiceQty, InvoiceDate, 1, objMST_User.User_ID, BoxBatchCode, BoxSerialNo, Code).ToList();
-                var result = query[0].Value;
-                return Json(query);
+                //var query = context.spInsertPalletLable_Verify(Invoice_No, PartConfig_Id, InvoiceQty, InvoiceDate, 1, user.User_ID, BoxBatchCode, BoxSerialNo, Code).ToList();
+                var query = PalletRepository.SaveInTemp(Invoice_No, Convert.ToInt32(PartConfig_Id), Convert.ToInt32(InvoiceQty), InvoiceDate, 1, Convert.ToInt32(user.User_ID), BoxBatchCode, BoxSerialNo, Code);
+                var result = Convert.ToInt32(query.Rows[0][0]);
+                return Json(result);
             }
         }
 
@@ -112,9 +121,9 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                MST_User objMST_User = new MST_User();
-                objMST_User = (MST_User)Session["UserInfo"];
-                var query = context.spInsertPalletSerialData(Invoice_No, PartConfigId, invoiceQty, InvoiceDate, 1, objMST_User.User_ID).ToList();
+                User user = new User();
+                user = (User)Session["UserInfo"];
+                var query = PalletRepository.Save(Invoice_No, Convert.ToInt32(PartConfigId),Convert.ToInt32(invoiceQty), InvoiceDate, 1, Convert.ToInt32(user.User_ID)); // context.spInsertPalletSerialData(Invoice_No, PartConfigId, invoiceQty, InvoiceDate, 1, user.User_ID).ToList();
 
                 return Json(query);
             }
@@ -129,11 +138,11 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                MST_User objMST_User = new MST_User();
-                objMST_User = (MST_User)Session["UserInfo"];
-                var query = context.spInsertPalletDetails(TRN_PalletSerialNo_ID, BoxBatchCode, serialno, 1, objMST_User.User_ID);
+                User user = new User();
+                user = (User)Session["UserInfo"];
+                var query = PalletRepository.InsertPalletDetails( Convert.ToInt32(TRN_PalletSerialNo_ID), BoxBatchCode, serialno, 1, Convert.ToInt32(user.User_ID));// context.spInsertPalletDetails(TRN_PalletSerialNo_ID, BoxBatchCode, serialno, 1, user.User_ID);
 
-                return Json(query);
+                return Json( Convert.ToInt16(query.Rows[0][0]));
             }
         }
 
@@ -202,11 +211,11 @@ namespace FactoryMagix.Controllers
             else
             {
                 // string userIpAddress = this.Request.UserHostAddress;
-                MST_User objuser = (MST_User)Session["UserInfo"];
+                User objuser = (User)Session["UserInfo"];
                 //need to replace machineid and userid
 
-                var query = context.spInsertUserErrorLog_2(objuser.Login_ID, PartConfigNo, "", ErrorDescription, invoiceNo, invoiceDate, invoiceQty).ToList();
-                var result = query[0].Value;
+                var query = PartRepository.SavePalletErrorLogs(objuser.Login_ID, Convert.ToInt32(PartConfigNo), "", ErrorDescription, invoiceNo, invoiceDate, Convert.ToInt32(invoiceQty));// context.spInsertUserErrorLog_2(objuser.Login_ID, PartConfigNo, "", ErrorDescription, invoiceNo, invoiceDate, invoiceQty).ToList();
+                var result = Convert.ToInt32(query.Rows[0][0]);
                 return Json(query);
             }
         }
@@ -282,9 +291,43 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var query = context.spGetBoschPartNoFromCustPartNo(ToyotaPartInDB, Kanban);
+                var query = PartRepository.GetBoschPartNoFromCustPartNo(ToyotaPartInDB, Kanban); // context.spGetBoschPartNoFromCustPartNo(ToyotaPartInDB, Kanban);
                 return Json(query, JsonRequestBehavior.AllowGet);
             }
         }
+
+        [HttpPost]
+        public ActionResult PrintBarcodeAndCreatePRN()
+        {
+            string PalletNumber = "";
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                User user = (User)Session["UserInfo"];
+                DataTable dtBox = PalletRepository.CreatePallet(Convert.ToInt32(user.User_ID));
+                if (dtBox != null && dtBox.Rows.Count > 0)
+                {
+
+                    PalletNumber = Convert.ToString(dtBox.Rows[0]["PalletSrNo"]);
+                    // dt = BoxRepository.GetBoxReprintDetails(SerialNo, Convert.ToInt32(flag)); ///db.spGetBarcodeDataprint(SerialNo, flag).ToList();
+                    string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
+                    Logger.Info("IP of Request:" + clientIp);
+                    string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
+                    string folderPath = Path.Combine(path, clientIp);
+                    string shareName = clientIp;
+                    //FolderHelper.CreateAndShareFolder(folderPath, shareName);
+
+
+                    PalletRepository.CreatePRNFile(folderPath, dtBox, (int)LabelType.Pallet, user.Login_ID);
+                }
+
+            }
+            return Json(PalletNumber);
+        }
+
+
     }
 }

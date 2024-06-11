@@ -114,6 +114,10 @@ namespace FactoryMagix.Repository
                         tr.Close();
                         //string newfile = //@ConfigurationManager.AppSettings["TempBoxLabelPrn"].ToString();
                         string newfile = Path.Combine(DestinationFolderPath, "PalletLabel.prn");
+                        if(File.Exists(newfile))
+                        {
+                            File.Delete(newfile);
+                        }
                         StreamWriter w = (new FileInfo(newfile)).CreateText();
                         w.WriteLine(strbuild);
                         w.Close();
@@ -188,5 +192,66 @@ namespace FactoryMagix.Repository
 
 
         }
+
+        public static DataTable SaveInTemp(string Invoice_No, int PartConfig_Id, int InvoiceQty, string InvoiceDate, int MachineId,int UserId, string BoxBatchCode, string BoxSerialNo, string Code)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@Invoice_No", Invoice_No, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartConfig_Id", PartConfig_Id, ref sqlParameters);
+            DBHelper.AddSqlParameter("@InvoiceQty", InvoiceQty, ref sqlParameters);
+            DBHelper.AddSqlParameter("@InvoiceDate", InvoiceQty, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Machine_ID", MachineId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Created_By", UserId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@BoxBatchCode", BoxBatchCode, ref sqlParameters);
+            DBHelper.AddSqlParameter("@BoxSerialNo", BoxSerialNo, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Code", Code, ref sqlParameters);
+
+            var dtUsers = DBHelper.ExecuteProcedure("spInsertPalletLable_Verify", sqlParameters);
+
+            return dtUsers;
+        }
+
+        public static DataTable Save(string Invoice_No, int PartConfig_Id, int InvoiceQty, string InvoiceDate, int MachineId, int UserId)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@Invoice_No", Invoice_No, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartConfig_Id", PartConfig_Id, ref sqlParameters);
+            DBHelper.AddSqlParameter("@InvoiceQty", InvoiceQty, ref sqlParameters);
+            DBHelper.AddSqlParameter("@InvoiceDate", InvoiceQty, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Machine_ID", MachineId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@Created_By", UserId, ref sqlParameters);
+           
+
+            var dtUsers = DBHelper.ExecuteProcedure("spInsertPalletSerialData", sqlParameters);
+
+            return dtUsers;
+        }
+
+        public static DataTable InsertPalletDetails(int TRN_PalletSerialNo_ID, string BoxBatchCode, string serialno, int MachineId, int UserId)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@TRN_PalletSerialNo_ID", TRN_PalletSerialNo_ID, ref sqlParameters);
+            DBHelper.AddSqlParameter("@BoxBatchCode", BoxBatchCode, ref sqlParameters);
+            DBHelper.AddSqlParameter("@BoxSerialNo", serialno, ref sqlParameters);
+            DBHelper.AddSqlParameter("@MachineId", MachineId, ref sqlParameters);
+            DBHelper.AddSqlParameter("@created_By", UserId, ref sqlParameters);
+
+
+            DataTable dtUsers = DBHelper.ExecuteProcedure("spInsertPalletDetails", sqlParameters);
+
+            return dtUsers;
+            
+        }
+
+        public static DataTable CreatePallet(int UserId)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@UserId", UserId, ref sqlParameters);
+
+            DataTable dt = DBHelper.ExecuteProcedure("usp_CreatePalletByUser", sqlParameters);
+
+            return dt;
+        }
+
     }
 }
