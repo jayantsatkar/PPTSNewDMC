@@ -326,5 +326,16 @@ namespace FactoryMagix.Repository
 
             return dt;
         }
+
+        public static DataTable ValidateBoxSerialNo(string Boxbatchcode, string BoxSerialNo, int PartId)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@BoxBatchNo", Boxbatchcode, ref sqlParameters);
+            DBHelper.AddSqlParameter("@BoxSerialNo", BoxSerialNo, ref sqlParameters);
+            DBHelper.AddSqlParameter("@PartConfigID", PartId, ref sqlParameters);
+            DataTable dt = DBHelper.ExecuteProcedure("spCheckBoxScanedSrNo", sqlParameters);
+            return dt;
+
+        }
     }
 }
