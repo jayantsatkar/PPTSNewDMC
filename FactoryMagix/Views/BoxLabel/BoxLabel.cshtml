@@ -1,4 +1,4 @@
-﻿@model FactoryMagix.Models.spGetAllPartNowithIndex_Result
+﻿@model FactoryMagix.Models.PartResult
 @{
     ViewBag.Title = "Box Barcode Generation";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -222,15 +222,11 @@ document.getElementById('btnBarcodePrint').disabled = true;
                     if (data.length > 0) {
                         var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
                         try {
-                            //= 1;ttladmin ; FingerValidationBox
-                           // parameter = vdata + ";FingerValidationBox;" + parameter;
-
-                           // CallLocalUSBPrinter(parameter);
-                            return 1;
+                            alert(vdata + " - Box packed succesfully");
                         }
                         catch (e) {
                             alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-                            return 0;
+                           
                         }
                     }
                 }
@@ -241,7 +237,7 @@ document.getElementById('btnBarcodePrint').disabled = true;
 
 
 
-    //Kirti--------------
+    
     function execFinger() {
         Clear();
         $.ajax({
@@ -267,9 +263,9 @@ document.getElementById('btnBarcodePrint').disabled = true;
                 }
             }
         });
-	// Disable Print Button on successful barcode print: Start
-document.getElementById('btnBarcodePrint').disabled = true;
-	// Disable Print Button on successful barcode print: End
+	    // Disable Print Button on successful barcode print: Start
+        document.getElementById('btnBarcodePrint').disabled = true;
+	    // Disable Print Button on successful barcode print: End
 
     }
 
@@ -1244,7 +1240,8 @@ document.getElementById('btnBarcodePrint').disabled = true;
     });
 
     $(document).on("click", "#btnBarcodePrint", function () {
-		Clear();
+        Clear();
+        printBarcode();
         // var resultprinting = printBarcodeFromWebApp(); ///execFinger()
         // if (resultprinting != null) {
             // if (resultprinting == 1) {

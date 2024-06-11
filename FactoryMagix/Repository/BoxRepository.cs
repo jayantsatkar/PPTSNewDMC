@@ -108,7 +108,13 @@ namespace FactoryMagix.Repository
                         while (tr.Peek() != -1);
                         tr.Close();
                         //string newfile = //@ConfigurationManager.AppSettings["TempBoxLabelPrn"].ToString();
+                       
                         string newfile = Path.Combine(DestinationFolderPath, "BoxLabel.prn");
+
+                        if (File.Exists(newfile))
+                        {
+                            File.Delete(newfile);
+                        }
                         StreamWriter w = (new FileInfo(newfile)).CreateText();
                         w.WriteLine(strbuild);
                         w.Close();
@@ -309,6 +315,16 @@ namespace FactoryMagix.Repository
 
             return dt;
 
+        }
+
+        public static DataTable CreateBox(int UserId)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@UserId", UserId, ref sqlParameters);
+            
+            DataTable dt = DBHelper.ExecuteProcedure("usp_CreateBoxByUser", sqlParameters);
+
+            return dt;
         }
     }
 }

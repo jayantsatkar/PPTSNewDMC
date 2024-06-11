@@ -12,11 +12,13 @@ using Newtonsoft.Json;
 using FactoryMagix;
 using FactoryMagix.Repository;
 using System.Collections.Generic;
+using NLog;
 
 namespace FactoryMagix.Controllers
 {
     public class BoxLabelController : Controller
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
         // GET: BoxLabel
         public ActionResult BoxLabel()
@@ -368,16 +370,33 @@ namespace FactoryMagix.Controllers
         [HttpPost]
         public ActionResult PrintBarcodeAndCreatePRN()
         {
-            List<int> dt = new List<int>();
+            string BoxNumber = "";
             if (Session["UserInfo"] == null)
             {
                 return RedirectToAction("Login", "Account");
             }
             else
             {
-                /// to be implemented
+                User user = (User)Session["UserInfo"];
+                DataTable dtBox = BoxRepository.CreateBox(Convert.ToInt32(user.User_ID));
+                if (dtBox != null && dtBox.Rows.Count > 0)
+                {
+
+                    BoxNumber = Convert.ToString(dtBox.Rows[0]["BoxSerial_No"]);
+               // dt = BoxRepository.GetBoxReprintDetails(SerialNo, Convert.ToInt32(flag)); ///db.spGetBarcodeDataprint(SerialNo, flag).ToList();
+                string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
+                Logger.Info("IP of Request:" + clientIp);
+                string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
+                string folderPath = Path.Combine(path, clientIp);
+                string shareName = clientIp;
+                //FolderHelper.CreateAndShareFolder(folderPath, shareName);
+
+                
+                    BoxRepository.CreatePRNFile(folderPath, dtBox, (int)LabelType.Box, user.Login_ID);
+                }
+                
             }
-            return Json(dt);
+            return Json(BoxNumber);
         }
     }
 
