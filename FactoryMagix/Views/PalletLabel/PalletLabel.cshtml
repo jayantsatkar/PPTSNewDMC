@@ -1,4 +1,4 @@
-﻿@model FactoryMagix.Models.spGetAllPartNowithIndex_Result
+﻿@model FactoryMagix.Models.PartResult
 @{
     ViewBag.Title = "Pallet Label";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -223,8 +223,7 @@
     function exec(params) {
         try {
             var shell = new ActiveXObject("WScript.shell");
-            // shell.run("C:\\UserValidation\\Debug\\ZK7500.exe " + parameter, 1, true);
-            shell.run("C:\\Users\\jayan\\source\\repos\\TestApp\\bin\\Debug\\TestApp.exe " + parameter, 1, true);
+            shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
             return 1;
         }
         catch (e) {
@@ -405,7 +404,6 @@
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if (keycode == 13) {
             //take Drop down selected Id and text
-            // debugger;
             var partconfigurationID = $("#hdnPallateDDLId").val();
             var ddlpartNoText = $("#hdnPallateDDLText").val();
 
@@ -748,7 +746,7 @@
         try {
             var shell = new ActiveXObject("WScript.shell");
 
-            shell.run("C:\\LoginWindow\\Debug\\ZK7500.exe " + parameter, 1, true);
+            shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
             return 1;
         }
         catch (e) {
@@ -888,23 +886,66 @@
         });
     }
 
-    function printBarcodeFromWebApp() {
-        Clear();
+function CallLocalUSBPrinter(params) {
 
+        try {
+
+            var shell = new ActiveXObject("WScript.shell");
+            shell.run("C:\\UserValidation\\PrintingLogicNET35Barcode\\LabelPrinting.exe " + parameter, 1, true);
+
+            return 1;
+        }
+        catch (e) {
+            alert('Error : ' + e.message + '\n' + e.stack);
+            return 0;
+        }
+    }
+
+    function printBarcode() {
+        Clear();
+        $.ajax({
+            url: '@Url.Action("PrintBarcodeAndCreatePRN", "PalletLabel")',
+            type: "POST",
+            data: {},
+            success: function (data) {
+                // console.log('userdata',data);
+                // debugger;
+                if (data != null) {
+                    if (data.length > 0) {
+                        var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
+                        try {
+                            alert(vdata + " - Pallet packed succesfully");
+                        }
+                        catch (e) {
+                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+
+	function printBarcodeFromWebApp() {
+        Clear();
         $.ajax({
             url: '@Url.Action("GetuserData", "PalletLabel")',
             type: "POST",
             data: {},
             success: function (data) {
+                // console.log('userdata',data);
+                // debugger;
                 if (data != null) {
                     if (data.length > 0) {
-
-                        var vdata = data;
-                        //parameter = parameter +";"+vdata;
+                        var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
                         try {
+                            //= 1;ttladmin ; FingerValidationBox
                             parameter = vdata + ";FingerValidationPallet;" + parameter;
-                            //parameter="test"
-                            //exec(parameter);
+                            // alert(parameter);
+                            // console.log('Param in execFinger');
+                            // console.log(parameter);
                             CallLocalUSBPrinter(parameter);
                             return 1;
                         }
@@ -918,38 +959,24 @@
         });
     }
 
-    function CallLocalUSBPrinter(params) {
-
-        try {
-
-            var shell = new ActiveXObject("WScript.shell");
-            shell.run("C:\\Users\\jayan\\source\\repos\\TestApp\\bin\\Debug\\TestApp.exe " + parameter, 1, true);
-
-            return 1;
-        }
-        catch (e) {
-            alert('Error : ' + e.message + '\n' + e.stack);
-            return 0;
-        }
-    }
-
     $(document).on("click", "#btnBarcodePrint", function () {
-
-        var resultprinting = printBarcodeFromWebApp()//execFinger()
-        if (resultprinting != null) {
-            if (resultprinting == 1) {
-                // on data save success
-                document.getElementById('btnBarcodePrint').disabled = true;
-                Clear();
-                alert(boxbarcode[3] + " - Pallet packed succesfully");
-            }
-            else {
-                //On error
-                document.getElementById('btnBarcodePrint').disabled = true;
-                Clear();
-                alert("Error occured during barcode printing");
-            }
-        }
+        Clear();
+        printBarcode();
+        // var resultprinting = printBarcodeFromWebApp();// execFinger()
+        // if (resultprinting != null) {
+            // if (resultprinting == 1) {
+                // // on data save success
+                // document.getElementById('btnBarcodePrint').disabled = true;
+                // Clear();
+                // alert(boxbarcode[3] + " - Pallet packed succesfully");
+            // }
+            // else {
+                // //On error
+                // document.getElementById('btnBarcodePrint').disabled = true;
+                // Clear();
+                // alert("Error occured during barcode printing");
+            // }
+        // }
     });
 
     $(document).on("click", "#btnClear", function () {
@@ -1005,7 +1032,8 @@
                             <input type="button" id="btnVerify" disabled="disabled" class="btn btn-default btn-sm" tabindex="9" title="Verify" value="Verify" />
                         </td>
                         <td align="right" width="50%" valign="middle">
-                            <input type="button" id="btnBarcodePrint" disabled="disabled" class="btn btn-default btn-sm" tabindex="8" title="Print Pallet Barcode" value="Print Barcode" onclick="" />
+                            <input type="button" id="btnBarcodePrint" class="btn btn-default btn-sm" tabindex="8" title="Print Pallet Barcode" value="Print Barcode" onclick="" />
+                            @*disabled="disabled"*@
                         </td>
                         <td align="right" width="50%" valign="middle">
                             <a class="btn btn-default btn-sm" href="~/Home/Index" tabindex="10" title="Cancel">Cancel</a>
