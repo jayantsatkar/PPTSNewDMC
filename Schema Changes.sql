@@ -1,3 +1,5 @@
+TRUNCATE TRN_BOXtEMPO
+TRUNCATE TRN_PALLETtEMPO
 update mst_user set  First_Name='' where First_Name is null
 update mst_user set  Last_Name='' where Last_Name is null
 Update MST_USER SET Middle_Name ='' WHERE Middle_Name  IS NULL
@@ -45,3 +47,26 @@ UPDATE MST_PartConfiguration SET Created_By = 1 WHERE Created_By IS NULL
 
 ALTER TABLE MST_PartConfiguration 
 ALTER COLUMN [Created_By] [bigint] NOT NULL 
+
+
+usp_CreatePalletByUser
+usp_CreateBoxByUser
+usp_AddUpdatePartConfiguration
+usp_GetPartDetails
+usp_GetParts
+usp_AddUpdateCustomer
+usp_GetCustomer
+usp_GetCustomers
+usp_GetUserByUserName
+usp_AddError
+usp_AddUpdateUser
+usp_GetUser
+usp_GetUsers
+usp_AddUpdateRole
+usp_GetRole
+usp_GetUserForms
+usp_GetModules
+usp_GetForms
+usp_GetUserForm
+usp_GetUserWithRole
+usp_GetRoles
