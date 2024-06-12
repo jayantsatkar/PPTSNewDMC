@@ -10,12 +10,13 @@ using System.Data;
 using FactoryMagix.Repository;
 namespace FactoryMagix.Controllers
 {
+    [Authorize(Roles = "Super Administrator, Administrator")]
     public class AssignFormsToUserController : Controller
     {
         // private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
 
         // GET: AssignFormsToUser
-        [Authorize(Roles = "Super Administrator")]
+        
         public ActionResult Index()
         {
             if (Session["UserInfo"] == null)

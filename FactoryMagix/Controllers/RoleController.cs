@@ -18,7 +18,7 @@ using FactoryMagix.Repository;
 
 namespace FactoryMagix.Controllers
 {
-
+    [Authorize(Roles = "Super Administrator, Administrator")]
     public class RoleController : Controller
     {
 
