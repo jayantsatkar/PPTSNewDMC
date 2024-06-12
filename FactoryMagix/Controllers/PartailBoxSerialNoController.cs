@@ -10,7 +10,7 @@ namespace FactoryMagix.Controllers
     public class PartailBoxSerialNoController : Controller
     {
 
-        private FactoryMagix.Models.BOSCH_PPTSEntities db = new FactoryMagix.Models.BOSCH_PPTSEntities();
+       // private FactoryMagix.Models.BOSCH_PPTSEntities db = new FactoryMagix.Models.BOSCH_PPTSEntities();
         // GET: PartailBoxSerialNo
         public ActionResult Index()
         {

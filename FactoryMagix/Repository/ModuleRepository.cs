@@ -123,5 +123,37 @@ namespace FactoryMagix.Repository
 
             return forms;
         }
+
+        public static IList<FormModule> GetFormModule(int UserId)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@pUser_Id", UserId, ref sqlParameters);
+
+            var dtForms = DBHelper.ExecuteProcedure("spGetFormsandModuleforUser", sqlParameters);
+            List<FormModule> forms = new List<FormModule>();
+
+            if (dtForms.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dtForms.Rows)
+                {
+                    forms.Add(new FormModule
+                    {
+                        Sub_Module_ID = Convert.ToInt64(dr["Sub_Module_ID"]),
+                        Sub_Module_Name = Convert.ToString(dr["Sub_Module_Name"]),
+                        Frm_Name = Convert.ToString(dr["Frm_Name"]),
+                        Frm_URL = Convert.ToString(dr["Frm_URL"]),
+                        Frm_ID = Convert.ToInt64(dr["Frm_ID"]),
+                        Flag_Visible = Convert.ToInt32(dr["Flag_Visible"]),
+                        Frm_Order = Convert.ToInt64(dr["Frm_Order"]),
+                        Module_Name = Convert.ToString(dr["Module_Name"]),
+                        Module_ID = Convert.ToInt64(dr["Module_ID"]),
+                        Module_Order = Convert.ToInt32(dr["Module_Order"])
+                    });
+                }
+
+            }
+            return forms;
+        }
+
     }
 }
