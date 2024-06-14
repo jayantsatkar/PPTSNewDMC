@@ -635,6 +635,7 @@
     <Content Include="Views\DDL\DDL.cshtml" />
     <Content Include="Views\Account\Unauthorized.cshtml" />
     <Content Include="Views\BoxLabel\BoxLabel.cshtml" />
+    <Content Include="Views\BoxLabel\Sticker.cshtml" />
     <None Include="Views\Reports\UserErrorReport.cshtml" />
     <None Include="Views\Reports\UserErrorReport_2.cshtml" />
     <Content Include="Web.config">

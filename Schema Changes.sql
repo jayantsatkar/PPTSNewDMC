@@ -48,6 +48,16 @@ UPDATE MST_PartConfiguration SET Created_By = 1 WHERE Created_By IS NULL
 ALTER TABLE MST_PartConfiguration 
 ALTER COLUMN [Created_By] [bigint] NOT NULL 
 
+SET IDENTITY_INSERT MST_Form ON 
+INSERT INTO MST_Form(Frm_Id,	Module_ID,	Sub_Module_ID,	Frm_Name,	Frm_URL,	Frm_Order,	Created_By,	Created_On)
+
+SELECT 
+11,	3,	0,	'Box Label Generation (Sticker)',	'/BoxLabel/BoxLabel',	3,	1,	'2024-06-14'
+
+SET IDENTITY_INSERT MST_Form OFF 
+
+INSERT INTO REL_UserForm(	User_Id,	Frm_Id,	Flag_Visible,	Created_By,	Created_On)
+SELECT 	1,	11,	1	,1	,GETDATE()
 
 usp_CreatePalletByUser
 usp_CreateBoxByUser

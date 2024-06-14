@@ -33,6 +33,20 @@ namespace FactoryMagix.Controllers
             }
         }
 
+        public ActionResult Sticker()
+        {
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+
+
         [HttpPost]
         public JsonResult GetPartNos()
         {
