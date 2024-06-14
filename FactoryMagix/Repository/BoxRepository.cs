@@ -241,7 +241,7 @@ namespace FactoryMagix.Repository
 
         }
 
-        public static DataTable InsertBoxSerialData(int PartId, int Qty, int MachineId, int UserId) {
+        public static IList<PartResult> InsertBoxSerialData(int PartId, int Qty, int MachineId, int UserId) {
             //{
             //    new ObjectParameter("PartConfig_Id", partConfig_Id) :
             //        new ObjectParameter("PartConfig_Id", typeof(long));
@@ -267,13 +267,29 @@ namespace FactoryMagix.Repository
             DBHelper.AddSqlParameter("@created_By", UserId, ref sqlParameters);
            
             DataTable dt = DBHelper.ExecuteProcedure("spInsertBoxSerialData", sqlParameters);
+            List<PartResult> partResults = new List<PartResult>();
 
-            return dt;
+            if (dt.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    partResults.Add(new PartResult
+                    {
+                        result = Convert.ToInt32(dr["result"]),
+                        TRN_BoxSerialNo_ID = Convert.ToInt32(dr["TRN_BoxSerialNo_ID"]),
+                        BoxSerial_No = Convert.ToString(dr["BoxSerial_No"]),
+                        Created_On = Convert.ToString(dr["Created_On"])
+                    });
+                }
+            }
+
+            return partResults;
         }
 
 
-        public static DataTable SaveBoxDetails(int PartId, string BoschPartNo, int tRN_BoxSerialNo_ID, string partBatchCode, string partSerialNo,int actualQty, int machineId, int created_By)
+        public static PartResult SaveBoxDetails(int PartId, string BoschPartNo, int tRN_BoxSerialNo_ID, string partBatchCode, string partSerialNo,int actualQty, int machineId, int created_By)
         {
+            PartResult partResult = new PartResult();
             List<SqlParameter> sqlParameters = new List<SqlParameter>();
             DBHelper.AddSqlParameter("@PartConfig_Id", PartId, ref sqlParameters);
             DBHelper.AddSqlParameter("@BoschPartNo", BoschPartNo, ref sqlParameters);
@@ -287,7 +303,12 @@ namespace FactoryMagix.Repository
 
             DataTable dt = DBHelper.ExecuteProcedure("spInsertBoxDetails", sqlParameters);
 
-            return dt;
+            if (dt.Rows.Count > 0)
+            {
+                partResult.result = Convert.ToInt32(dt.Rows[0][0]);
+            }
+
+            return partResult;
 
         }
 
