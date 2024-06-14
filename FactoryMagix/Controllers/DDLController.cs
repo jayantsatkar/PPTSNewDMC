@@ -8,28 +8,27 @@ using PRNPrintFile;
 using System.IO;
 using System.Text;
 using System.Drawing.Printing;
-
+using FactoryMagix.Repository;
+using System.Data;
 
 namespace FactoryMagix.Controllers
 {
     public class DDLController : Controller
     {
         BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
-        // GET: BoxLabel
         public ActionResult DDL()
         {
-            
-                ViewBag.MST_PartConfiguration_ID = new SelectList(context.spGetAllPartNowithIndex(), "MST_PartConfiguration_ID", "PartNo");
-               return View();
+
+            //  ViewBag.MST_PartConfiguration_ID = new SelectList(context.spGetAllPartNowithIndex(), "MST_PartConfiguration_ID", "PartNo");
+            ViewBag.MST_PartConfiguration_ID = new SelectList(PartRepository.GetPartsWithKeyValue(), "MST_PartConfiguration_ID", "PartNo");
+            return View();
            
         }
-        //kirti
+        
         [HttpPost]
         public ActionResult GetuserData()
         {
-
-
-            MST_User objUserSession = (MST_User)Session["UserInfo"];
+            User objUserSession = (User)Session["UserInfo"];
 
             return Json(objUserSession.User_ID + ";" + objUserSession.Login_ID);
 
@@ -45,7 +44,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                var query = context.spGetPartDetails(Convert.ToInt64(code)).ToList();
+                var query = PartRepository.GetPart(Convert.ToInt32(code)); // context.spGetPartDetails(Convert.ToInt64(code)).ToList();
 
                 return Json(query);
             }
@@ -54,6 +53,7 @@ namespace FactoryMagix.Controllers
         [HttpPost]
         public ActionResult ValidatePartNo(string PartNo, string batchcode, string partSerialNo, long partconfigid, string PartBarcode)
         {
+            int result = 0;
             if (Session["UserInfo"] == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -62,9 +62,13 @@ namespace FactoryMagix.Controllers
             {
                 // System.Net.IPHostEntry obj = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName().ToString());
 
-                var query = context.spCheckPartNoScaned(PartNo, batchcode, partSerialNo, partconfigid).ToList();
-
-                var result = query[0].Value;
+              //  var query = context.spCheckPartNoScaned(PartNo, batchcode, partSerialNo, partconfigid).ToList();
+                DataTable dt = PartRepository.ValidatePartNumber(PartNo, batchcode, partSerialNo, Convert.ToInt32(partconfigid));
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    result = Convert.ToInt32(dt.Rows[0][0]);
+                }
+              //  var result = query[0].Value;
                 return Json(result);
             }
 
@@ -94,13 +98,25 @@ namespace FactoryMagix.Controllers
 
                 // string userIpAddress = this.Request.UserHostAddress;
 
-                MST_User objuser = (MST_User)Session["UserInfo"];
-                //need to replace machineid and userid
+                //User objuser = (User)Session["UserInfo"];
+                ////need to replace machineid and userid
 
 
-                var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
-                var result = query[0].Value;
-                return Json(query);
+                //var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
+                //var result = query[0].Value;
+                //return Json(query);
+
+
+                int result = 0;
+                User objuser = (User)Session["UserInfo"];
+                //var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
+                var query = PartRepository.SaveInTemp(Convert.ToInt32(PartConfigId), Convert.ToInt32(partqty), 1, Convert.ToInt32(objuser.User_ID), partno, partbatchcode, partserialno, Code);
+                if (query != null && query.Rows.Count > 0)
+                {
+                    result = Convert.ToInt32(query.Rows[0][0]);
+                }
+
+                return Json(result);
             }
         }
 
@@ -117,7 +133,7 @@ namespace FactoryMagix.Controllers
 
                 // string userIpAddress = this.Request.UserHostAddress;
 
-                MST_User objuser = (MST_User)Session["UserInfo"];
+                User objuser = (User)Session["UserInfo"];
                 //need to replace machineid and userid
                 var query = context.spInsertBoxSerialData(PartConfigId, partqty, 1, objuser.User_ID).ToList();
 
@@ -135,9 +151,9 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                MST_User objMST_User = new MST_User();
-                objMST_User = (MST_User)Session["UserInfo"];
-                var query = context.spInsertBoxDetails(PartConfigId, partno, boxserialno, partbatchcode, partserialno, partqty, 1, objMST_User.User_ID);
+                User objUser = new User();
+                objUser = (User)Session["UserInfo"];
+                var query = context.spInsertBoxDetails(PartConfigId, partno, boxserialno, partbatchcode, partserialno, partqty, 1, objUser.User_ID);
 
                 return Json(query);
             }
@@ -345,7 +361,7 @@ namespace FactoryMagix.Controllers
 
                 // string userIpAddress = this.Request.UserHostAddress;
 
-                MST_User objuser = (MST_User)Session["UserInfo"];
+                User objuser = (User)Session["UserInfo"];
                 //need to replace machineid and userid
 
 

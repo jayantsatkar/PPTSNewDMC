@@ -28,7 +28,7 @@ namespace FactoryMagix.Controllers
         {
             
             
-            MST_User objUserSession = (MST_User)Session["UserInfo"];
+            User objUserSession = (User)Session["UserInfo"];
 
             return Json(objUserSession.User_ID+";" +Convert.ToString( Session["UserIdfingerPrint"]));
 

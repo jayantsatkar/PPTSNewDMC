@@ -12,7 +12,7 @@ namespace FactoryMagix.Models
         public int? SelectedUserId { get; set; }
 
         public IEnumerable<MST_Role> DrRole { get; set; }
-        public IEnumerable<MST_User> DrUser { get; set; }
+        public IEnumerable<User> DrUser { get; set; }
         public IEnumerable<MST_Module> DrModule { get; set; }
         public IEnumerable<REL_UserForm> DrRELUser { get; set; }
 
