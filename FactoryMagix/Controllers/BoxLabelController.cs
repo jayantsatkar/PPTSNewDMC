@@ -162,37 +162,37 @@ namespace FactoryMagix.Controllers
 
         // BELOW  METHODS NOT IN USE SO IT IS COMMENTED
         //[HttpPost]
-        //public ActionResult Save(long PartConfigId, long partqty)
-        //{
-        //    if (Session["UserInfo"] == null)
-        //    {
-        //        return RedirectToAction("Login", "Account");
-        //    }
-        //    else
-        //    {
-        //        User objuser = (User)Session["UserInfo"];
-        //        var query = context.spInsertBoxSerialData(PartConfigId, partqty, 1, objuser.User_ID).ToList();
+        public ActionResult Save(long PartConfigId, long partqty)
+        {
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                User objuser = (User)Session["UserInfo"];
+                //var query = context.spInsertBoxSerialData(PartConfigId, partqty, 1, objuser.User_ID).ToList();
+                var query = BoxRepository.InsertBoxSerialData(Convert.ToInt32( PartConfigId),Convert.ToInt32( partqty), 1, Convert.ToInt32( objuser.User_ID)) ;
+                return Json(query);
+            }
+        }
 
-        //        return Json(query);
-        //    }
-        //}
-
-        //[HttpPost]
-        //public ActionResult SaveBarCodeDetails(long PartConfigId, long partqty, string partbatchcode, string partserialno, string partno, long boxserialno)
-        //{
-        //    if (Session["UserInfo"] == null)
-        //    {
-        //        return RedirectToAction("Login", "Account");
-        //    }
-        //    else
-        //    {
-        //        User objMST_User = new User();
-        //        objMST_User = (User)Session["UserInfo"];
-        //        var query = context.spInsertBoxDetails(PartConfigId, partno, boxserialno, partbatchcode, partserialno, partqty, 1, objMST_User.User_ID);
-
-        //        return Json(query);
-        //    }
-        //}
+        [HttpPost]
+        public ActionResult SaveBarCodeDetails(long PartConfigId, long partqty, string partbatchcode, string partserialno, string partno, long boxserialno)
+        {
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                User objMST_User = new User();
+                objMST_User = (User)Session["UserInfo"];
+                //var query = context.spInsertBoxDetails(PartConfigId, partno, boxserialno, partbatchcode, partserialno, partqty, 1, objMST_User.User_ID);
+                var query = BoxRepository.SaveBoxDetails(Convert.ToInt32(PartConfigId), partno, Convert.ToInt32(boxserialno), partbatchcode, partserialno, Convert.ToInt32(partqty), 1, Convert.ToInt32(objMST_User.User_ID));
+                return Json(query);
+            }
+        }
 
         [HttpPost]
         public ActionResult PrintBarcode(string CustomerName, string PartNo, long PartQty, string BoxSerialNo, string ParTDesc, string Createddate)
