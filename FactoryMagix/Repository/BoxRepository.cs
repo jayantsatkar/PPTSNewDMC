@@ -241,7 +241,7 @@ namespace FactoryMagix.Repository
 
         }
 
-        public static DataTable SaveBoxDetailsNewDMC(int PartId, int Qty, int MachineId, int UserId) {
+        public static DataTable InsertBoxSerialData(int PartId, int Qty, int MachineId, int UserId) {
             //{
             //    new ObjectParameter("PartConfig_Id", partConfig_Id) :
             //        new ObjectParameter("PartConfig_Id", typeof(long));
@@ -337,5 +337,7 @@ namespace FactoryMagix.Repository
             return dt;
 
         }
+
+       
     }
 }
