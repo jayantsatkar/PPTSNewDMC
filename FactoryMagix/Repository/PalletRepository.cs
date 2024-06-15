@@ -1,4 +1,5 @@
 ﻿using FactoryMagix.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -251,6 +252,62 @@ namespace FactoryMagix.Repository
             DataTable dt = DBHelper.ExecuteProcedure("usp_CreatePalletByUser", sqlParameters);
 
             return dt;
+        }
+
+        public static List<Pallet> GetPallets(string InvoiceNumber)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@InvoiceNumber", InvoiceNumber, ref sqlParameters);
+            DataTable dataTable = DBHelper.ExecuteProcedure("usp_GetPalletData", sqlParameters);
+
+            List<Pallet> pallets = new List<Pallet>();
+            if (dataTable.Rows.Count > 0)
+            {
+                foreach (DataRow dr in dataTable.Rows)
+                {
+                    pallets.Add(new Pallet { 
+                        CreatedBy = Convert.ToString(dr["Created_By"]),
+                        PalletNumber = Convert.ToString(dr["PalletSrNo"]),
+                        InvoiceNumber = Convert.ToString(dr["InvoiceNo"]),
+                        PartId = Convert.ToInt32(dr["PartId"]),
+                        InvoiceDate = Convert.ToString(dr["InvoiceDate"]),
+                        CreatedOn = Convert.ToDateTime(dr["CreatedOn"]),
+                        PalletId = Convert.ToInt32(dr["PalletId"])
+                    });
+                }
+                
+            }
+
+            return pallets;
+        }
+
+        public static Pallet GetPalletByPalletId(int PalletId)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@PalletId", PalletId, ref sqlParameters);
+            DataTable dataTable = DBHelper.ExecuteProcedure("usp_GetPalletByPalletId", sqlParameters);
+
+            Pallet pallet = new Pallet();
+            if (dataTable.Rows.Count > 0)
+            {
+                pallet.CreatedBy = Convert.ToString(dataTable.Rows[0]["Created_By"]);
+                pallet.PalletNumber = Convert.ToString(dataTable.Rows[0]["PalletSrNo"]);
+                pallet.InvoiceNumber = Convert.ToString(dataTable.Rows[0]["InvoiceNo"]);
+                pallet.PartId = Convert.ToInt32(dataTable.Rows[0]["PartId"]);
+                pallet.InvoiceDate = Convert.ToString(dataTable.Rows[0]["InvoiceDate"]);
+                pallet.CreatedOn = Convert.ToDateTime(dataTable.Rows[0]["CreatedOn"]);
+                pallet.PalletId = Convert.ToInt32(dataTable.Rows[0]["PalletId"]);
+            }
+
+            return pallet;
+        }
+
+        public static void UpdateInvoiceNumber(Pallet pallet)
+        {
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+
+            DBHelper.AddSqlParameter("@JSON", JsonConvert.SerializeObject(pallet, Formatting.Indented), ref sqlParameters);
+            DBHelper.ExecuteNonQuery("usp_AddUpdatePallet", sqlParameters);
         }
 
     }

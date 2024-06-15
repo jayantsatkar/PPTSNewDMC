@@ -10,11 +10,14 @@ using System.Collections.Generic;
 using System.Data;
 using NLog;
 using System.Configuration;
+using PagedList;
+using System.Net;
 
 namespace FactoryMagix.Controllers
 {
     public class PalletLabelController : Controller
     {
+        const int pageSize = 10;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         // BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
         public ActionResult PalletLabel()
@@ -28,6 +31,63 @@ namespace FactoryMagix.Controllers
                 return View();
             }
         }
+
+        //public ActionResult Index()
+        //{
+        //    Pallet pallet = new Pallet();
+        //    if (Session["UserInfo"] == null)
+        //    {
+        //        return RedirectToAction("Login", "Account");
+        //    }
+        //    else
+        //    {
+        //        return View(pallet);
+        //    }
+        //}
+
+        public ActionResult Index(string option, string search, int? page)
+        {
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                if (option == "InvoiceNumber")
+                {
+                    List<Pallet> dataExist = PalletRepository.GetPallets(search).Where(x => x.InvoiceNumber.Contains(search)).ToList();
+                    if (dataExist.Count == 0)
+                    {
+                        var pallets = from c in PalletRepository.GetPallets("")// db.MST_User
+                                   select c;
+                        pallets = pallets.OrderBy(c => c.InvoiceNumber);
+                        ViewBag.RecordsCount = pallets.Count();
+                        var listPaged = pallets.ToPagedList(page ?? 1, pageSize);
+                        TempData["NoDatavalidationMessage"] = "No records found please enter valid data..!";
+
+                        return View(listPaged);
+
+                    }
+
+                    // return View(db.MST_User.Where(x => x.Login_ID.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+                    return View(dataExist.ToPagedList(page ?? 1, pageSize));//(PalletRepository.GetPallets("").Where(x => x.Login_ID.Contains(search) || search == null).ToList().ToPagedList(page ?? 1, pageSize));
+
+                }
+                
+                else
+                {
+                    var pallets = from c in PalletRepository.GetPallets("") //db.MST_User
+                               select c;
+                    pallets = pallets.OrderByDescending(c => c.CreatedOn);
+                    ViewBag.RecordsCount = pallets.Count();
+                    var listPaged = pallets.ToPagedList(page ?? 1, pageSize);
+
+                    return View(listPaged);
+                }
+            }
+        }
+
+
 
         //// Added by 92293
         [HttpPost]
@@ -328,6 +388,88 @@ namespace FactoryMagix.Controllers
             return Json(PalletNumber);
         }
 
+        public ActionResult GotoPage(int? page)
+        {
+            if (Session["UserInfo"] == null)
+            {
+                return Redirect("/Account/Login");
+            }
+            else
+            {
+                var pallets = from c in PalletRepository.GetPallets("") //db.MST_User
+                           select c;
+                pallets = pallets.OrderByDescending(c => c.CreatedOn);
+                var listPaged = pallets.ToPagedList(page ?? 1, pageSize);
+                ViewBag.RecordsCount = pallets.Count();
+                if (listPaged.PageNumber != 1 && page.HasValue && page > listPaged.PageCount)
+                {
+                    ViewBag.PageCount = listPaged.PageCount;
+                    var currentlistPaged = pallets.ToPagedList(1, pageSize);
+                    ViewData["GotoPageMessage"] = "Please enter page number between 1 to";
+                    return View("Index", currentlistPaged);
+                }
+                return View("Index", listPaged);
+            }
+        }
+
+        public ActionResult Edit(int? id)
+        {
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Pallet pallet = PalletRepository.GetPalletByPalletId(Convert.ToInt32(id)); //db.MST_User.Find(id);
+                if (pallet == null)
+                {
+                    return HttpNotFound();
+                }
+                
+                //ViewBag.Role_ID = new SelectList(RoleRepository.GetRoles(), "Role_ID", "Role_Name", mST_User.Role_ID);
+                return View(pallet);
+            }
+        }
+
+        [HttpPost]
+        // public ActionResult Edit([Bind(Include = "User_ID,Role_ID,Login_ID,Password,First_Name,Last_Name,Middle_Name,EmailId,User_Image,Address,City,State,Country,Pincode,Mobile_No,EmployeeId,IsActive,Created_By,Created_On,Modified_By,Modified_On")] MST_User mST_User)
+        public ActionResult Edit(Pallet pallet)
+        {
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                try
+                {
+                   // user.Password = Encryptdata(strPassword);
+                    // mST_User.ConfirmPassword = Encryptdata(strPassword);
+
+                   // user.Modified_On = DateTime.Now;
+                    User objUserSession = (User)Session["UserInfo"];
+                    pallet.ModifiedBy = (Int32) objUserSession.User_ID;
+                    //user.Modified_By = objUserSession == null ? 0 : objUserSession.User_ID;
+                    //db.Entry(mST_User).State = System.Data.Entity.EntityState.Modified;
+                    //db.SaveChanges();
+
+                    PalletRepository.UpdateInvoiceNumber(pallet);
+                   // UserRepository.AddUpdateUser(user);
+                    TempData["EditMessage"] = "Invoice Number Updated Successfully!";
+
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    var error = ex.Message;
+                    return View();
+                }
+            }
+        }
 
     }
 }
