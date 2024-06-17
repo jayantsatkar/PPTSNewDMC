@@ -29,18 +29,40 @@ namespace FactoryMagix.Controllers
             }
             else
             {
+                string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
+                Logger.Info("IP of Request:" + clientIp);
+                string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
+                string folderPath = Path.Combine(path, clientIp);
+               // string shareName = clientIp;
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
                 return View();
             }
         }
 
         public ActionResult Sticker()
         {
+
             if (Session["UserInfo"] == null)
             {
                 return RedirectToAction("Login", "Account");
             }
             else
             {
+                string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
+                Logger.Info("IP of Request:" + clientIp);
+                string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
+                string folderPath = Path.Combine(path, clientIp);
+                // string shareName = clientIp;
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
                 return View();
             }
         }
