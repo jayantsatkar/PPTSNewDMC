@@ -221,7 +221,7 @@ namespace FactoryMagix.Repository
             DBHelper.AddSqlParameter("@PartBatchCode", PartBatchCode, ref sqlParameters);
             DBHelper.AddSqlParameter("@PartSerialNo", PartSerialNo, ref sqlParameters);
             DBHelper.AddSqlParameter("@Code", Code, ref sqlParameters);
-            DataTable dt = DBHelper.ExecuteProcedure("spCheckPartconfiguration", sqlParameters);
+            DataTable dt = DBHelper.ExecuteProcedure("spInsertBoxLable_Verify", sqlParameters);
             return dt;
         }
 
