@@ -635,8 +635,8 @@
     <Content Include="Views\Reports\PartSerialNoWise.cshtml" />
     <Content Include="Views\DDL\DDL.cshtml" />
     <Content Include="Views\Account\Unauthorized.cshtml" />
+    <Content Include="Views\BoxLabel\BoxLabelLaser.cshtml" />
     <Content Include="Views\BoxLabel\BoxLabel.cshtml" />
-    <Content Include="Views\BoxLabel\Sticker.cshtml" />
     <Content Include="Views\PalletLabel\Index.cshtml" />
     <Content Include="Views\PalletLabel\Edit.cshtml" />
     <None Include="Views\Reports\UserErrorReport.cshtml" />

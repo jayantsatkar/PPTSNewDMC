@@ -12,7 +12,7 @@ using System.Configuration;
 
 namespace FactoryMagix.Controllers
 {
-    [Authorize(Roles = "Super Administrator, Administrator, Supervisor")]
+   // [Authorize(Roles = "Super Administrator, Administrator, Supervisor")]
     public class BarCodeReprintController : Controller
     {
         // private FactoryMagix.Models.BOSCH_PPTSEntities db = new FactoryMagix.Models.BOSCH_PPTSEntities();

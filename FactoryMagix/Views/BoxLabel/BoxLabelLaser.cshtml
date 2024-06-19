@@ -1,0 +1,1445 @@
+﻿@model FactoryMagix.Models.PartResult
+@{
+    ViewBag.Title = "Box Barcode Generation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .ontop {
+        z-index: 999;
+        width: 100%;
+        height: 1000px;
+        top: 0;
+        left: 0;
+        display: none;
+        position: absolute;
+        background-color: white;
+        color: #aaaaaa;
+        opacity: .9;
+        filter: alpha(opacity = 50);
+    }
+
+    #popup {
+        width: 300px;
+        height: 400px;
+        position: absolute;
+        color: black;
+        background-color: gray;
+        /* To align popup window at the center of screen*/
+        top: 40%;
+        left: 50%;
+        margin-top: -100px;
+        margin-left: -150px;
+    }
+
+    /*added to make text blink*/
+    .blink_me {
+        animation: blinker 1s linear infinite;
+    }
+
+    @@keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    /* Start styling below to manage ddl parts on zoom in/out*/
+    .input-group {
+        display: inline-flex;
+        width: 100%;
+        text-align: left;
+        max-width: 280px;
+    }
+
+    .input-group-addon {
+        width: 35px;
+        height: 34px;
+    }
+    /*END styling to manage ddl parts on zoom in/out*/
+</style>
+
+<script type="text/javascript">
+    function pop(div) {
+        document.getElementById(div).style.display = 'block';
+    }
+
+    function hide(div) {
+        document.getElementById(div).style.display = 'none';
+    }
+    //To detect escape button
+    document.onkeydown = function (evt) {
+        evt = evt || window.event;
+        if (evt.keyCode == 27) {
+            hide('popDiv');
+        }
+    };
+</script>
+
+<script type="text/javascript" language="javascript">
+    var tblScanPartNo = document.getElementById("tblScanPartNo");
+    var pubbufferbarcode = "";
+    var rowcount, colcount;
+    var status = 0;
+    var BatchCode, Serial;
+    var totalPartCount = 0;
+    var partNo = "";
+    var parameter = "";
+    var Code = "";
+    var Errordescription = "";
+
+    var IdList = [];
+    var countHowManyScans = 0;
+
+    var toyotaPartInDB = "";
+    var boschPartNoInDB = "";
+    var kanbanId = "";
+    var supplierCode = "";
+    var ddlSelPartNo = "";
+    $("#hdnCustomerPartNo").val("");
+
+    $(document).ready(function () {
+        $('.combobox').combobox();
+        IdList.length = 0;
+        document.getElementById('txtScanPartBarcode').disabled = true;
+
+        // Added for toyota
+        $("#divCustomerPartNo").hide();
+        $("#txtScanCustPartBarcode").val("");
+        toyotaPartInDB = "";
+        boschPartNoInDB = "";
+        kanbanId = "";
+        supplierCode = "";
+
+        getPartNoList();
+
+        //Set focus on dropdownlist
+        $("#MST_PartConfiguration_IDundefined").focus();
+
+        // To clear all textboxes on clear of ddl
+        $('.glyphicon-remove').on('click', function () {
+            $("#txtpartDesc").val("");
+            $("#txtQtybox").val("");
+            $("#txtCustName").val("");
+            $("#txtCustCode").val("");
+            $("#txtCustIndex").val("");
+            $("#tblScanPartNo").empty();
+            $('#txtScanned').html("");
+            totalPartCount = 0;
+            countHowManyScans = 0;
+
+            if (document.getElementById('btnVerify').disabled == false) {
+                document.getElementById('btnVerify').disabled = true;
+            }
+            // Added for toyota
+            if ($("#divCustomerPartNo").is(":visible")) {
+                $("#divCustomerPartNo").hide();
+                $("#txtScanCustPartBarcode").val("");
+
+                toyotaPartInDB = "";
+                boschPartNoInDB = "";
+                ddlSelPartNo = "";
+            }
+
+            if ($("#divBoschPartNo").is(":hidden")) {
+                $("#divBoschPartNo").show();
+            }
+
+            $("#hdnDDLId").val("");
+            $("#hdnDDLText").val("");
+
+            $("#hdnCustomerPartNo").val("");
+        });
+
+        // To get the selected value of the ddl on the selected text
+        $("#MST_PartConfiguration_IDundefined").change(function () {
+            var ddlText = $(this).val();
+            for (i = 0; i < IdList.length; i++) {    // IdList array elements get filled in getPartNoList() function when page loads
+                if (ddlText.toUpperCase() == (IdList[i].name).toUpperCase()) {
+                    // Clear the previous value first before inserting new value
+                    $("#hdnDDLId").val("");
+                    $("#hdnDDLText").val("");
+
+                    $("#hdnDDLId").val(IdList[i].id);
+                    $("#hdnDDLText").val(IdList[i].name);
+
+                    Action(IdList[i].id);
+                    break;
+                }
+            }
+        });
+        // End by 92293
+    });
+
+    // Added by 92293  get the list of part nos to bind to ddl
+    function getPartNoList() {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPartNos", "BoxLabel")',
+            data: "{}",
+            dataType: "json",
+            traditional: true,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#MST_PartConfiguration_ID").append('<option value=' + data[i].MST_PartConfiguration_ID + '>' + data[i].PartNo + '</option>');
+                    IdList.push({ id: data[i].MST_PartConfiguration_ID, name: data[i].PartNo });
+                }
+                $('#MST_PartConfiguration_ID').data('combobox').refresh();
+            },
+            error: function (result) {
+                alert(result.status + ' ' + result.statusText);
+            }
+        });
+    }
+
+
+function CallLocalUSBPrinter(params) {
+
+        try {
+
+            var shell = new ActiveXObject("WScript.shell");
+            shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
+            // Disable Print Button on successful barcode print: Start
+document.getElementById('btnBarcodePrint').disabled = true;
+	// Disable Print Button on successful barcode print: End
+            return 1;
+        }
+        catch (e) {
+            alert('Error : ' + e.message + '\n' + e.stack);
+            return 0;
+        }
+    }
+
+	function printBarcode() {
+        Clear();
+        $.ajax({
+            url: '@Url.Action("PrintBarcodeAndCreatePRN", "BoxLabel")',
+            type: "POST",
+            data: {},
+            success: function (data) {
+                // console.log('userdata',data);
+                // debugger;
+                if (data != null) {
+                    if (data.length > 0) {
+                        var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
+                        try {
+                            alert(vdata + " - Box packed succesfully");
+                        }
+                        catch (e) {
+                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+                           
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+
+
+    
+    function execFinger() {
+        Clear();
+        $.ajax({
+            url: '@Url.Action("GetuserData", "BoxLabel")',
+            type: "POST",
+            data: {},
+            success: function (data) {
+                // debugger;
+                if (data != null) {
+                    if (data.length > 0) {
+                        var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
+                        try {
+                            //= 1;ttladmin ; FingerValidationBox
+                            parameter = vdata + ";FingerValidationBox;" + parameter;
+                            exec(parameter);
+                            return 1;
+                        }
+                        catch (e) {
+                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+                            return 0;
+                        }
+                    }
+                }
+            }
+        });
+	    // Disable Print Button on successful barcode print: Start
+        document.getElementById('btnBarcodePrint').disabled = true;
+	    // Disable Print Button on successful barcode print: End
+
+    }
+
+    //Kirti--------------
+    function exec(params) {
+        try {
+            var shell = new ActiveXObject("WScript.shell");
+            shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
+
+            return 1;
+        }
+        catch (e) {
+            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+            return 0;
+        }
+    }
+
+    // this gets called when ddl selection changes ie. user selects the part no from ddl
+    function Action(code) {
+        $.ajax({
+            url: '@Url.Action("Action", "BoxLabel")',
+            type: "POST",
+            data: { "code": code },
+            success: function (data) {
+                if (data != null) {
+                    var vdata = data;
+                    if (vdata.query.length > 0) {
+                        debugger;
+                        if (vdata.query[0].Customer_Code == vdata.Customer) {
+                            $("#txtpartDesc").val(vdata.query[0].BoschPart_Desc);
+                            $("#txtCustName").val(vdata.query[0].Customer_Name);
+                            $("#txtCustCode").val(vdata.query[0].Customer_Code);
+                            $("#txtCustIndex").val(vdata.query[0].Customer_Index);
+                            // $("#txtQtybox").val(vdata[0].NoOfPartQy_Box);
+                            $("#hdnCustomerPartNo").val(vdata.query[0].CustPart_No);
+
+                            $("#divBoschPartNo").hide();
+                            $("#txtScanPartBarcode").val("");
+                            $("#divCustomerPartNo").show();
+                            $("#txtScanCustPartBarcode").focus();
+                        }
+                        else {
+                            $("#txtQtybox").val(vdata.query[0].NoOfPartQy_Box);
+                            $("#txtpartDesc").val(vdata.query[0].BoschPart_Desc);
+                            $("#txtCustName").val(vdata.query[0].Customer_Name);
+                            $("#txtCustCode").val(vdata.query[0].Customer_Code);
+                            $("#txtCustIndex").val(vdata.query[0].Customer_Index);
+
+                            if ($("#divBoschPartNo").is(":hidden")) {
+                                $("#divBoschPartNo").show();
+                                $("#txtScanPartBarcode").val("");
+                            }
+
+                            document.getElementById("txtScanPartBarcode").disabled = false;
+                            $("#txtScanPartBarcode").focus();
+                        }
+                    }
+                    $("#tblScanPartNo").empty();
+                }
+            },
+        });
+    }
+
+    //12 1506aaaa4433 47200-0de50-00 00002/00007,  1506a,  a,  ,  2018061301,  yg54,  2,  aa,  01,  ,  apc - 18
+    // if customer barcode scan
+    $(document).on("keyup", "#txtScanCustPartBarcode", function (event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == 13) {
+        // Scanned customer Barcode string
+        var custScannedBarcode = document.getElementById('txtScanCustPartBarcode').value;
+        if (custScannedBarcode.length == 87) {    // Toyota barcode length is of 87 characters
+            var splitCustStrbarcode = custScannedBarcode.split(",");
+            if (splitCustStrbarcode.length > 1 && splitCustStrbarcode.length == 11) {
+
+                var first = splitCustStrbarcode[0];
+                supplierCode = splitCustStrbarcode[1];
+
+                var getStrPart = first.substring(16, 27);  //get toyota part No
+                toyotaPartInDB = getStrPart.replace(/[^a-z0-9\s]/gi, '').replace(/[-\s]/g, "");
+
+                var custPartNoDB = $("#hdnCustomerPartNo").val();  // this hidden field get initiated in Action() function  ie. 472000DE50
+                ddlSelPartNo = custPartNoDB.substring(0, 10);
+
+                if (ddlSelPartNo != "") {
+                    if (toyotaPartInDB.toUpperCase() == ddlSelPartNo.toUpperCase()) {
+                        var kanban = splitCustStrbarcode[5];
+                        var qty = splitCustStrbarcode[6];
+
+                        $.ajax({
+                            url: '@Url.Action("VerifyCustomerPartNo", "BoxLabel")',
+                            type: "POST",
+                            data: { 'ToyotaPartInDB': toyotaPartInDB, 'Kanban': kanban },
+                            success: function (data) {
+                                if (data.length > 0) {
+                                    boschPartNoInDB = data[0].Bosch_PartNo;
+                                    kanbanId = kanban;
+
+                                    $("#blinkCustomer").removeClass("blink_me");  // removed blinking
+                                    $("#blinkCustomer").css({ 'color': 'gray', 'font-weight': '300' });
+                                    $("#txtQtybox").val(qty);                     // dynamically assign qty value from cust barcode string
+                                    $("#divBoschPartNo").show();
+                                    document.getElementById("txtScanPartBarcode").disabled = false;
+                                    $("#txtScanPartBarcode").focus();
+                                }
+                            },
+                            error: function (data) {
+                                alert("Scanned customer barcode not matching with database...!");
+                                $("#txtScanCustPartBarcode").val("");
+                            }
+                        });
+
+                    }
+                    else {
+                        $("#txtScanCustPartBarcode").val("");
+                        alert("Scanned customer barcode not matching with selected customer from dropdownlist...!");
+                        Errordescription = custScannedBarcode + " - Scanned customer barcode not matching with selected value from dropdownlist.";
+                        SaveUserLogs();
+                    }
+                    $("#hdnCustomerPartNo").val("");
+                }
+                else {
+                    alert("Customer part no. not found in scanned barcode string.");
+                    Errordescription = custScannedBarcode + " - Customer part no. is empty in hidden field #hdnCustomerPartNo";
+                    SaveUserLogs();
+                }
+            }
+            else {
+                alert("Wrong customer barcode is scanned.");
+                $("#txtScanCustPartBarcode").val("");
+                Errordescription = custScannedBarcode + " - Splict barcode string count is not equal to 11 as aspected.";
+                SaveUserLogs();
+            }
+        }
+        else {
+            //$("#txtScanCustPartBarcode").val("");
+            alert("Wrong customer barcode is scanned. The length of scanned barcode string is not equal to 85 Characters.");
+            $("#txtScanCustPartBarcode").val("");
+            Errordescription = custScannedBarcode + " - Scanned customer barcode string is not equal to 85 characters.";
+            SaveUserLogs();
+        }
+      } // if enter key
+    });
+
+    $(document).on("keyup", "#txtScanPartBarcode", function (event) {
+
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        var PartNo, partbatchcode, partsrno;
+        if (keycode == 13) {
+
+            // Added by 92293
+            countHowManyScans = countHowManyScans + 1;
+
+            if (countHowManyScans <= document.getElementById('txtQtybox').value) {
+
+                //scanned part no details
+                var scannedBarcode = document.getElementById('txtScanPartBarcode').value;
+
+                //***********************START 1-1-2017: Kirti*************************************************
+                var TempBarcode = scannedBarcode;
+
+                TempBarcode = TempBarcode.split(":");
+                var TempPreviousBarcode = TempBarcode;
+
+                if (TempBarcode.length == 3) {
+                    TempBarcode = "***:" + TempBarcode[0] + ":*****:" + TempBarcode[1] + ":**:" + TempBarcode[2];
+                    scannedBarcode = TempBarcode;
+                }
+
+                // **********************Added new condition for toyota  ******************************
+                if ($("#divCustomerPartNo").is(":visible")) {
+                    var txtCustBarcodeValue = $("#txtScanCustPartBarcode").val();
+
+                    if (txtCustBarcodeValue != null && txtCustBarcodeValue != "") {
+                        if (scannedBarcode.length == 52) {  // Bosch part barcode string length for Toyota is of 52 Char long
+                            var splitBoschBarcode = scannedBarcode.split(":");
+
+                            if (splitBoschBarcode.length > 1 && splitBoschBarcode.length == 7) {
+                                var boschPart = splitBoschBarcode[0];
+
+                                var toyotaPartNoInBoschBarcode = splitBoschBarcode[1];
+                                var toyPartNoInBosch = toyotaPartNoInBoschBarcode.replace(/[^a-z0-9\s]/gi, '').replace(/[-\s]/g, "");  // Remove space from the string
+
+                                if (boschPart.indexOf('.') > -1) {
+                                    ////boschPart has '.' in it so it can be directly compaired with DB so no code here
+                                }
+                                else {
+                                    // add '.' to the part no.
+                                    var newBoschPartNo = "";
+                                    var fCode = "";
+                                    var sCode = "";
+                                    var tCode = "";
+                                    var str = "";
+
+                                    str = boschPart.replace(/[^a-z0-9\s]/gi, '').replace(/[\s]/g, "");  // Remove space from the string;
+                                    if (str.length == 10) {
+                                        fCode = str.substr(0, 4);
+                                        fCode += '.';
+                                        newBoschPartNo = fCode;
+
+                                        sCode = str.substr(4, 3);
+                                        sCode += '.';
+                                        newBoschPartNo = newBoschPartNo + sCode;
+
+                                        tCode = str.substr(7, 3);
+                                        // tCode += '.';
+                                        newBoschPartNo = newBoschPartNo + tCode;
+
+                                        boschPart = newBoschPartNo;
+                                    }
+                                }   //End  to handle new barcode format
+
+                                //  for toyotaPartInDB record is available in DB table against kanban id and bosch part no + for boschPartNoInDB record is available in DB table and this record cantains : between Bosch part no
+                                if (toyPartNoInBosch.toUpperCase() == toyotaPartInDB.toUpperCase() && boschPart == boschPartNoInDB) {  // validated toyota part no and curresponding bosch part no in db
+
+                                    //if(splitBoschBarcode[6].length < 9 && splitBoschBarcode[6].length == 8) {
+                                    if (splitBoschBarcode[6].length == 8) {
+                                        if (splitBoschBarcode[0].length == 10) {
+                                            //alert('Barcode matched...!!!!');
+                                            scanbarcode(splitBoschBarcode[0], splitBoschBarcode[3] + ':' + splitBoschBarcode[4], splitBoschBarcode[6])
+                                            //scanbarcode(-----Part No--------, -----------Part Batch code-------------------- , -----Part Sr No---- )
+                                        }
+                                        else {
+                                            $("#txtScanPartBarcode").val("");
+                                            $("#txtScanPartBarcode").focus();
+                                            alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                                            Errordescription = scannedBarcode + " - Incorrect Bosch Part no. in scanned barcode string. Part no. length is not equal to 10 characters.";
+                                            if (countHowManyScans > 0) {
+                                                countHowManyScans = countHowManyScans - 1;
+                                            }
+                                            else {
+                                                countHowManyScans = 0;
+                                            }
+                                            SaveUserLogs();
+                                        }
+                                    }
+                                    else {
+                                        $("#txtScanPartBarcode").val("");
+                                        $("#txtScanPartBarcode").focus();
+                                        alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                                        Errordescription = scannedBarcode + " - Bosch part serial no. length is incorrect.";
+                                        if (countHowManyScans > 0) {
+                                            countHowManyScans = countHowManyScans - 1;
+                                        }
+                                        else {
+                                            countHowManyScans = 0;
+                                        }
+                                        SaveUserLogs();
+                                    }
+
+                                    //increase the counter of count here if not increase in scanbarcode(....)
+                                }
+                                else {
+                                    $("#txtScanPartBarcode").val("");
+                                    $("#txtScanPartBarcode").focus();
+                                    alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                                    Errordescription = scannedBarcode + " - Toyota part no. OR Bosch part no did not matched with database.";
+                                    if (countHowManyScans > 0) {
+                                        countHowManyScans = countHowManyScans - 1;
+                                    }
+                                    else {
+                                        countHowManyScans = 0;
+                                    }
+                                    SaveUserLogs();
+                                }
+                            }
+                            else {  // ie. after splitting the barcode the split length is not equal to 7
+                                $("#txtScanPartBarcode").val("");
+                                $("#txtScanPartBarcode").focus();
+                                alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                                Errordescription = scannedBarcode + " - After spliting the scanned barcode, the spliting count not equal to 7 as aspected.";
+                                if (countHowManyScans > 0) {
+                                    countHowManyScans = countHowManyScans - 1;
+                                }
+                                else {
+                                    countHowManyScans = 0;
+                                }
+                                SaveUserLogs();
+                            }
+                        }
+                        else {  // ie. scann barcode length is not equla to 52
+                            $("#txtScanPartBarcode").val("");
+                            $("#txtScanPartBarcode").focus();
+                            alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                            Errordescription = scannedBarcode + " - The scanned Bosch barcode string is not equal to 52 char length.";
+                            if (countHowManyScans > 0) {
+                                countHowManyScans = countHowManyScans - 1;
+                            }
+                            else {
+                                countHowManyScans = 0;
+                            }
+                            SaveUserLogs();
+                        }
+                    }
+                    else {  //  // ie. scann barcode length of customer is null or empty
+                        $("#txtScanPartBarcode").val("");
+                        $("#txtScanPartBarcode").focus();
+                        alert(scannedBarcode + " - Customer barcode string can not be empty. please scan correct customer barcode!");
+                        Errordescription = scannedBarcode + " - The scanned Bosch barcode string is null or empty.";
+                        if (countHowManyScans > 0) {
+                            countHowManyScans = countHowManyScans - 1;
+                        }
+                        else {
+                            countHowManyScans = 0;
+                        }
+                        SaveUserLogs();
+                    }
+                }
+                    // *********************End condition for toyota ******************************
+
+                    // *********************START Other customers  ******************************
+                else if (scannedBarcode.length == 12) {
+                    scanBarcodeNewDMC(scannedBarcode);
+                }
+                    // Added by 92293  to consume new barcode format -------
+                else if (scannedBarcode.length == 29) {
+                    var splitstrbarcode = scannedBarcode.split(":");
+
+                    if (splitstrbarcode.length > 1 && splitstrbarcode.length == 4) {  // element having count 4 after split
+                        if (splitstrbarcode[3].length <= 6) {  // serial no not more than 6 digits ie. 000001
+                            if (splitstrbarcode[0].length == 6 && splitstrbarcode[2].length == 4) {  // ddmmyy = 6  and shift_id = L011
+                                scanbarcode(splitstrbarcode[1], splitstrbarcode[0] + ':' + splitstrbarcode[2], splitstrbarcode[3])
+                            }
+                            else {  // this is true when scannedBarcode.length ie. ddmmyy not equal to 6
+                                $("#txtScanPartBarcode").val("");
+                                $("#txtScanPartBarcode").focus();
+                                alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                                Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
+
+                                // Added by 92293
+                                if (countHowManyScans > 0) {
+                                    countHowManyScans = countHowManyScans - 1;
+                                }
+                                else {
+                                    countHowManyScans = 0;
+                                }
+
+                                SaveUserLogs();
+                            }
+                        }
+                        else {  // this is true when  splitBarcode[3] is more than 6 digits
+                            $("#txtScanPartBarcode").val("");
+                            $("#txtScanPartBarcode").focus();
+                            alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                            Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
+
+                            // Added by 92293
+                            if (countHowManyScans > 0) {
+                                countHowManyScans = countHowManyScans - 1;
+                            }
+                            else {
+                                countHowManyScans = 0;
+                            }
+
+                            SaveUserLogs();
+                        }
+                    }
+                    else {   //  this is true when element having count more than 4 after split
+                        $("#txtScanPartBarcode").val("");
+                        $("#txtScanPartBarcode").focus();
+                        alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                        Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
+
+                        // Added by 92293
+                        if (countHowManyScans > 0) {
+                            countHowManyScans = countHowManyScans - 1;
+                        }
+                        else {
+                            countHowManyScans = 0;
+                        }
+                        SaveUserLogs();
+                    }
+                }
+                    // end added by 92293  to consume new barcode format -------
+                else {  // this is true when scannedBarcode.length < 29 ie. less than 29
+                    $("#txtScanPartBarcode").val("");
+                    $("#txtScanPartBarcode").focus();
+                    alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
+                    Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
+
+                    // Added by 92293
+                    if (countHowManyScans > 0) {
+                        countHowManyScans = countHowManyScans - 1;
+                    }
+                    else {
+                        countHowManyScans = 0;
+                    }
+                    SaveUserLogs();
+                }
+            }
+            else {
+                //actual count and part scann count already equal so.
+                $("#txtScanPartBarcode").val("");
+                $("#txtScanPartBarcode").focus();
+                countHowManyScans = countHowManyScans - 1;
+                alert("quantity of parts scanned exceded");
+                Errordescription = "No of part scanned exceded than the actual count";
+                SaveUserLogs();
+            }   // <= this line Added by 92293
+        }
+    });
+
+    function scanbarcode(partno, partbatchcode, partsrno) {
+        var splitpartNo = "";
+        var partconfigurationID = $("#hdnDDLId").val();
+        var ddlpartNoText = $("#hdnDDLText").val();
+
+        if (ddlpartNoText) {
+            // ex :- 0204.823.985-5W9-208521-BOSCH CHASSIS SYSTEMS INDIA LIMITED-0204816690   //ddl selected value
+            splitpartNo = ddlpartNoText.split("-");
+        }
+
+        //Added by 92293 to handle new barcode format
+        if (partno.indexOf('.') > -1) {
+            ////partno has '.' in it
+        }
+        else {
+            // add char '.' to the part no.
+            var newPartNo = "";
+            var fCode = "";
+            var sCode = "";
+            var tCode = "";
+            var str = "";
+
+            var str = partno;
+            if (str.length == 10) {
+                fCode = str.substr(0, 4);
+                fCode += '.';
+                newPartNo = fCode;
+
+                sCode = str.substr(4, 3);
+                sCode += '.';
+                newPartNo = newPartNo + sCode;
+
+                tCode = str.substr(7, 3);
+                // tCode += '.';
+                newPartNo = newPartNo + tCode;
+
+                partno = newPartNo;
+            }
+        }   //End  to handle new barcode format
+
+        //Validate scanned part no with dropdown part no
+        if (splitpartNo[0].toUpperCase() === partno.toUpperCase() || splitpartNo[4].toUpperCase() === partno.toUpperCase()) {
+
+            $.ajax({
+                url: '@Url.Action("ValidatePartNo", "BoxLabel")',
+                type: "POST",
+                data: {
+                    "PartNo": partno, "batchcode": partbatchcode, "partSerialNo": partsrno,
+                    "partconfigid": partconfigurationID, "PartBarcode": ddlpartNoText
+                },
+                success: function (ValidateData) {
+                    if (ValidateData != null) {
+                        var tempdate = ValidateData;
+
+                        if (tempdate === 1) {
+
+                            tblScanPartNo = document.getElementById("tblScanPartNo");
+                            //if
+                            if (tblScanPartNo.rows.length == 0) {
+                                totalPartCount = totalPartCount + 1;
+                                $('#txtScanned').html(totalPartCount);
+
+                                if (totalPartCount == document.getElementById('txtQtybox').value) {
+                                    document.getElementById('txtScanPartBarcode').disabled = false;
+                                    //--------kirti:----------------
+                                    document.getElementById('btnVerify').disabled = false;
+                                    //--------kirti:----------------
+                                }
+
+                                //Add blank row
+                                CreateBlankRow(tblScanPartNo);
+                                //add one moredata row
+                                var row = document.createElement('tr'); // create row node
+                                var col = document.createElement('td'); // create column node
+                                var col2 = document.createElement('td'); // create second column node
+                                var col3 = document.createElement('td');
+                                row.appendChild(col); // append first column to row
+                                row.appendChild(col2); // append second column to row
+                                row.appendChild(col3);
+                                col.innerHTML = partno; // put data in first column
+                                col2.innerHTML = partbatchcode; // put data in second column
+                                col3.innerHTML = partsrno;
+
+                                tblScanPartNo.appendChild(row); // append row to table
+
+                                $("#txtScanPartBarcode").val("");
+                                $("#txtScanPartBarcode").focus();
+                            }
+                            else if (tblScanPartNo.rows.length > 1) {
+                                totalPartCount = totalPartCount + 1;
+                                $('#txtScanned').html(totalPartCount);
+
+                                if (totalPartCount <= document.getElementById('txtQtybox').value) {
+                                    //To enable Print Barcode button
+
+                                    if (totalPartCount == document.getElementById('txtQtybox').value) {
+                                        document.getElementById('txtScanPartBarcode').disabled = false;
+                                        //--------kirti:----------------
+                                        document.getElementById('btnVerify').disabled = false;
+                                        //--------kirti:----------------
+                                    }
+
+                                    rowcount = 0;
+                                    colcount = 0;
+                                    status = 0;
+                                    BatchCode = "";
+                                    Serial = "";
+                                    for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
+                                        BatchCode = tblScanPartNo.rows[rowcount].cells[1].innerHTML;
+                                        Serial = tblScanPartNo.rows[rowcount].cells[2].innerHTML;
+                                        if (BatchCode == partbatchcode) {
+                                            if (Serial == partsrno) {
+                                                status = 1;
+                                                break;
+                                            }
+                                            else {
+                                                status = 0;
+                                            }
+                                        }
+                                    }
+                                    if (status == 0) {
+                                        var row = document.createElement('tr'); // create row node
+                                        var col = document.createElement('td'); // create column node
+                                        var col2 = document.createElement('td'); // create second column node
+                                        var col3 = document.createElement('td');
+                                        row.appendChild(col); // append first column to row
+                                        row.appendChild(col2); // append second column to row
+                                        row.appendChild(col3);
+                                        col.innerHTML = partno; // put data in first column
+                                        col2.innerHTML = partbatchcode; // put data in second column
+                                        col3.innerHTML = partsrno;
+                                        tblScanPartNo.appendChild(row);// append row to table
+
+                                        $("#txtScanPartBarcode").val("");
+                                        $("#txtScanPartBarcode").focus();
+                                    }
+                                    else if (status == 1) {
+                                        // Commented below line and added new one by 92293
+                                        //$("#txtScanPartBarcode").val("");
+                                        totalPartCount = totalPartCount - 1;
+
+                                        $('#txtScanned').html(totalPartCount);
+
+                                        // Commented below line and added new one by 92293
+                                        //$("#txtScanPartBarcode").val(totalPartCount);
+
+                                        if (totalPartCount != document.getElementById('txtQtybox').value) {
+                                            document.getElementById('btnBarcodePrint').disabled = true;
+                                            // Added by 92293
+                                            document.getElementById('btnVerify').disabled = true;
+                                        }
+                                        alert($("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part");  // this will be shown if scanned part is already in the dynamic html table on this view.
+                                        Errordescription = $("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part";
+
+                                        // Added by 92293
+                                        $("#txtScanPartBarcode").val("");
+                                        if (countHowManyScans > 0) {
+                                            countHowManyScans = countHowManyScans - 1;
+                                        }
+                                        else {
+                                            countHowManyScans = 0;
+                                        }
+
+                                        SaveUserLogs();
+                                    }
+                                }
+                                else {
+                                    $("#txtScanPartBarcode").val("");
+                                    document.getElementById('txtScanPartBarcode').disabled = true;
+                                    $("#btnBarcodePrint").focus();
+                                    totalPartCount = totalPartCount - 1;
+                                    $('#txtScanned').html(totalPartCount);
+                                    // Added by 92293
+                                    if (countHowManyScans > 0) {
+                                        countHowManyScans = countHowManyScans - 1;
+                                    }
+                                    else {
+                                        countHowManyScans = 0;
+                                    }
+                                    alert("Total part quantity exceded");
+                                }
+                            }
+
+                            $("#txtScanPartBarcode").val("");
+                            $("#txtScanPartBarcode").focus();
+
+                        }
+                        else {   // temp data === 1 failed
+                            $("#txtScanPartBarcode").focus();
+                            alert($("#txtScanPartBarcode").val() + " - This part packed already");
+                            Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
+
+                            // Added by 92293
+                            if (countHowManyScans > 0) {
+                                countHowManyScans = countHowManyScans - 1;
+                            }
+                            else {
+                                countHowManyScans = 0;
+                            }
+                            SaveUserLogs();
+
+                            $("#txtScanPartBarcode").val("");
+                        }
+                    }
+                }
+            })
+        }
+
+        else {
+            $("#txtScanPartBarcode").focus();
+            alert($("#txtScanPartBarcode").val() + " - Wrong part scanned");
+            Errordescription = $("#txtScanPartBarcode").val() + " - Wrong part scanned";
+
+            // Added by 92293
+            if (countHowManyScans > 0) {
+                countHowManyScans = countHowManyScans - 1;
+            }
+            else {
+                countHowManyScans = 0;
+            }
+            SaveUserLogs();
+            $("#txtScanPartBarcode").val("");
+        }
+    }
+
+    function scanBarcodeNewDMC(newDMC) {
+        //debugger;
+        // Check this function.
+	var flag = false;
+        var partconfigurationID = $("#hdnDDLId").val();
+        var ddlpartNoText = $("#hdnDDLText").val();
+
+        if (ddlpartNoText) {
+            // ex :- 0204.823.985-5W9-208521-BOSCH CHASSIS SYSTEMS INDIA LIMITED-0204816690   //ddl selected value
+            splitpartNo = ddlpartNoText.split("-");
+
+		if(splitpartNo[4].substring(splitpartNo[4].length - 4, splitpartNo[4].length) == newDMC.substring(newDMC.length - 4, newDMC.length)){
+			flag = true;
+		}
+        }
+
+        var partno, partbatchcode, partsrno;
+
+        //    sCode += '.';
+            //    newPartNo = newPartNo + sCode;
+
+            //    tCode = str.substr(7, 3);
+            //    // tCode += '.';
+            //    newPartNo = newPartNo + tCode;
+
+            //    partno = newPartNo;
+            //}
+           //End  to handle new barcode format
+
+        //Validate scanned part no with dropdown part no
+        if (flag) {
+
+            $.ajax({
+                url: '@Url.Action("ValidatePartNoNewDMC", "BoxLabel")',
+                type: "POST",
+                data: {
+                    "ScannedBarcode": newDMC, "PartNo": splitpartNo[4]
+                },
+                success: function (ValidateData) {
+                    //debugger;
+                    if (ValidateData != null) {
+                        var tempdate = ValidateData;
+
+                        if (tempdate.Result === 1) {
+                            partno = tempdate.PartNo;
+                            partbatchcode = tempdate.PartBatchCode;
+                            partsrno = tempdate.PartSerialNo;
+
+                            tblScanPartNo = document.getElementById("tblScanPartNo");
+                            //if
+                            if (tblScanPartNo.rows.length == 0) {
+                                totalPartCount = totalPartCount + 1;
+                                $('#txtScanned').html(totalPartCount);
+
+                                if (totalPartCount == document.getElementById('txtQtybox').value) {
+                                    document.getElementById('txtScanPartBarcode').disabled = false;
+                                    //--------kirti:----------------
+                                    document.getElementById('btnVerify').disabled = false;
+                                    //--------kirti:----------------
+                                }
+
+                                //Add blank row
+                                CreateBlankRow(tblScanPartNo);
+                                //add one moredata row
+                                var row = document.createElement('tr'); // create row node
+                                var col = document.createElement('td'); // create column node
+                                var col2 = document.createElement('td'); // create second column node
+                                var col3 = document.createElement('td');
+                                row.appendChild(col); // append first column to row
+                                row.appendChild(col2); // append second column to row
+                                row.appendChild(col3);
+                                col.innerHTML = partno; // put data in first column
+                                col2.innerHTML = partbatchcode; // put data in second column
+                                col3.innerHTML = partsrno;
+
+                                tblScanPartNo.appendChild(row); // append row to table
+
+                                $("#txtScanPartBarcode").val("");
+                                $("#txtScanPartBarcode").focus();
+                            }
+                            else if (tblScanPartNo.rows.length > 1) {
+                                totalPartCount = totalPartCount + 1;
+                                $('#txtScanned').html(totalPartCount);
+
+                                if (totalPartCount <= document.getElementById('txtQtybox').value) {
+                                    //To enable Print Barcode button
+
+                                    if (totalPartCount == document.getElementById('txtQtybox').value) {
+                                        document.getElementById('txtScanPartBarcode').disabled = false;
+                                        //--------kirti:----------------
+                                        document.getElementById('btnVerify').disabled = false;
+                                        //--------kirti:----------------
+                                    }
+
+                                    rowcount = 0;
+                                    colcount = 0;
+                                    status = 0;
+                                    BatchCode = "";
+                                    Serial = "";
+                                    for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
+                                        BatchCode = tblScanPartNo.rows[rowcount].cells[1].innerHTML;
+                                        Serial = tblScanPartNo.rows[rowcount].cells[2].innerHTML;
+                                        if (BatchCode == partbatchcode) {
+                                            if (Serial == partsrno) {
+                                                status = 1;
+                                                break;
+                                            }
+                                            else {
+                                                status = 0;
+                                            }
+                                        }
+                                    }
+                                    if (status == 0) {
+                                        var row = document.createElement('tr'); // create row node
+                                        var col = document.createElement('td'); // create column node
+                                        var col2 = document.createElement('td'); // create second column node
+                                        var col3 = document.createElement('td');
+                                        row.appendChild(col); // append first column to row
+                                        row.appendChild(col2); // append second column to row
+                                        row.appendChild(col3);
+                                        col.innerHTML = partno; // put data in first column
+                                        col2.innerHTML = partbatchcode; // put data in second column
+                                        col3.innerHTML = partsrno;
+                                        tblScanPartNo.appendChild(row);// append row to table
+
+                                        $("#txtScanPartBarcode").val("");
+                                        $("#txtScanPartBarcode").focus();
+                                    }
+                                    else if (status == 1) {
+                                        // Commented below line and added new one by 92293
+                                        //$("#txtScanPartBarcode").val("");
+                                        totalPartCount = totalPartCount - 1;
+
+                                        $('#txtScanned').html(totalPartCount);
+
+                                        // Commented below line and added new one by 92293
+                                        //$("#txtScanPartBarcode").val(totalPartCount);
+
+                                        if (totalPartCount != document.getElementById('txtQtybox').value) {
+                                            document.getElementById('btnBarcodePrint').disabled = true;
+                                            // Added by 92293
+                                            document.getElementById('btnVerify').disabled = true;
+                                        }
+                                        alert($("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part");  // this will be shown if scanned part is already in the dynamic html table on this view.
+                                        Errordescription = $("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part";
+
+                                        // Added by 92293
+                                        $("#txtScanPartBarcode").val("");
+                                        if (countHowManyScans > 0) {
+                                            countHowManyScans = countHowManyScans - 1;
+                                        }
+                                        else {
+                                            countHowManyScans = 0;
+                                        }
+
+                                        SaveUserLogs();
+                                    }
+                                }
+                                else {
+                                    $("#txtScanPartBarcode").val("");
+                                    document.getElementById('txtScanPartBarcode').disabled = true;
+                                    $("#btnBarcodePrint").focus();
+                                    totalPartCount = totalPartCount - 1;
+                                    $('#txtScanned').html(totalPartCount);
+                                    // Added by 92293
+                                    if (countHowManyScans > 0) {
+                                        countHowManyScans = countHowManyScans - 1;
+                                    }
+                                    else {
+                                        countHowManyScans = 0;
+                                    }
+                                    alert("Total part quantity exceded");
+                                }
+                            }
+
+                            $("#txtScanPartBarcode").val("");
+                            $("#txtScanPartBarcode").focus();
+
+                        }
+                        else {   // temp data === 1 failed
+                            $("#txtScanPartBarcode").focus();
+                            alert($("#txtScanPartBarcode").val() + " - This part packed already");
+                            Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
+
+                            // Added by 92293
+                            if (countHowManyScans > 0) {
+                                countHowManyScans = countHowManyScans - 1;
+                            }
+                            else {
+                                countHowManyScans = 0;
+                            }
+                            SaveUserLogs();
+
+                            $("#txtScanPartBarcode").val("");
+                        }
+                    }
+                }
+            })
+        }
+
+        else {
+            $("#txtScanPartBarcode").focus();
+            alert($("#txtScanPartBarcode").val() + " - Wrong part scanned");
+            Errordescription = $("#txtScanPartBarcode").val() + " - Wrong part scanned";
+
+            // Added by 92293
+            if (countHowManyScans > 0) {
+                countHowManyScans = countHowManyScans - 1;
+            }
+            else {
+                countHowManyScans = 0;
+            }
+            SaveUserLogs();
+            $("#txtScanPartBarcode").val("");
+        }
+    }
+
+    function SaveUserLogs() {
+
+        var partconfigurationID = $("#hdnDDLId").val();
+        $.ajax({
+            url: '@Url.Action("SaveUserLogs", "BoxLabel")',
+            type: "POST",
+            data: {
+                "PartConfigNo": partconfigurationID, "ErrorDescription": Errordescription
+            },
+            success: function (data) {
+                if (data != null) {
+                    var tempverify = data;
+                    parameter = "SupervisorLogin;" + tempverify[0] + ";Box";
+
+                    SuppervisorControll();
+                }
+            }
+        });
+    };
+
+    function SuppervisorControll() {
+        pop('popDiv');
+        var calllogin = callLogin();
+        if (calllogin == 1) {
+            hide('popDiv');
+        }
+        else if (calllogin == 0) {
+            alert("Problem in supervisor login");
+        }
+    };
+
+    function callLogin() {
+        try {
+            var shell = new ActiveXObject("WScript.shell");
+            shell.run("C:\\LoginWindow\\Debug\\ZK7500.exe " + parameter, 1, true);
+
+            return 1;
+        }
+        catch (e) {
+            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+            return 0;
+        }
+    };
+
+
+    function Clear() {
+        $("#tblScanPartNo").empty();
+        $("#txtQtybox").val("");
+        $("#txtpartDesc").val("");
+        $("#txtCustName").val("");
+        $("#txtCustCode").val("");
+        $("#txtCustIndex").val("");
+        $("#txtScanPartBarcode").val("");
+        document.getElementById('txtScanPartBarcode').disabled = true;
+        $('#txtScanned').html("");
+        totalPartCount = 0;
+        countHowManyScans = 0;
+        document.getElementById('btnBarcodePrint').disabled = true;
+
+        // Added by 92293
+        //IdList.length = 0;
+        $("#hdnDDLId").val("");
+        $("#hdnDDLText").val("");
+
+        $("#MST_PartConfiguration_IDundefined").val('');
+        //$("#MST_PartConfiguration_IDundefined")[0].selectedIndex = -1;
+
+        $("#MST_PartConfiguration_IDundefined").focus();
+
+        if (document.getElementById('btnVerify').disabled == false) {
+            document.getElementById('btnVerify').disabled = true;
+        }
+        countHowManyScans = 0;
+
+        //Added for Toyota
+        if ($("#divCustomerPartNo").is(":visible")) {
+            $("#divCustomerPartNo").hide();
+            $("#txtScanCustPartBarcode").val("");
+            var toyotaPartInDB = "";
+            var boschPartNoInDB = "";
+            var kanbanId = "";
+            var supplierCode = "";
+        }
+    }
+
+    $(document).on("click", "#btnClear", function () {
+        Clear();
+    });
+
+    $(document).on("click", "#btnVerify", function () {
+        var splitpartNo = "";
+        var partconfigurationID = $("#hdnDDLId").val();
+        var ddlpartNoText = $("#hdnDDLText").val();
+
+        var tblScanPartNo = document.getElementById("tblScanPartNo");
+
+        if (ddlpartNoText) {
+            splitpartNo = ddlpartNoText.split("-");
+        }
+
+        var uniqueId = 'id-' + Math.random().toString(36).substr(2, 16);
+
+        for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
+            partNo = tblScanPartNo.rows[rowcount].cells[0].innerHTML;
+            BatchCode = tblScanPartNo.rows[rowcount].cells[1].innerHTML;
+            Serial = tblScanPartNo.rows[rowcount].cells[2].innerHTML;
+            //var uniqueCode = Code;
+            $.ajax({
+                url: '@Url.Action("SaveInTemp", "BoxLabel")',
+                type: "POST",
+                data: {
+                    "PartConfigId": partconfigurationID, "PartQty": totalPartCount, "partno": partNo, "partbatchcode": BatchCode, "partserialno": Serial, "Code": uniqueId
+                },
+                success: function (data) {
+                    if (data != null) {
+                        var tempverify = data
+                        if (tempverify == 1) {
+                            document.getElementById('btnBarcodePrint').disabled = false;
+                            document.getElementById('btnVerify').disabled = true;
+                            var CustomerName = document.getElementById('txtCustName').value;
+                            var PartDescription = document.getElementById('txtpartDesc').value;
+                            parameter = partconfigurationID + ";" + uniqueId + ";" + CustomerName + ";" + PartDescription;
+                            //+ ";" + PartDescription;
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).on("click", "#btnBarcodePrint", function () {
+        Clear();
+        printBarcode();
+        // var resultprinting = printBarcodeFromWebApp(); ///execFinger()
+        // if (resultprinting != null) {
+            // if (resultprinting == 1) {
+                // // on data save success
+                // document.getElementById('btnBarcodePrint').disabled = true;
+                // Clear();
+                // alert(boxbarcode[3] + " - Box packed succesfully");
+            // }
+            // else {
+                // //On error
+                // document.getElementById('btnBarcodePrint').disabled = true;
+                // Clear();
+                // alert("Error occured during barcode printing");
+            // }
+        // }
+    });
+
+    function CreateBlankRow(tblScanPartNo) {
+        var thead = document.createElement('thead');
+        var row = document.createElement('tr'); // create row node
+        var col = document.createElement('td'); // create column node
+        var col2 = document.createElement('td'); // create second column node
+        var col3 = document.createElement('td');
+        row.appendChild(col); // append first column to row
+        row.appendChild(col2); // append second column to row
+        row.appendChild(col3);
+        row.appendChild(thead);
+        col.innerHTML = "Scanned Part No"; // put data in first column
+        col2.innerHTML = "Batch No"  // put data in second column
+        col3.innerHTML = "Serial No";
+
+        tblScanPartNo.appendChild(row); // append row to table
+    }
+
+
+
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+        <ol class="breadcrumb">
+            <li><i class="fa fa-home"></i><a href="~/Home/Index">Home</a></li>
+            <li><i class="fa fa-table"></i>Barcode Generation</li>
+            <li><i class="fa fa-th-list"></i>Box Barcode Generation</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <section class="panel">
+                <header class="panel-heading">
+
+                    <table valign="middle">
+                        <tr>
+                            <td align="left" width="50%">
+                                Box Barcode Generation
+                            </td>
+                            <td align="right" width="50%" valign="middle">
+
+                                <input type="button" id="btnClear" class="btn btn-default btn-sm" tabindex="9" title="Clear" value="Clear" />
+                            </td>
+                            <td align="right" width="50%" valign="middle">
+
+                                <input type="button" id="btnVerify" disabled="disabled" class="btn btn-default btn-sm" tabindex="9" title="Verify" value="Verify" />
+                            </td>
+                            <td align="right" width="50%" valign="middle">
+                                <input type="button" id="btnBarcodePrint" disabled="disabled" tabindex="8" class="btn btn-default btn-sm" title="Print Box Barcode" value="Print Barcode" />
+                            </td>
+                            <td align="right" width="50%" valign="middle">
+                                <a class="btn btn-default btn-sm" href="~/Home/Index" tabindex="10" title="Cancel">Cancel</a>
+                            </td>
+
+                        </tr>
+
+                    </table>
+                </header>
+                <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+
+                            <div class="row">
+
+                                <div class="col-lg-6">
+
+                                    <label class="col-lg-3 control-label">Part No</label>
+                                    <div class="col-lg-9" style="padding-right:15px;padding-left:0px;">
+                                        <select id="MST_PartConfiguration_ID" class="combobox form-control">
+                                            <option value="" selected="selected">-- Select --</option>
+                                        </select>
+
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Part desc</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtpartDesc" tabindex="2" disabled="disabled" class="form-control" />
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <div class="row">
+
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Qty per Box</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtQtybox" disabled="disabled" tabindex="3" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Customer Name</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtCustName" disabled="disabled" tabindex="4" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Customer Code</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtCustCode" disabled="disabled" tabindex="5" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Customer Index</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtCustIndex" disabled="disabled" tabindex="6" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* New Div Added For Toyota*@
+                        <div class="form-group" id="divCustomerPartNo">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label id="lblCustPartNo" class="col-lg-3 control-label" style="color:firebrick; font-size:15px; font-weight:bold;"><span id="blinkCustomer" class="blink_me">Scan Customer Part No</span></label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtScanCustPartBarcode" tabindex="9" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="col-lg-12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="divBoschPartNo">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">Scan Part No</label>
+                                    <div class="col-lg-12">
+                                        <input type="text" id="txtScanPartBarcode" tabindex="7" disabled="disabled" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="col-lg-3 control-label">No of Part Scanned</label>
+                                    <div class="col-lg-12">
+                                        @*<input type="text" id="txtScanned" disabled="disabled" tabindex="6" class="form-control" />*@
+                                        <label class="col-lg-3 control-label" style="font-size: larger; font-weight: 500" id="txtScanned"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table" id="tblScanPartNo"></table>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        }
+    </div>
+</div>
+
+<input type="hidden" id="hdnDDLId" />
+<input type="hidden" id="hdnDDLText" />
+<input type="hidden" id="hdnCustomerPartNo" />
+
+<div id="popDiv" class="ontop" data-theme="c">
+</div>
+
+
+
+
+
+

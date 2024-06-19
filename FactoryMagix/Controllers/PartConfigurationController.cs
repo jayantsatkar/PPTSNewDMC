@@ -16,7 +16,7 @@ using System.Web.UI.WebControls;
 using FactoryMagix.Repository;
 namespace FactoryMagix.Controllers
 {
-    [Authorize(Roles = "Super Administrator, Administrator")]
+   // [Authorize(Roles = "Super Administrator, Administrator")]
     public class PartConfigurationController : Controller
     {
         // private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
