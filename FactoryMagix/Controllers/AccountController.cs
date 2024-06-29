@@ -147,7 +147,7 @@ namespace FactoryMagix.Controllers
             //    }
 
             //}
-            EndExe();
+            //EndExe();
             FormsAuthentication.SignOut();
           
             return RedirectToAction("Login", "Account");
