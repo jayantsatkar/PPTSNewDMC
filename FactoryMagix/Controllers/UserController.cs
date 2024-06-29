@@ -16,12 +16,13 @@ using PagedList;
 using PagedList.Mvc;
 using System.Data.Entity.Validation;
 using FactoryMagix.Repository;
-
+using NLog;
 namespace FactoryMagix.Controllers
 {
   //  [Authorize(Roles = "Super Administrator, Administrator, Supervisor")]
     public class UserController : Controller
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         //private BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
         const int pageSize = 10;
 
@@ -177,26 +178,28 @@ namespace FactoryMagix.Controllers
                     //ViewBag.Role_ID = new SelectList(db.MST_Role, "Role_ID", "Role_Name", mST_User.Role_ID);
                     ViewBag.Role_ID = new SelectList(RoleRepository.GetRoles(), "Role_ID", "Role_Name", mST_User.Role_ID);
                 }
-                catch (DbEntityValidationException dbEx)
-                {
-                    Exception raise = dbEx;
-                    foreach (var validationErrors in dbEx.EntityValidationErrors)
-                    {
-                        foreach (var validationError in validationErrors.ValidationErrors)
-                        {
-                            string message = string.Format("{0}:{1}",
-                                validationErrors.Entry.Entity.ToString(),
-                                validationError.ErrorMessage);
-                            // raise a new exception nesting  
-                            // the current instance as InnerException  
-                            raise = new InvalidOperationException(message, raise);
-                        }
-                    }
-                    throw raise;
-                }
+                //catch (DbEntityValidationException dbEx)
+                //{
+                //    Exception raise = dbEx;
+                //    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                //    {
+                //        foreach (var validationError in validationErrors.ValidationErrors)
+                //        {
+                //            string message = string.Format("{0}:{1}",
+                //                validationErrors.Entry.Entity.ToString(),
+                //                validationError.ErrorMessage);
+                //            // raise a new exception nesting  
+                //            // the current instance as InnerException  
+                //            raise = new InvalidOperationException(message, raise);
+                //        }
+                //    }
+                //    throw raise;
+                //}
                 catch (Exception ex)
                 {
+                    Logger.Error(ex);
                     return View("Error", new HandleErrorInfo(ex, "MST_User", "Create"));
+
                 }
                 return View(mST_User);
             }
@@ -296,8 +299,9 @@ namespace FactoryMagix.Controllers
                 }
                 catch (Exception ex)
                 {
+                    Logger.Error(ex);
                     var error = ex.Message;
-                    return View();
+                    return View(user);
                 }
             }
         }
