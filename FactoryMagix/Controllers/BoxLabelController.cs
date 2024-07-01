@@ -233,6 +233,7 @@ namespace FactoryMagix.Controllers
         [HttpPost]
         public ActionResult PrintBarcode(string CustomerName, string PartNo, long PartQty, string BoxSerialNo, string ParTDesc, string Createddate)
         {
+            long result = 0;
             try
             {
                 if (Session["UserInfo"] == null)
@@ -241,7 +242,7 @@ namespace FactoryMagix.Controllers
                 }
                 else
                 {
-                    long result = 0;
+                    
                     string prnPath = (Server.MapPath(@"~/PrnFiles/Box Label.prn"));
 
                     if (System.IO.File.Exists(prnPath))
@@ -286,19 +287,23 @@ namespace FactoryMagix.Controllers
                         }
 
                     }
-                    return Json(result);
+                   // return Json(result);
                 }
+                return Json(result);
             }
             catch (Exception ex)
             {
-                string path = @"E:\Project\Bosch\PublishWebSite\New\PPTS17\PPTS08\ErrorLog\errorlog.txt";
 
-                using (StreamWriter sw = System.IO.File.AppendText(path))
-                {
-                    sw.WriteLine("$Message:" + ex.Message + "\t" + "Error" + "\t" + "$Datetime:" + DateTime.Now);
-                }
-                throw;
+                //string path = @"E:\Project\Bosch\PublishWebSite\New\PPTS17\PPTS08\ErrorLog\errorlog.txt";
+
+                //using (StreamWriter sw = System.IO.File.AppendText(path))
+                //{
+                //    sw.WriteLine("$Message:" + ex.Message + "\t" + "Error" + "\t" + "$Datetime:" + DateTime.Now);
+                //}
+                //throw;
+                Logger.Error("Error", ex);
             }
+            return Json(result);
         }
 
         public long Print(string filename)
@@ -321,8 +326,9 @@ namespace FactoryMagix.Controllers
                     return 1;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error(ex);
                 return 0;
                 throw;
             }
@@ -345,8 +351,9 @@ namespace FactoryMagix.Controllers
                     StrLine = StrLine.Replace(str11, DbColumnName);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error(ex);
                 return string.Empty;
             }
             return StrLine;
