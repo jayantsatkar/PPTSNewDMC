@@ -446,7 +446,7 @@
             var keycode = (event.keyCode ? event.keyCode : event.which);
             var PartNo, partbatchcode, partsrno;
             if (keycode == 13) {
-                debugger;
+              
                 // Added by 92293
                 countHowManyScans = countHowManyScans + 1;
 
@@ -1290,8 +1290,7 @@ else if (scannedBarcode.length == 27) {
             type: "POST",
             data: {},
             success: function (data) {
-                // console.log('userdata',data);
-                // debugger;
+                
                 if (data != null) {
                     if (data.length > 0) {
                         var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Configuration;
 using System.Text;
+using System.Threading;
 
 namespace FactoryMagix.Repository
 {
@@ -344,6 +345,7 @@ namespace FactoryMagix.Repository
             DBHelper.AddSqlParameter("@UserId", UserId, ref sqlParameters);
             
             DataTable dt = DBHelper.ExecuteProcedure("usp_CreateBoxByUser", sqlParameters);
+           // Thread.Sleep(1000);
 
             return dt;
         }

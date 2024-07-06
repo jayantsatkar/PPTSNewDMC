@@ -13,16 +13,22 @@ using FactoryMagix;
 using FactoryMagix.Repository;
 using System.Collections.Generic;
 using NLog;
+using System.Reflection;
 
 namespace FactoryMagix.Controllers
 {
     public class BoxLabelController : Controller
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+       // private Dictionary<Type, List<Type>> _dependencies = new Dictionary<Type, List<Type>>();
         //BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
         // GET: BoxLabel
         public ActionResult BoxLabel()
         {
+           // var analyzer = new DependencyAnalyzer();
+            //AnalyzeAssembly(Assembly.GetExecutingAssembly());
+            //DetectCircularDependencies();
+
             if (Session["UserInfo"] == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -183,6 +189,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
+                Logger.Info("Btn Verify Click:Start");
                 int result = 0;
                 User objuser = (User)Session["UserInfo"];
                 //var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
@@ -191,7 +198,9 @@ namespace FactoryMagix.Controllers
                 {
                      result = Convert.ToInt32(query.Rows[0][0]);
                 }
-                    
+
+                Logger.Info("Btn Verify Click:End");
+
                 return Json(result);
             }
         }
@@ -414,33 +423,104 @@ namespace FactoryMagix.Controllers
         public ActionResult PrintBarcodeAndCreatePRN()
         {
             string BoxNumber = "";
-            if (Session["UserInfo"] == null)
+            try
             {
-                return RedirectToAction("Login", "Account");
-            }
-            else
-            {
-                User user = (User)Session["UserInfo"];
-                DataTable dtBox = BoxRepository.CreateBox(Convert.ToInt32(user.User_ID));
-                if (dtBox != null && dtBox.Rows.Count > 0)
+                Logger.Info("Calling PrintBarcodeAndCreatePRN");
+                
+                if (Session["UserInfo"] == null)
                 {
-
-                    BoxNumber = Convert.ToString(dtBox.Rows[0]["BoxSerial_No"]);
-               // dt = BoxRepository.GetBoxReprintDetails(SerialNo, Convert.ToInt32(flag)); ///db.spGetBarcodeDataprint(SerialNo, flag).ToList();
-                string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
-                Logger.Info("IP of Request:" + clientIp);
-                string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
-                string folderPath = Path.Combine(path, clientIp);
-                string shareName = clientIp;
-                //FolderHelper.CreateAndShareFolder(folderPath, shareName);
-
-                
-                    BoxRepository.CreatePRNFile(folderPath, dtBox, (int)LabelType.Box, user.Login_ID);
+                    return RedirectToAction("Login", "Account");
                 }
-                
+                else
+                {
+                    User user = (User)Session["UserInfo"];
+                    Logger.Info("CreateBox:Start");
+                    DataTable dtBox = BoxRepository.CreateBox(Convert.ToInt32(user.User_ID));
+                    Logger.Info("CreateBox:End");
+                    if (dtBox != null && dtBox.Rows.Count > 0)
+                    {
+                       
+
+                        BoxNumber = Convert.ToString(dtBox.Rows[0]["BoxSerial_No"]);
+                        Logger.Info("Box Number = " + BoxNumber);
+                        // dt = BoxRepository.GetBoxReprintDetails(SerialNo, Convert.ToInt32(flag)); ///db.spGetBarcodeDataprint(SerialNo, flag).ToList();
+                        string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
+                        Logger.Info("IP of Request:" + clientIp);
+                        string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
+                        string folderPath = Path.Combine(path, clientIp);
+                        string shareName = clientIp;
+                        //FolderHelper.CreateAndShareFolder(folderPath, shareName);
+
+                        Logger.Info("CreatePRNFile:Start");
+                        BoxRepository.CreatePRNFile(folderPath, dtBox, (int)LabelType.Box, user.Login_ID);
+                        Logger.Info("CreatePRNFile:End");
+                    }
+
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Logger.Error("PrintBarcodeAndCreatePRN", ex);
             }
             return Json(BoxNumber);
         }
+
+        //public void AnalyzeAssembly(Assembly assembly)
+        //{
+        //    var types = assembly.GetTypes();
+        //    foreach (var type in types)
+        //    {
+        //        var constructors = type.GetConstructors();
+        //        foreach (var constructor in constructors)
+        //        {
+        //            var parameters = constructor.GetParameters();
+        //            foreach (var parameter in parameters)
+        //            {
+        //                if (!_dependencies.ContainsKey(type))
+        //                {
+        //                    _dependencies[type] = new List<Type>();
+        //                }
+        //                _dependencies[type].Add(parameter.ParameterType);
+        //            }
+        //        }
+        //    }
+        //}
+
+        //public void DetectCircularDependencies()
+        //{
+        //    foreach (var type in _dependencies.Keys)
+        //    {
+        //        var visited = new HashSet<Type>();
+        //        if (HasCircularDependency(type, visited))
+        //        {
+        //            Logger.Info("Dependancy:"+type.Name.ToString());
+        //        }
+        //    }
+        //}
+
+        //private bool HasCircularDependency(Type type, HashSet<Type> visited)
+        //{
+        //    if (visited.Contains(type))
+        //    {
+        //        return true;
+        //    }
+
+        //    visited.Add(type);
+
+        //    if (_dependencies.ContainsKey(type))
+        //    {
+        //        foreach (var dependency in _dependencies[type])
+        //        {
+        //            if (HasCircularDependency(dependency, new HashSet<Type>(visited)))
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //    }
+
+        //    return false;
+        //}
     }
 
     //public class PartResult
@@ -457,4 +537,7 @@ namespace FactoryMagix.Controllers
     //        PartSerialNo = string.Empty;
     //    }
     //}
+
+
 }
+
