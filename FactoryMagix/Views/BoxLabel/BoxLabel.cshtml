@@ -190,7 +190,7 @@
             });
         }
 
-        function execFinger() {
+        @*function execFinger() {
             Clear();
             $.ajax({
                 url: '@Url.Action("GetuserData", "BoxLabel")',
@@ -214,7 +214,7 @@
                     }
                 }
             });
-        }
+        }*@
 
         //Kirti--------------
         function exec(params) {
@@ -430,7 +430,7 @@
             var keycode = (event.keyCode ? event.keyCode : event.which);
             var PartNo, partbatchcode, partsrno;
             if (keycode == 13) {
-              
+
                 // Added by 92293
                 countHowManyScans = countHowManyScans + 1;
 
@@ -891,9 +891,9 @@
 
                                     if (totalPartCount == document.getElementById('txtQtybox').value) {
                                         document.getElementById('txtScanPartBarcode').disabled = false;
-                                      
+
                                         document.getElementById('btnVerify').disabled = false;
-                                      
+
                                     }
 
                                     //Add blank row
@@ -924,9 +924,9 @@
 
                                         if (totalPartCount == document.getElementById('txtQtybox').value) {
                                             document.getElementById('txtScanPartBarcode').disabled = false;
-                                          
+
                                             document.getElementById('btnVerify').disabled = false;
-                                          
+
                                         }
 
                                         rowcount = 0;
@@ -1141,20 +1141,78 @@
             Clear();
         });
 
-        $(document).on("click", "#btnVerify", function () {
-            var splitpartNo = "";
-            var partconfigurationID = $("#hdnDDLId").val();
-            var ddlpartNoText = $("#hdnDDLText").val();
+    $(document).on("click", "#btnVerify", function () {
+        var splitpartNo = "";
+        var partconfigurationID = $("#hdnDDLId").val();
+        var ddlpartNoText = $("#hdnDDLText").val();
 
-            var tblScanPartNo = document.getElementById("tblScanPartNo");
+        var tblScanPartNo = document.getElementById("tblScanPartNo");
 
-            if (ddlpartNoText) {
-                splitpartNo = ddlpartNoText.split("-");
+        if (ddlpartNoText) {
+            splitpartNo = ddlpartNoText.split("-");
+        }
+
+        var uniqueId = 'id-' + Math.random().toString(36).substr(2, 16);
+        let partsList = [];
+        for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
+            partNo = tblScanPartNo.rows[rowcount].cells[0].innerHTML;
+            BatchCode = tblScanPartNo.rows[rowcount].cells[1].innerHTML;
+            Serial = tblScanPartNo.rows[rowcount].cells[2].innerHTML;
+            let userId = @ViewData["User_Id"];
+            let partObject = {
+                "PartId": partconfigurationID,
+                "PartQty": totalPartCount,
+                "Partno": partNo,
+                "PartBatchCode": BatchCode,
+                "PartSerialNo": Serial,
+                "Code": uniqueId,
+                "UserId": userId
             }
 
-            var uniqueId = 'id-' + Math.random().toString(36).substr(2, 16);
+            partsList.push(partObject);
+            //var uniqueCode = Code;
 
-            for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
+        }
+        let JsonData = JSON.stringify(partsList);
+
+        $.ajax({
+            url: '@Url.Action("SaveInTempList", "BoxLabel")',
+            type: "POST",
+            data: {
+                "JSON": JsonData
+            },
+            success: function (data) {
+                if (data.length > 0) {
+                    var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
+                    try {
+                        alert(vdata + " - Box packed succesfully");
+                        Clear();
+                    }
+                    catch (e) {
+                        alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+
+                    }
+                }
+            }
+        });
+
+    });
+                            // if (data != null) {
+                            //Clear();
+                            //var tempverify = data
+                            //if (tempverify == 1) {
+                            //    document.getElementById('btnBarcodePrint').disabled = false;
+                            //    document.getElementById('btnVerify').disabled = true;
+                            //    var CustomerName = document.getElementById('txtCustName').value;
+                            //    var PartDescription = document.getElementById('txtpartDesc').value;
+                            //    parameter = partconfigurationID + ";" + uniqueId + ";" + CustomerName + ";" + PartDescription;
+                            //    //+ ";" + PartDescription;
+                            //}
+                            //}
+                    
+               
+
+            @*for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
                 partNo = tblScanPartNo.rows[rowcount].cells[0].innerHTML;
                 BatchCode = tblScanPartNo.rows[rowcount].cells[1].innerHTML;
                 Serial = tblScanPartNo.rows[rowcount].cells[2].innerHTML;
@@ -1179,13 +1237,13 @@
                         }
                     }
                 });
-            }
-        });
+            }*@
+        //});
 
         $(document).on("click", "#btnBarcodePrint", function () {
             Clear();
-            printBarcode();
-            
+           // printBarcode();
+
         });
 
         function CreateBlankRow(tblScanPartNo) {
@@ -1205,7 +1263,7 @@
             tblScanPartNo.appendChild(row); // append row to table
         }
 
-		function printBarcodeFromWebApp() {
+		@*function printBarcodeFromWebApp() {
         Clear();
         $.ajax({
             url: '@Url.Action("GetuserData", "BoxLabel")',
@@ -1230,26 +1288,26 @@
                 }
             }
         });
-    }
+    }*@
 
 
 
-	function CallLocalUSBPrinter(params) {
+	//function CallLocalUSBPrinter(params) {
 
-        try {
+ //       try {
 
-            var shell = new ActiveXObject("WScript.shell");
-            shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
-            // Disable Print Button on successful barcode print: Start
-			document.getElementById('btnBarcodePrint').disabled = true;
-			// Disable Print Button on successful barcode print: End
-            return 1;
-        }
-        catch (e) {
-            alert('Error : ' + e.message + '\n' + e.stack);
-            return 0;
-        }
-    }
+ //           var shell = new ActiveXObject("WScript.shell");
+ //           shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
+ //           // Disable Print Button on successful barcode print: Start
+	//		document.getElementById('btnBarcodePrint').disabled = true;
+	//		// Disable Print Button on successful barcode print: End
+ //           return 1;
+ //       }
+ //       catch (e) {
+ //           alert('Error : ' + e.message + '\n' + e.stack);
+ //           return 0;
+ //       }
+ //   }
 
     function printBarcode() {
         Clear();
@@ -1258,7 +1316,7 @@
             type: "POST",
             data: {},
             success: function (data) {
-                
+
                 if (data != null) {
                     if (data.length > 0) {
                         var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
