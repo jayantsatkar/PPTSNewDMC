@@ -1240,21 +1240,7 @@ document.getElementById('btnBarcodePrint').disabled = true;
     $(document).on("click", "#btnBarcodePrint", function () {
         Clear();
         printBarcode();
-        // var resultprinting = printBarcodeFromWebApp(); ///execFinger()
-        // if (resultprinting != null) {
-            // if (resultprinting == 1) {
-                // // on data save success
-                // document.getElementById('btnBarcodePrint').disabled = true;
-                // Clear();
-                // alert(boxbarcode[3] + " - Box packed succesfully");
-            // }
-            // else {
-                // //On error
-                // document.getElementById('btnBarcodePrint').disabled = true;
-                // Clear();
-                // alert("Error occured during barcode printing");
-            // }
-        // }
+        
     });
 
     function CreateBlankRow(tblScanPartNo) {
