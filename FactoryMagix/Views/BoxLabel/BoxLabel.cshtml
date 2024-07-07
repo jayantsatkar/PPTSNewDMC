@@ -190,46 +190,8 @@
             });
         }
 
-        @*function execFinger() {
-            Clear();
-            $.ajax({
-                url: '@Url.Action("GetuserData", "BoxLabel")',
-                type: "POST",
-                data: {},
-                success: function (data) {
-                    if (data != null) {
-                        if (data.length > 0) {
-                            var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
-                            try {
-                                //= 1;ttladmin ; FingerValidationBox
-                                parameter = vdata + ";FingerValidationBox;" + parameter;
-                                exec(parameter);
-                                return 1;
-                            }
-                            catch (e) {
-                                alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-                                return 0;
-                            }
-                        }
-                    }
-                }
-            });
-        }*@
-
-        //Kirti--------------
-        function exec(params) {
-            try {
-                var shell = new ActiveXObject("WScript.shell");
-                //shell.run("C:\\UserValidation\\Debug\\\PrintingNET35\\LabelPrinting.exe " + parameter, 1, true);
-		shell.run("C:\\UserValidation\\Debug\\ZK7500.exe " + parameter, 1, true);
-
-                return 1;
-            }
-            catch (e) {
-                alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-                return 0;
-            }
-        }
+       
+               
 
         // this gets called when ddl selection changes ie. user selects the part no from ddl
         function Action(code) {
