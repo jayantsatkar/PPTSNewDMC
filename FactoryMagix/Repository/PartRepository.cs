@@ -225,6 +225,16 @@ namespace FactoryMagix.Repository
             return dt;
         }
 
+        public static DataTable SaveInTempList(string JSONData)
+        {
+
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@JSONData", JSONData, ref sqlParameters);
+           
+            DataTable dt = DBHelper.ExecuteProcedure("usp_InsertBoxLabel_List", sqlParameters);
+            return dt;
+        }
+
         public static List<ToyotaPart> GetBoschPartNoFromCustPartNo(string ToyotaPartInDB, string Kanban)
         {
 
