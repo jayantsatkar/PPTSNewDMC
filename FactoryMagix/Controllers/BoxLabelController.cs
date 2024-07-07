@@ -20,15 +20,9 @@ namespace FactoryMagix.Controllers
     public class BoxLabelController : Controller
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-       // private Dictionary<Type, List<Type>> _dependencies = new Dictionary<Type, List<Type>>();
-        //BOSCH_PPTSEntities context = new BOSCH_PPTSEntities();
         // GET: BoxLabel
         public ActionResult BoxLabel()
         {
-           // var analyzer = new DependencyAnalyzer();
-            //AnalyzeAssembly(Assembly.GetExecutingAssembly());
-            //DetectCircularDependencies();
-
             if (Session["UserInfo"] == null)
             {
                 return RedirectToAction("Login", "Account");
@@ -39,7 +33,6 @@ namespace FactoryMagix.Controllers
                 Logger.Info("IP of Request:" + clientIp);
                 string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
                 string folderPath = Path.Combine(path, clientIp);
-               // string shareName = clientIp;
 
                 if (!Directory.Exists(folderPath))
                 {
@@ -139,29 +132,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                //DataTable dt = new DataTable();
-                //SqlConnection conn = new SqlConnection(ConfigurationManager.AppSettings["SQLConnection"].ToString());
-                //SqlCommand cmd = new SqlCommand("usp_CheckPartNoScaned", conn);
-                //cmd.CommandType = CommandType.StoredProcedure;
-                //cmd.Parameters.AddWithValue("@SCANNEDBARCODE", ScannedBarcode);
-                //cmd.Parameters.AddWithValue("@PartNo", PartNo);
-                //conn.Open();
-
-                //SqlDataAdapter sda = new SqlDataAdapter(cmd);
-                //sda.Fill(dt);
-                //conn.Close();
-                //PartResult result = new PartResult();
-
-                //if (dt!=null && dt.Rows.Count>0)
-                //{
-
-                //    result.Result = Convert.ToInt32(dt.Rows[0]["Result"]);
-                //    result.PartNo = Convert.ToString(dt.Rows[0]["PartNo"]);
-                //    result.PartBatchCode= Convert.ToString(dt.Rows[0]["PartBatchCode"]);
-                //    result.PartSerialNo = Convert.ToString(dt.Rows[0]["PartSerialNo"]);
-                //}
                 PartResult result = PartRepository.ValidatePartNumberNewDMC(ScannedBarcode, PartNo);
-
                 return Json(result);
             }
 
@@ -302,14 +273,6 @@ namespace FactoryMagix.Controllers
             }
             catch (Exception ex)
             {
-
-                //string path = @"E:\Project\Bosch\PublishWebSite\New\PPTS17\PPTS08\ErrorLog\errorlog.txt";
-
-                //using (StreamWriter sw = System.IO.File.AppendText(path))
-                //{
-                //    sw.WriteLine("$Message:" + ex.Message + "\t" + "Error" + "\t" + "$Datetime:" + DateTime.Now);
-                //}
-                //throw;
                 Logger.Error("Error", ex);
             }
             return Json(result);
@@ -465,79 +428,6 @@ namespace FactoryMagix.Controllers
             }
             return Json(BoxNumber);
         }
-
-        //public void AnalyzeAssembly(Assembly assembly)
-        //{
-        //    var types = assembly.GetTypes();
-        //    foreach (var type in types)
-        //    {
-        //        var constructors = type.GetConstructors();
-        //        foreach (var constructor in constructors)
-        //        {
-        //            var parameters = constructor.GetParameters();
-        //            foreach (var parameter in parameters)
-        //            {
-        //                if (!_dependencies.ContainsKey(type))
-        //                {
-        //                    _dependencies[type] = new List<Type>();
-        //                }
-        //                _dependencies[type].Add(parameter.ParameterType);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //public void DetectCircularDependencies()
-        //{
-        //    foreach (var type in _dependencies.Keys)
-        //    {
-        //        var visited = new HashSet<Type>();
-        //        if (HasCircularDependency(type, visited))
-        //        {
-        //            Logger.Info("Dependancy:"+type.Name.ToString());
-        //        }
-        //    }
-        //}
-
-        //private bool HasCircularDependency(Type type, HashSet<Type> visited)
-        //{
-        //    if (visited.Contains(type))
-        //    {
-        //        return true;
-        //    }
-
-        //    visited.Add(type);
-
-        //    if (_dependencies.ContainsKey(type))
-        //    {
-        //        foreach (var dependency in _dependencies[type])
-        //        {
-        //            if (HasCircularDependency(dependency, new HashSet<Type>(visited)))
-        //            {
-        //                return true;
-        //            }
-        //        }
-        //    }
-
-        //    return false;
-        //}
     }
-
-    //public class PartResult
-    //{
-    //    public int Result { get; set; }
-    //    public string PartNo { get; set; }
-    //    public string PartBatchCode { get; set; }
-    //    public string PartSerialNo { get; set; }
-
-    //    public PartResult()
-    //    {
-    //        PartNo = string.Empty;
-    //        PartBatchCode = string.Empty;
-    //        PartSerialNo = string.Empty;
-    //    }
-    //}
-
-
 }
 
