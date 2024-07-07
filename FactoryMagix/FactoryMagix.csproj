@@ -175,7 +175,6 @@
     <Compile Include="Controllers\PartialController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="DAL.cs" />
     <Compile Include="DAL\DBHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
