@@ -29,6 +29,7 @@ namespace FactoryMagix.Controllers
             }
             else
             {
+                ViewData["User_Id"] = ((User)Session["UserInfo"]).User_ID.ToString();
                 string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
                 Logger.Info("IP of Request:" + clientIp);
                 string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
@@ -173,6 +174,44 @@ namespace FactoryMagix.Controllers
                 Logger.Info("Btn Verify Click:End");
 
                 return Json(result);
+            }
+        }
+
+
+        public ActionResult SaveInTempList(string JSON)
+        {
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                User user = (User)Session["UserInfo"];
+                Logger.Info("Btn Verify Click:Start");
+               // int result = 0;
+                string BoxNumber = "";
+                //var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
+                DataTable dataTable = PartRepository.SaveInTempList(JSON);
+                if (dataTable != null && dataTable.Rows.Count > 0)
+                {
+                    BoxNumber = Convert.ToString(dataTable.Rows[0]["BoxSerial_No"]);
+                    Logger.Info("Box Number = " + BoxNumber);
+                    // dt = BoxRepository.GetBoxReprintDetails(SerialNo, Convert.ToInt32(flag)); ///db.spGetBarcodeDataprint(SerialNo, flag).ToList();
+                    string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
+                    Logger.Info("IP of Request:" + clientIp);
+                    string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
+                    string folderPath = Path.Combine(path, clientIp);
+                    string shareName = clientIp;
+                    //FolderHelper.CreateAndShareFolder(folderPath, shareName);
+
+                    Logger.Info("Print Start");
+                    BoxRepository.CreatePRNFile(folderPath, dataTable, (int)LabelType.Box, user.Login_ID);
+                    Logger.Info("Print Start");
+                }
+
+               // Logger.Info("Btn Verify Click:End");
+
+                return Json(BoxNumber);
             }
         }
 
