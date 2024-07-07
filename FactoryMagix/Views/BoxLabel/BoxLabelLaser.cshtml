@@ -66,7 +66,6 @@
     function hide(div) {
         document.getElementById(div).style.display = 'none';
     }
-    //To detect escape button
     document.onkeydown = function (evt) {
         evt = evt || window.event;
         if (evt.keyCode == 27) {
@@ -167,10 +166,10 @@
                 }
             }
         });
-        // End by 92293
+       
     });
 
-    // Added by 92293  get the list of part nos to bind to ddl
+    
     function getPartNoList() {
         $.ajax({
             type: "POST",
@@ -189,97 +188,6 @@
                 alert(result.status + ' ' + result.statusText);
             }
         });
-    }
-
-
-function CallLocalUSBPrinter(params) {
-
-        try {
-
-            var shell = new ActiveXObject("WScript.shell");
-            shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
-            // Disable Print Button on successful barcode print: Start
-document.getElementById('btnBarcodePrint').disabled = true;
-	// Disable Print Button on successful barcode print: End
-            return 1;
-        }
-        catch (e) {
-            alert('Error : ' + e.message + '\n' + e.stack);
-            return 0;
-        }
-    }
-
-	function printBarcode() {
-        Clear();
-        $.ajax({
-            url: '@Url.Action("PrintBarcodeAndCreatePRN", "BoxLabel")',
-            type: "POST",
-            data: {},
-            success: function (data) {
-               
-                if (data != null) {
-                    if (data.length > 0) {
-                        var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
-                        try {
-                            alert(vdata + " - Box packed succesfully");
-                        }
-                        catch (e) {
-                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-                           
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-
-
-
-    
-    function execFinger() {
-        Clear();
-        $.ajax({
-            url: '@Url.Action("GetuserData", "BoxLabel")',
-            type: "POST",
-            data: {},
-            success: function (data) {
-             
-                if (data != null) {
-                    if (data.length > 0) {
-                        var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
-                        try {
-                            //= 1;ttladmin ; FingerValidationBox
-                            parameter = vdata + ";FingerValidationBox;" + parameter;
-                            exec(parameter);
-                            return 1;
-                        }
-                        catch (e) {
-                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-                            return 0;
-                        }
-                    }
-                }
-            }
-        });
-	    // Disable Print Button on successful barcode print: Start
-        document.getElementById('btnBarcodePrint').disabled = true;
-	    // Disable Print Button on successful barcode print: End
-
-    }
-
-    //Kirti--------------
-    function exec(params) {
-        try {
-            var shell = new ActiveXObject("WScript.shell");
-            shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
-
-            return 1;
-        }
-        catch (e) {
-            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-            return 0;
-        }
     }
 
     // this gets called when ddl selection changes ie. user selects the part no from ddl
@@ -422,7 +330,6 @@ document.getElementById('btnBarcodePrint').disabled = true;
                 //scanned part no details
                 var scannedBarcode = document.getElementById('txtScanPartBarcode').value;
 
-                //***********************START 1-1-2017: Kirti*************************************************
                 var TempBarcode = scannedBarcode;
 
                 TempBarcode = TempBarcode.split(":");
@@ -730,9 +637,7 @@ document.getElementById('btnBarcodePrint').disabled = true;
 
                                 if (totalPartCount == document.getElementById('txtQtybox').value) {
                                     document.getElementById('txtScanPartBarcode').disabled = false;
-                                    //--------kirti:----------------
                                     document.getElementById('btnVerify').disabled = false;
-                                    //--------kirti:----------------
                                 }
 
                                 //Add blank row
@@ -763,9 +668,7 @@ document.getElementById('btnBarcodePrint').disabled = true;
 
                                     if (totalPartCount == document.getElementById('txtQtybox').value) {
                                         document.getElementById('txtScanPartBarcode').disabled = false;
-                                        //--------kirti:----------------
                                         document.getElementById('btnVerify').disabled = false;
-                                        //--------kirti:----------------
                                     }
 
                                     rowcount = 0;
@@ -908,18 +811,7 @@ document.getElementById('btnBarcodePrint').disabled = true;
 
         var partno, partbatchcode, partsrno;
 
-        //    sCode += '.';
-            //    newPartNo = newPartNo + sCode;
-
-            //    tCode = str.substr(7, 3);
-            //    // tCode += '.';
-            //    newPartNo = newPartNo + tCode;
-
-            //    partno = newPartNo;
-            //}
-           //End  to handle new barcode format
-
-        //Validate scanned part no with dropdown part no
+        
         if (flag) {
 
             $.ajax({
@@ -946,9 +838,7 @@ document.getElementById('btnBarcodePrint').disabled = true;
 
                                 if (totalPartCount == document.getElementById('txtQtybox').value) {
                                     document.getElementById('txtScanPartBarcode').disabled = false;
-                                    //--------kirti:----------------
                                     document.getElementById('btnVerify').disabled = false;
-                                    //--------kirti:----------------
                                 }
 
                                 //Add blank row
@@ -979,9 +869,7 @@ document.getElementById('btnBarcodePrint').disabled = true;
 
                                     if (totalPartCount == document.getElementById('txtQtybox').value) {
                                         document.getElementById('txtScanPartBarcode').disabled = false;
-                                        //--------kirti:----------------
                                         document.getElementById('btnVerify').disabled = false;
-                                        //--------kirti:----------------
                                     }
 
                                     rowcount = 0;
@@ -1138,20 +1026,7 @@ document.getElementById('btnBarcodePrint').disabled = true;
         }
     };
 
-    function callLogin() {
-        try {
-            var shell = new ActiveXObject("WScript.shell");
-            shell.run("C:\\LoginWindow\\Debug\\ZK7500.exe " + parameter, 1, true);
-
-            return 1;
-        }
-        catch (e) {
-            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-            return 0;
-        }
-    };
-
-
+    
     function Clear() {
         $("#tblScanPartNo").empty();
         $("#txtQtybox").val("");
