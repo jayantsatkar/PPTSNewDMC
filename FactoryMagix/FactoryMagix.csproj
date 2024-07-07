@@ -665,7 +665,7 @@
     <Content Include="Views\Customer\Edit.cshtml" />
     <Content Include="Views\Customer\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutA.cshtml" />
-    <Content Include="Views\BoxLabel\BoxLabelRef.cshtml" />
+    <Content Include="Views\BoxLabel\BoxLabelSticker.cshtml" />
     <Content Include="Views\PalletLabel\PalletLabel.cshtml" />
     <Content Include="Views\Reports\InvoiceReport.cshtml" />
     <Content Include="Scripts\jtable\themes\basic\jtable_basic.less" />
