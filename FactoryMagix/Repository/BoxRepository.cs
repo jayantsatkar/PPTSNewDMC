@@ -345,8 +345,7 @@ namespace FactoryMagix.Repository
             DBHelper.AddSqlParameter("@UserId", UserId, ref sqlParameters);
             
             DataTable dt = DBHelper.ExecuteProcedure("usp_CreateBoxByUser", sqlParameters);
-           // Thread.Sleep(1000);
-
+           
             return dt;
         }
 
