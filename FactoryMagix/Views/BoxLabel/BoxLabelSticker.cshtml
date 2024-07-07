@@ -168,10 +168,8 @@
                     }
                 }
             });
-            // End by 92293
         });
 
-        // Added by 92293  get the list of part nos to bind to ddl
         function getPartNoList() {
             $.ajax({
                 type: "POST",
@@ -192,7 +190,6 @@
             });
         }
 
-        //Kirti--------------
         function execFinger() {
             Clear();
             $.ajax({
@@ -281,7 +278,6 @@
             });
         }
 
-        //12 1506aaaa4433 47200-0de50-00 00002/00007,  1506a,  a,  ,  2018061301,  yg54,  2,  aa,  01,  ,  apc - 18
         // if customer barcode scan
         $(document).on("keyup", "#txtScanCustPartBarcode", function (event) {
             var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -362,23 +358,11 @@
                     let kanban = splitCustStrbarcode[11];
                     let customer = splitCustStrbarcode[12];
 
-
-                    //var kanban = splitCustStrbarcode[5];
-                    //var qty = splitCustStrbarcode[6];
-
                     let qty = splitCustStrbarcode[6];
-                    //var first = splitCustStrbarcode[0];
-                    //supplierCode = splitCustStrbarcode[1];
-
-                    //var getStrPart = first.substring(16, 27);  //get toyota part No
-                    //toyotaPartInDB = getStrPart.replace(/[^a-z0-9\s]/gi, '').replace(/[-\s]/g, "");
-
-                    // var custPartNoDB = $("#hdnCustomerPartNo").val();  // this hidden field get initiated in Action() function  ie. 472000DE50
 
                     let toyotaPartInDB = $("#hdnCustomerPartNo").val();
                     console.log(customer.substring(8));
                     console.log(toyotaPartInDB.substring(9));
-                    // ddlSelPartNo = custPartNoDB.substring(0, 10);
 
                     if (customer != "") {
                         if (toyotaPartInDB.substring(9).toUpperCase() == customer.substring(8).toUpperCase()) {
@@ -552,7 +536,6 @@
                                             SaveUserLogs();
                                         }
 
-                                        //increase the counter of count here if not increase in scanbarcode(....)
                                     }
                                     else {
                                         $("#txtScanPartBarcode").val("");
@@ -582,7 +565,6 @@
                                     SaveUserLogs();
                                 }
                             }
-
                             // new Login for Part No. T00, T10, T30, T50, T60, T80
                             else if (scannedBarcode.length = 40 && scannedBarcode.split(":").length > 1 && scannedBarcode.split(":").length == 6) { // Added By Jayant Satkar
                                 //console.log('New Toyota Barcode');
@@ -799,7 +781,7 @@
                         }
                     }
 
-else if (scannedBarcode.length == 27) {
+                    else if (scannedBarcode.length == 27) {
                         //alert('K050151200M78LA010112210003');
                         //var splitstrbarcode = scannedBarcode.split(":");
                         let partNumber = scannedBarcode.substring(5, 16);
@@ -909,9 +891,9 @@ else if (scannedBarcode.length == 27) {
 
                                     if (totalPartCount == document.getElementById('txtQtybox').value) {
                                         document.getElementById('txtScanPartBarcode').disabled = false;
-                                        //--------kirti:----------------
+                                      
                                         document.getElementById('btnVerify').disabled = false;
-                                        //--------kirti:----------------
+                                      
                                     }
 
                                     //Add blank row
@@ -942,9 +924,9 @@ else if (scannedBarcode.length == 27) {
 
                                         if (totalPartCount == document.getElementById('txtQtybox').value) {
                                             document.getElementById('txtScanPartBarcode').disabled = false;
-                                            //--------kirti:----------------
+                                          
                                             document.getElementById('btnVerify').disabled = false;
-                                            //--------kirti:----------------
+                                          
                                         }
 
                                         rowcount = 0;
@@ -1203,21 +1185,7 @@ else if (scannedBarcode.length == 27) {
         $(document).on("click", "#btnBarcodePrint", function () {
             Clear();
             printBarcode();
-            // var resultprinting = printBarcodeFromWebApp(); //execFinger()
-            // if (resultprinting != null) {
-                // if (resultprinting == 1) {
-                    // // on data save success
-                    // document.getElementById('btnBarcodePrint').disabled = true;
-                    // Clear();
-                    // alert(boxbarcode[3] + " - Box packed succesfully");
-                // }
-                // else {
-                    // //On error
-                    // document.getElementById('btnBarcodePrint').disabled = true;
-                    // Clear();
-                    // alert("Error occured during barcode printing");
-                // }
-            // }
+            
         });
 
         function CreateBlankRow(tblScanPartNo) {
