@@ -146,10 +146,6 @@
                 $("#txtInvoieQty").removeAttr("disabled");
             }
 
-            //$("#txtNoofBoxes").attr("disabled", "disabled");
-            //document.getElementById('txtNoofBoxes').disabled = true;
-            //$("#txtNoofBoxes").
-
             if ($("#divCustomerPartNo").is(":visible")) {
                 $("#txtScanCustPartBarcode").val("");
                 $("#divCustomerPartNo").hide();
@@ -246,12 +242,7 @@
                         if (vdata.query[0].Customer_Code == vdata.Customer) {
 
                             $("#hdnCustomerPartNo").val(vdata.query[0].CustPart_No);
-                            //globalpartQty = vdata.query[0].NoOfPartQy_Box;
-                            // Allow user to enter the quenty of boxes
-                            //$("#txtInvoieQty").attr("disabled", "disabled");
-                            //$("#txtNoofBoxes").removeAttr("disabled");
-                            //$("#txtNoofBoxes").val("");
-
+                           
                             $("#divCustomerPartNo").show();
                             $("#txtScanCustPartBarcode").focus();
                             $("#txtInvoieQty").attr("disabled", "disabled");
@@ -326,7 +317,7 @@
                 }
                 else {
                     $("#txtNoofBoxes").val("");
-                    //document.getElementById('btnBarcodePrint').disabled = true;
+                  
                     document.getElementById('btnVerify').disabled = true;
                     alert("Please enter invoice quantity");
                     $("#txtInvoiceDate").val("");
@@ -344,62 +335,6 @@
         }
     });
 
-    //$(document).on("focusout", '#txtNoofBoxes', function () {
-    //    var tblScanBox = document.getElementById("tblScanBox");
-    //    var boxQty = document.getElementById('txtNoofBoxes').value;
-    //    //var qty = 0;
-    //    if ((document.getElementById('txtInvoiceNo').value).length > 0) {
-    //        if ((document.getElementById('txtInvoiceDate').value).length > 0) {
-
-    //            if ($("#txtInvoieQty").prop('disabled')) {
-    //                //alert('Textbox is disabled...')
-    //                if (boxQty != "") {
-    //                    if (boxQty > 99999) {
-    //                        $("#txtNoofBoxes").focus();
-    //                        alert("Please enter valid box quantity !");
-
-    //                    }
-    //                    else {
-    //                        if (tblScanBox.rows.length - 1 == document.getElementById('txtNoofBoxes').value) {
-    //                            document.getElementById('txtScanBoxBarcode').disabled = true;
-    //                            document.getElementById('btnVerify').disabled = false;
-    //                        }
-    //                        else if (tblScanBox.rows.length - 1 > document.getElementById('txtNoofBoxes').value) {
-    //                            $("#txtNoofBoxes").val("");
-    //                            $("#txtInvoieQty").val("");
-    //                            $("#txtInvoieQty").focus();
-    //                            document.getElementById('txtScanBoxBarcode').disabled = true;
-    //                            document.getElementById('btnVerify').disabled = true;
-    //                            alert("Please enter valid box quntity !");
-    //                        }
-    //                        else {
-    //                            document.getElementById('txtScanBoxBarcode').disabled = false;
-    //                            $("#txtScanBoxBarcode").focus();
-    //                            document.getElementById('btnBarcodePrint').disabled = true;
-    //                            document.getElementById('btnVerify').disabled = true;
-    //                        }
-    //                    }  // else part of invoiceqty > 99999 complete
-    //                }
-    //                else {
-    //                    $("#txtNoofBoxes").val("");
-    //                    $("#txtNoofBoxes").focus();
-    //                    document.getElementById('btnVerify').disabled = true;
-    //                    alert("Please enter valid box quantity");
-    //                }
-    //            }
-    //        }  //ie. txtInvoiceDate value.length not > 0
-    //        else {
-    //            $("#txtInvoiceDate").focus();
-    //            alert("Please enter Invoice Date");
-    //        }
-    //    }
-    //    else {
-    //        $("#txtInvoiceNo").focus();
-    //        alert("Please enter Invoice no");
-    //    }
-    //});
-
-
     function keyuptext(Barcode) {  // <= Barcode example = 0204.842.987-7TY:022:B190620181436:B00133309
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if (keycode == 13) {
@@ -413,39 +348,7 @@
                 //scanned part no details
                 var splitstr = Barcode.split(":");  //splitstr[0] = 0204.842.987-7TY   splitstr[1] = 022   splitstr[2] = B190620181436  splitstr[3] = B00133309
 
-                //// **************** START For Toyota Customer ***************************
-                //// check whether the txtNoofBoxes text box is disabled or not for Toyota Cust
-                //if (!$("#txtNoofBoxes").prop('disabled')) {
-                //    if (splitstr.length === 4) {
-                //        if (splitstr[3].length === 9) {
-                //            //split dropdown details
-                //            if (ddlpartNoText) {   // ddlpartNoText = 0204.842.987-7TY-208240-Toyota India-472000DE50
-                //                splitpartNo = ddlpartNoText.split("-");   // splitpartNo[0] = 0204.842.987   splitpartNo[1] = 7TY   splitpartNo[2] = 208240  splitpartNo[3] = Toyota India    splitpartNo[3] = 472000DE50
-                //                //if (splitpartNo[0] + '-' + splitpartNo[1].toUpperCase() === splitstr[0].toUpperCase() || splitpartNo[4].toUpperCase() === splitstr[0].toUpperCase()) {
-                //            }
-                //        }
-                //        else {
-                //            //Wrong box barcode scanned
-                //            $("#txtScanBoxBarcode").val("");
-                //            $("#txtScanBoxBarcode").focus();
-                //            alert("Wrong box barcode scanned.");
-                //            Errordescription = "Barcode string, serial no. character length is not equal to 9";
-                //            SaveUserLogs();
-                //            return;
-                //        }
-                //    }
-                //    else {
-                //        //Wrong box barcode scanned
-                //        $("#txtScanBoxBarcode").val("");
-                //        $("#txtScanBoxBarcode").focus();
-                //        alert("Wrong box barcode scanned");
-                //        Errordescription = "Scanned barcode string length, after split, is not equal to 5 as aspected";
-                //        SaveUserLogs();
-                //        return;
-                //    }
-                //}
-                //// **************** END For Toyota Customer ***************************
-
+               
                 // **************** START other than toyota Customer ***************************
                 if (splitstr.length === 4) {
                     if (splitstr[3].length === 9) {
@@ -603,23 +506,7 @@
                     Errordescription = "Wrong box barcode scanned";
                     SaveUserLogs();
                 }
-                //    }
-                //    else {   // ie. splitstr[3].length != 9
-                //        //Wrong box barcode scanned
-                //        $("#txtScanBoxBarcode").val("");
-                //        $("#txtScanBoxBarcode").focus();
-                //        alert("Wrong box barcode scanned");
-                //        Errordescription = "Wrong box barcode scanned";
-                //        SaveUserLogs();
-                //    }
-                //}
-                //else {  //ie. splitstr.length === 4
-                //    $("#txtScanBoxBarcode").val("");
-                //    $("#txtScanBoxBarcode").focus();
-                //    alert("Wrong box barcode scanned");
-                //    Errordescription = "Wrong box barcode scanned";
-                //    SaveUserLogs();
-                //}
+               
             }
             else {
                 alert("Number of Boxes cannot be blank!");
@@ -762,7 +649,13 @@
         $("#txtNoofBoxes").val("");
         $("#txtScanBoxBarcode").val("");
         $("#txtInvoiceNo").val("");
-        $("#txtInvoiceDate").val("");
+       //# $("#txtInvoiceDate").val("");
+        let today = new Date();
+        let day = String(today.getDate()).padStart(2, '0');
+        let month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0
+        let year = today.getFullYear();
+        let todayDate = day + '.' + month + '.' + year;
+        $("#txtInvoiceDate").val(todayDate);
         document.getElementById('btnBarcodePrint').disabled = true;
         document.getElementById("txtScanBoxBarcode").disabled = true;
         $("#txtInvoiceNo").focus();
@@ -774,14 +667,11 @@
         $("#hdnPallateDDLText").val("");
 
         $("#MST_PartConfiguration_IDundefined").val('');
-        //$("#MST_PartConfiguration_IDundefined")[0].selectedIndex = -1;
-
-        // Added for toyota
-        // on clear, revert the changes made in txtInvoiceQty & txtNoOfBoxes text boxes...
+       
         if ($("#txtInvoieQty").prop('disabled')) {
             $("#txtInvoieQty").removeAttr("disabled");
         }
-        //$("#txtNoofBoxes").attr("disabled", "disabled");
+       
         $("#hdnCustomerPartNo").val("");
 
         //Added for Toyota
@@ -813,7 +703,7 @@
         var uniqueId = 'id-' + Math.random().toString(36).substr(2, 16);
         var flag = true;
 
-        for (rowcount = 1; rowcount < tblScanBox.rows.length; rowcount++) {
+        @*for (rowcount = 1; rowcount < tblScanBox.rows.length; rowcount++) {
             partNo = tblScanBox.rows[rowcount].cells[0].innerHTML;
             BatchCode = tblScanBox.rows[rowcount].cells[2].innerHTML;
             Serial = tblScanBox.rows[rowcount].cells[3].innerHTML;
@@ -853,53 +743,57 @@
                     }
                 }
             });
+        }*@
+
+        let boxList = [];
+        for (rowcount = 1; rowcount < tblScanBox.rows.length; rowcount++) {
+            partNo = tblScanBox.rows[rowcount].cells[0].innerHTML;
+            BatchCode = tblScanBox.rows[rowcount].cells[2].innerHTML;
+            Serial = tblScanBox.rows[rowcount].cells[3].innerHTML;
+
+            invoiceNo = document.getElementById('txtInvoiceNo').value ? document.getElementById('txtInvoiceNo').value : '000000001';
+            invoiceqty = document.getElementById('txtInvoieQty').value ? document.getElementById('txtInvoieQty').value : 1;
+            InvoiceDate = document.getElementById('txtInvoiceDate').value ? document.getElementById('txtInvoiceDate').value : Date();
+            let userId = @ViewData["User_Id"];
+            let boxObject = {
+                "PartNo": partNo,
+                "BatchCode": BatchCode,
+                "Serial": Serial,
+                "InvoiceNo": invoiceNo,
+                "InvoiceQty": invoiceqty,
+                "InvoiceDate": InvoiceDate,
+                "Code": uniqueId,
+                "UserId": userId,
+                "PartId": partconfigurationID
+            }
+            boxList.push(boxObject);
         }
-    });
+        let JsonData = JSON.stringify(boxList);
+            $.ajax({
+                url: '@Url.Action("SaveInTempList", "PalletLabel")',
+                type: "POST",
+                data: {
+                    "JSON": JsonData
+                   
+                },
+                success: function (data) {
+                   
+                    if (data != null && data.length > 0) {
+                       
+                            var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
+                            try {
+                                alert(data + " - Pallet packed succesfully");
+                                Clear();
+                            }
+                            catch (e) {
+                                alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
 
+                            }
 
-    function execFinger() {
-        Clear();
-
-        $.ajax({
-            url: '@Url.Action("GetuserData", "PalletLabel")',
-            type: "POST",
-            data: {},
-            success: function (data) {
-                if (data != null) {
-                    if (data.length > 0) {
-
-                        var vdata = data;
-                        //parameter = parameter +";"+vdata;
-                        try {
-                            parameter = vdata + ";FingerValidationPallet;" + parameter;
-                            //parameter="test"
-                            exec(parameter);
-                            return 1;
-                        }
-                        catch (e) {
-                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-                            return 0;
-                        }
                     }
                 }
-            }
-        });
-    }
-
-function CallLocalUSBPrinter(params) {
-
-        try {
-
-            var shell = new ActiveXObject("WScript.shell");
-            shell.run("C:\\UserValidation\\PrintingLogicNET35Barcode\\LabelPrinting.exe " + parameter, 1, true);
-
-            return 1;
-        }
-        catch (e) {
-            alert('Error : ' + e.message + '\n' + e.stack);
-            return 0;
-        }
-    }
+            });
+    });
 
     function printBarcode() {
         Clear();
@@ -926,57 +820,10 @@ function CallLocalUSBPrinter(params) {
         });
     }
 
-
-
-	function printBarcodeFromWebApp() {
-        Clear();
-        $.ajax({
-            url: '@Url.Action("GetuserData", "PalletLabel")',
-            type: "POST",
-            data: {},
-            success: function (data) {
-                // console.log('userdata',data);
-                // debugger;
-                if (data != null) {
-                    if (data.length > 0) {
-                        var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
-                        try {
-                            //= 1;ttladmin ; FingerValidationBox
-                            parameter = vdata + ";FingerValidationPallet;" + parameter;
-                            // alert(parameter);
-                            // console.log('Param in execFinger');
-                            // console.log(parameter);
-                            CallLocalUSBPrinter(parameter);
-                            return 1;
-                        }
-                        catch (e) {
-                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-                            return 0;
-                        }
-                    }
-                }
-            }
-        });
-    }
-
     $(document).on("click", "#btnBarcodePrint", function () {
         Clear();
         printBarcode();
-        // var resultprinting = printBarcodeFromWebApp();// execFinger()
-        // if (resultprinting != null) {
-            // if (resultprinting == 1) {
-                // // on data save success
-                // document.getElementById('btnBarcodePrint').disabled = true;
-                // Clear();
-                // alert(boxbarcode[3] + " - Pallet packed succesfully");
-            // }
-            // else {
-                // //On error
-                // document.getElementById('btnBarcodePrint').disabled = true;
-                // Clear();
-                // alert("Error occured during barcode printing");
-            // }
-        // }
+       
     });
 
     $(document).on("click", "#btnClear", function () {
@@ -1062,9 +909,9 @@ function CallLocalUSBPrinter(params) {
                                 <div class="col-lg-6">
                                     <label class="col-lg-3 control-label">Invoice Date</label>
                                     <div class="col-lg-12">
-                                        @*<input type="text" id="txtInvoiceDate" maxlength="20" tabindex="2" placeholder="MM-DD-YYYY" class="datepicker" data-date-format="mm/dd/yyyy" style="display: block; width: 100%; height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.428571429; color: #8e8e93; vertical-align: middle; background-color: #ffffff; border: 1px solid #c7c7cc; border-radius: 4px; -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;"/>*@
+                                       
                                         <input type="text" id="txtInvoiceDate" class="form-control" maxlength="20" tabindex="2" style="display: block; width: 100%; height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.428571429; color: #8e8e93; vertical-align: middle; background-color: #ffffff; border: 1px solid #c7c7cc; border-radius: 4px; -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;" placeholder="dd.mm.yyyy" />
-                                        @*<input type="text" id="txtInvoiceDate" class="form-control" maxlength="20" tabindex="2" style="display: block; width: 100%; height: 34px;"/>*@
+                                       
 
                                     </div>
                                 </div>
@@ -1076,13 +923,7 @@ function CallLocalUSBPrinter(params) {
 
                                 <div class="col-lg-6">
                                     <label class="col-lg-3 control-label">Part No</label>
-                                    @*<div class="col-xs-12 col-xm-12 col-md-12 col-lg-12">
-                                            <div <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7" style="padding-left:0px; padding-right:14px;">
-                                                <select id="MST_PartConfiguration_ID" class="combobox form-control">
-                                                    <option value="" selected="selected">-- Select --</option>
-                                                </select>
-                                            </div>
-                                        </div>*@
+                                  
                                     <div class="col-lg-9" style="padding-right:15px;padding-left:0px;">
                                         <select id="MST_PartConfiguration_ID" class="combobox form-control">
                                             <option value="" selected="selected">-- Select --</option>
@@ -1090,12 +931,7 @@ function CallLocalUSBPrinter(params) {
 
                                     </div>
                                 </div>
-                                @*<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                                        <label class="col-xs-4 col-sm-4 col-md-3 col-lg-3 control-label">Customer Name</label>
-                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                            <input type="text" id="txtCustName" disabled="disabled" tabindex="4" class="form-control" />
-                                        </div>
-                                    </div>*@
+                             
                                 <div class="col-lg-6">
                                     <label class="col-lg-3 control-label">Customer Name</label>
                                     <div class="col-lg-12">
@@ -1150,14 +986,14 @@ function CallLocalUSBPrinter(params) {
                                     </div>
                                 </div>
 
-                                @*Start : 28 Sept 17 Added by 92293*@
+                               
                                 <div class="col-lg-6">
                                     <label class="col-lg-3 control-label">No of Boxes Scanned</label>
                                     <div class="col-lg-12">
                                         <label class="col-lg-3 control-label" style="font-size: larger; font-weight: 500" id="txtBoxesScanned"></label>
                                     </div>
                                 </div>
-                                @*End : 28 Sept 17 Added by 92293*@
+                              
 
                             </div>
                         </div>
