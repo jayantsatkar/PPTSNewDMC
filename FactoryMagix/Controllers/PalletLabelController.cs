@@ -28,22 +28,19 @@ namespace FactoryMagix.Controllers
             }
             else
             {
+                ViewData["User_Id"] = ((User)Session["UserInfo"]).User_ID.ToString();
+                string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
+                Logger.Info("IP of Request:" + clientIp);
+                string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
+                string folderPath = Path.Combine(path, clientIp);
+
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
                 return View();
             }
         }
-
-        //public ActionResult Index()
-        //{
-        //    Pallet pallet = new Pallet();
-        //    if (Session["UserInfo"] == null)
-        //    {
-        //        return RedirectToAction("Login", "Account");
-        //    }
-        //    else
-        //    {
-        //        return View(pallet);
-        //    }
-        //}
 
         public ActionResult Index(string option, string search, int? page)
         {
@@ -87,9 +84,6 @@ namespace FactoryMagix.Controllers
             }
         }
 
-
-
-        //// Added by 92293
         [HttpPost]
         public JsonResult GetPartNos()
         {
@@ -170,6 +164,48 @@ namespace FactoryMagix.Controllers
                 return Json(result);
             }
         }
+
+
+        [HttpPost]
+        //public ActionResult SaveInTemp(string Invoice_No, long PartConfig_Id, long InvoiceQty, string InvoiceDate)
+        public ActionResult SaveInTempList(string JSON)
+        {
+            string PalletNumber = "";
+            if (Session["UserInfo"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                // string userIpAddress = this.Request.UserHostAddress;
+                User user = (User)Session["UserInfo"];
+                //need to replace machineid and userid
+                
+                //var query = context.spInsertPalletLable_Verify(Invoice_No, PartConfig_Id, InvoiceQty, InvoiceDate, 1, user.User_ID, BoxBatchCode, BoxSerialNo, Code).ToList();
+                DataTable dataTable = PalletRepository.SaveInTempList(JSON);
+                //// Added by 92293
+                ///DataTable dataTable = PartRepository.SaveInTempList(JSON);
+                if (dataTable != null && dataTable.Rows.Count > 0)
+                {
+                    PalletNumber = Convert.ToString(dataTable.Rows[0]["PalletSrNo"]);
+                    Logger.Info("Pallet Number = " + PalletNumber);
+                    // dt = BoxRepository.GetBoxReprintDetails(SerialNo, Convert.ToInt32(flag)); ///db.spGetBarcodeDataprint(SerialNo, flag).ToList();
+                    string clientIp = IpHelper.GetClientIpAddress(Request).Replace(':', '.');
+                    Logger.Info("IP of Request:" + clientIp);
+                    string path = ConfigurationManager.AppSettings["SharedDrive"].ToString();
+                    string folderPath = Path.Combine(path, clientIp);
+                    string shareName = clientIp;
+                    //FolderHelper.CreateAndShareFolder(folderPath, shareName);
+
+                    Logger.Info("Print Start");
+                    PalletRepository.CreatePRNFile(folderPath, dataTable, (int)LabelType.Pallet, user.Login_ID);
+                    Logger.Info("Print Start");
+                }
+
+            }
+            return Json(PalletNumber);
+        }
+
 
         [HttpPost]
         public ActionResult Save(long PartConfigId, string Invoice_No, long invoiceQty, string InvoiceDate)
