@@ -53,7 +53,7 @@ namespace FactoryMagix.Repository
                     InvoiceQty = Convert.ToString(dt.Rows[0]["InvoiceQty"]),
                     InvoiceDate = Convert.ToString(dt.Rows[0]["InvoiceDate"]),
                     pbarcode = Convert.ToString(dt.Rows[0]["PalletBarcode"]),
-                    PartQty= Convert.ToString(dt.Rows[0]["NoOfPartQy_Box"]),
+                    PartQty = Convert.ToString(dt.Rows[0]["NoOfPartQy_Box"]),
                     UserLoginId = UserName.ToUpper(),
                     Shift = GetShift();
 
@@ -115,7 +115,7 @@ namespace FactoryMagix.Repository
                         tr.Close();
                         //string newfile = //@ConfigurationManager.AppSettings["TempBoxLabelPrn"].ToString();
                         string newfile = Path.Combine(DestinationFolderPath, "PalletLabel.prn");
-                        if(File.Exists(newfile))
+                        if (File.Exists(newfile))
                         {
                             File.Delete(newfile);
                         }
@@ -194,7 +194,7 @@ namespace FactoryMagix.Repository
 
         }
 
-        public static DataTable SaveInTemp(string Invoice_No, int PartConfig_Id, int InvoiceQty, string InvoiceDate, int MachineId,int UserId, string BoxBatchCode, string BoxSerialNo, string Code)
+        public static DataTable SaveInTemp(string Invoice_No, int PartConfig_Id, int InvoiceQty, string InvoiceDate, int MachineId, int UserId, string BoxBatchCode, string BoxSerialNo, string Code)
         {
             List<SqlParameter> sqlParameters = new List<SqlParameter>();
             DBHelper.AddSqlParameter("@Invoice_No", Invoice_No, ref sqlParameters);
@@ -221,7 +221,7 @@ namespace FactoryMagix.Repository
             DBHelper.AddSqlParameter("@InvoiceDate", InvoiceQty, ref sqlParameters);
             DBHelper.AddSqlParameter("@Machine_ID", MachineId, ref sqlParameters);
             DBHelper.AddSqlParameter("@Created_By", UserId, ref sqlParameters);
-           
+
 
             var dtUsers = DBHelper.ExecuteProcedure("spInsertPalletSerialData", sqlParameters);
 
@@ -241,7 +241,7 @@ namespace FactoryMagix.Repository
             DataTable dtUsers = DBHelper.ExecuteProcedure("spInsertPalletDetails", sqlParameters);
 
             return dtUsers;
-            
+
         }
 
         public static DataTable CreatePallet(int UserId)
@@ -265,7 +265,8 @@ namespace FactoryMagix.Repository
             {
                 foreach (DataRow dr in dataTable.Rows)
                 {
-                    pallets.Add(new Pallet { 
+                    pallets.Add(new Pallet
+                    {
                         CreatedBy = Convert.ToString(dr["Created_By"]),
                         PalletNumber = Convert.ToString(dr["PalletSrNo"]),
                         InvoiceNumber = Convert.ToString(dr["InvoiceNo"]),
@@ -275,7 +276,7 @@ namespace FactoryMagix.Repository
                         PalletId = Convert.ToInt32(dr["PalletId"])
                     });
                 }
-                
+
             }
 
             return pallets;
@@ -308,6 +309,18 @@ namespace FactoryMagix.Repository
 
             DBHelper.AddSqlParameter("@JSON", JsonConvert.SerializeObject(pallet, Formatting.Indented), ref sqlParameters);
             DBHelper.ExecuteNonQuery("usp_AddUpdatePallet", sqlParameters);
+        }
+
+        //PalletRepository.SaveInTempList(JSON)
+
+        public static DataTable SaveInTempList(string JSONData)
+        {
+
+            List<SqlParameter> sqlParameters = new List<SqlParameter>();
+            DBHelper.AddSqlParameter("@JSONData", JSONData, ref sqlParameters);
+
+            DataTable dt = DBHelper.ExecuteProcedure("usp_InsertPalletLabel_List", sqlParameters);
+            return dt;
         }
 
     }
