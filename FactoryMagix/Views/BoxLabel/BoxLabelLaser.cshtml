@@ -166,10 +166,10 @@
                 }
             }
         });
-       
+
     });
 
-    
+
     function getPartNoList() {
         $.ajax({
             type: "POST",
@@ -200,7 +200,7 @@
                 if (data != null) {
                     var vdata = data;
                     if (vdata.query.length > 0) {
-                      
+
                         if (vdata.query[0].Customer_Code == vdata.Customer) {
                             $("#txtpartDesc").val(vdata.query[0].BoschPart_Desc);
                             $("#txtCustName").val(vdata.query[0].Customer_Name);
@@ -795,7 +795,7 @@
     }
 
     function scanBarcodeNewDMC(newDMC) {
-       
+
 	var flag = false;
         var partconfigurationID = $("#hdnDDLId").val();
         var ddlpartNoText = $("#hdnDDLText").val();
@@ -811,7 +811,7 @@
 
         var partno, partbatchcode, partsrno;
 
-        
+
         if (flag) {
 
             $.ajax({
@@ -821,7 +821,7 @@
                     "ScannedBarcode": newDMC, "PartNo": splitpartNo[4]
                 },
                 success: function (ValidateData) {
-                   
+
                     if (ValidateData != null) {
                         var tempdate = ValidateData;
 
@@ -1026,7 +1026,7 @@
         }
     };
 
-    
+
     function Clear() {
         $("#tblScanPartNo").empty();
         $("#txtQtybox").val("");
@@ -1084,38 +1084,57 @@
 
         var uniqueId = 'id-' + Math.random().toString(36).substr(2, 16);
 
+
+        let partsList = [];
         for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
             partNo = tblScanPartNo.rows[rowcount].cells[0].innerHTML;
             BatchCode = tblScanPartNo.rows[rowcount].cells[1].innerHTML;
             Serial = tblScanPartNo.rows[rowcount].cells[2].innerHTML;
+            let userId = @ViewData["User_Id"];
+            let partObject = {
+                "PartId": partconfigurationID,
+                "PartQty": totalPartCount,
+                "Partno": partNo,
+                "PartBatchCode": BatchCode,
+                "PartSerialNo": Serial,
+                "Code": uniqueId,
+                "UserId": userId
+            }
+
+            partsList.push(partObject);
             //var uniqueCode = Code;
-            $.ajax({
-                url: '@Url.Action("SaveInTemp", "BoxLabel")',
-                type: "POST",
-                data: {
-                    "PartConfigId": partconfigurationID, "PartQty": totalPartCount, "partno": partNo, "partbatchcode": BatchCode, "partserialno": Serial, "Code": uniqueId
-                },
-                success: function (data) {
-                    if (data != null) {
-                        var tempverify = data
-                        if (tempverify == 1) {
-                            document.getElementById('btnBarcodePrint').disabled = false;
-                            document.getElementById('btnVerify').disabled = true;
-                            var CustomerName = document.getElementById('txtCustName').value;
-                            var PartDescription = document.getElementById('txtpartDesc').value;
-                            parameter = partconfigurationID + ";" + uniqueId + ";" + CustomerName + ";" + PartDescription;
-                            //+ ";" + PartDescription;
-                        }
+
+        }
+        let JsonData = JSON.stringify(partsList);
+
+        $.ajax({
+            url: '@Url.Action("SaveInTempList", "BoxLabel")',
+            type: "POST",
+            data: {
+                "JSON": JsonData
+            },
+            success: function (data) {
+                if (data.length > 0) {
+                    var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
+                    try {
+                        alert(vdata + " - Box packed succesfully");
+                        Clear();
+                    }
+                    catch (e) {
+                        alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
+
                     }
                 }
-            });
-        }
+            }
+        });
+
+
     });
 
     $(document).on("click", "#btnBarcodePrint", function () {
         Clear();
         printBarcode();
-        
+
     });
 
     function CreateBlankRow(tblScanPartNo) {
