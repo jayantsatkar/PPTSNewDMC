@@ -617,7 +617,7 @@
         if (splitpartNo[0].toUpperCase() === partno.toUpperCase() || splitpartNo[4].toUpperCase() === partno.toUpperCase()) {
 
             $.ajax({
-                url: '@Url.Action("ValidatePartNo", "BoxLabel")',
+                url: '@Url.Action("ValidatePartNoNewDMC", "BoxLabel")',
                 type: "POST",
                 data: {
                     "PartNo": partno, "batchcode": partbatchcode, "partSerialNo": partsrno,
