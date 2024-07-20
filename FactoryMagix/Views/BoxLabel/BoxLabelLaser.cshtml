@@ -322,7 +322,7 @@
         var PartNo, partbatchcode, partsrno;
         if (keycode == 13) {
 
-            // Added by 92293
+            
             countHowManyScans = countHowManyScans + 1;
 
             if (countHowManyScans <= document.getElementById('txtQtybox').value) {
@@ -485,7 +485,7 @@
                 else if (scannedBarcode.length == 12) {
                     scanBarcodeNewDMC(scannedBarcode);
                 }
-                    // Added by 92293  to consume new barcode format -------
+                    
                 else if (scannedBarcode.length == 29) {
                     var splitstrbarcode = scannedBarcode.split(":");
 
@@ -500,7 +500,7 @@
                                 alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                                 Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                                // Added by 92293
+                                
                                 if (countHowManyScans > 0) {
                                     countHowManyScans = countHowManyScans - 1;
                                 }
@@ -517,7 +517,7 @@
                             alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                             Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                            // Added by 92293
+                            
                             if (countHowManyScans > 0) {
                                 countHowManyScans = countHowManyScans - 1;
                             }
@@ -534,7 +534,7 @@
                         alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                         Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                        // Added by 92293
+                        
                         if (countHowManyScans > 0) {
                             countHowManyScans = countHowManyScans - 1;
                         }
@@ -551,7 +551,7 @@
                     alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                     Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                    // Added by 92293
+                    
                     if (countHowManyScans > 0) {
                         countHowManyScans = countHowManyScans - 1;
                     }
@@ -717,13 +717,13 @@
 
                                         if (totalPartCount != document.getElementById('txtQtybox').value) {
                                             document.getElementById('btnBarcodePrint').disabled = true;
-                                            // Added by 92293
+                                            
                                             document.getElementById('btnVerify').disabled = true;
                                         }
                                         alert($("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part");  // this will be shown if scanned part is already in the dynamic html table on this view.
                                         Errordescription = $("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part";
 
-                                        // Added by 92293
+                                        
                                         $("#txtScanPartBarcode").val("");
                                         if (countHowManyScans > 0) {
                                             countHowManyScans = countHowManyScans - 1;
@@ -741,7 +741,7 @@
                                     $("#btnBarcodePrint").focus();
                                     totalPartCount = totalPartCount - 1;
                                     $('#txtScanned').html(totalPartCount);
-                                    // Added by 92293
+                                    
                                     if (countHowManyScans > 0) {
                                         countHowManyScans = countHowManyScans - 1;
                                     }
@@ -761,7 +761,7 @@
                             alert($("#txtScanPartBarcode").val() + " - This part packed already");
                             Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
 
-                            // Added by 92293
+                            
                             if (countHowManyScans > 0) {
                                 countHowManyScans = countHowManyScans - 1;
                             }
@@ -782,7 +782,7 @@
             alert($("#txtScanPartBarcode").val() + " - Wrong part scanned");
             Errordescription = $("#txtScanPartBarcode").val() + " - Wrong part scanned";
 
-            // Added by 92293
+            
             if (countHowManyScans > 0) {
                 countHowManyScans = countHowManyScans - 1;
             }
@@ -918,13 +918,13 @@
 
                                         if (totalPartCount != document.getElementById('txtQtybox').value) {
                                             document.getElementById('btnBarcodePrint').disabled = true;
-                                            // Added by 92293
+                                            
                                             document.getElementById('btnVerify').disabled = true;
                                         }
                                         alert($("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part");  // this will be shown if scanned part is already in the dynamic html table on this view.
                                         Errordescription = $("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part";
 
-                                        // Added by 92293
+                                        
                                         $("#txtScanPartBarcode").val("");
                                         if (countHowManyScans > 0) {
                                             countHowManyScans = countHowManyScans - 1;
@@ -942,7 +942,7 @@
                                     $("#btnBarcodePrint").focus();
                                     totalPartCount = totalPartCount - 1;
                                     $('#txtScanned').html(totalPartCount);
-                                    // Added by 92293
+                                    
                                     if (countHowManyScans > 0) {
                                         countHowManyScans = countHowManyScans - 1;
                                     }
@@ -962,7 +962,7 @@
                             alert($("#txtScanPartBarcode").val() + " - This part packed already");
                             Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
 
-                            // Added by 92293
+                            
                             if (countHowManyScans > 0) {
                                 countHowManyScans = countHowManyScans - 1;
                             }
@@ -983,7 +983,7 @@
             alert($("#txtScanPartBarcode").val() + " - Wrong part scanned");
             Errordescription = $("#txtScanPartBarcode").val() + " - Wrong part scanned";
 
-            // Added by 92293
+            
             if (countHowManyScans > 0) {
                 countHowManyScans = countHowManyScans - 1;
             }
@@ -1041,7 +1041,7 @@
         countHowManyScans = 0;
         document.getElementById('btnBarcodePrint').disabled = true;
 
-        // Added by 92293
+        
         //IdList.length = 0;
         $("#hdnDDLId").val("");
         $("#hdnDDLText").val("");
