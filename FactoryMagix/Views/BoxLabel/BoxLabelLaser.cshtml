@@ -544,7 +544,7 @@
                         SaveUserLogs();
                     }
                 }
-                    // end added by 92293  to consume new barcode format -------
+                    
                 else {  // this is true when scannedBarcode.length < 29 ie. less than 29
                     $("#txtScanPartBarcode").val("");
                     $("#txtScanPartBarcode").focus();
@@ -569,7 +569,7 @@
                 alert("quantity of parts scanned exceded");
                 Errordescription = "No of part scanned exceded than the actual count";
                 SaveUserLogs();
-            }   // <= this line Added by 92293
+            }   
         }
     });
 
@@ -583,7 +583,7 @@
             splitpartNo = ddlpartNoText.split("-");
         }
 
-        //Added by 92293 to handle new barcode format
+       
         if (partno.indexOf('.') > -1) {
             ////partno has '.' in it
         }
@@ -706,15 +706,13 @@
                                         $("#txtScanPartBarcode").focus();
                                     }
                                     else if (status == 1) {
-                                        // Commented below line and added new one by 92293
+                                       
                                         //$("#txtScanPartBarcode").val("");
                                         totalPartCount = totalPartCount - 1;
 
                                         $('#txtScanned').html(totalPartCount);
 
-                                        // Commented below line and added new one by 92293
-                                        //$("#txtScanPartBarcode").val(totalPartCount);
-
+                                        
                                         if (totalPartCount != document.getElementById('txtQtybox').value) {
                                             document.getElementById('btnBarcodePrint').disabled = true;
                                             
@@ -907,14 +905,11 @@
                                         $("#txtScanPartBarcode").focus();
                                     }
                                     else if (status == 1) {
-                                        // Commented below line and added new one by 92293
-                                        //$("#txtScanPartBarcode").val("");
+                                        
+                                        
                                         totalPartCount = totalPartCount - 1;
 
                                         $('#txtScanned').html(totalPartCount);
-
-                                        // Commented below line and added new one by 92293
-                                        //$("#txtScanPartBarcode").val(totalPartCount);
 
                                         if (totalPartCount != document.getElementById('txtQtybox').value) {
                                             document.getElementById('btnBarcodePrint').disabled = true;
@@ -957,7 +952,7 @@
                             $("#txtScanPartBarcode").focus();
 
                         }
-                        else {   // temp data === 1 failed
+                        else {   
                             $("#txtScanPartBarcode").focus();
                             alert($("#txtScanPartBarcode").val() + " - This part packed already");
                             Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
