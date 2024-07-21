@@ -322,7 +322,7 @@
         var PartNo, partbatchcode, partsrno;
         if (keycode == 13) {
 
-            
+
             countHowManyScans = countHowManyScans + 1;
 
             if (countHowManyScans <= document.getElementById('txtQtybox').value) {
@@ -485,7 +485,7 @@
                 else if (scannedBarcode.length == 12) {
                     scanBarcodeNewDMC(scannedBarcode);
                 }
-                    
+
                 else if (scannedBarcode.length == 29) {
                     var splitstrbarcode = scannedBarcode.split(":");
 
@@ -500,7 +500,7 @@
                                 alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                                 Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                                
+
                                 if (countHowManyScans > 0) {
                                     countHowManyScans = countHowManyScans - 1;
                                 }
@@ -517,7 +517,7 @@
                             alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                             Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                            
+
                             if (countHowManyScans > 0) {
                                 countHowManyScans = countHowManyScans - 1;
                             }
@@ -534,7 +534,7 @@
                         alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                         Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                        
+
                         if (countHowManyScans > 0) {
                             countHowManyScans = countHowManyScans - 1;
                         }
@@ -544,14 +544,14 @@
                         SaveUserLogs();
                     }
                 }
-                    
+
                 else {  // this is true when scannedBarcode.length < 29 ie. less than 29
                     $("#txtScanPartBarcode").val("");
                     $("#txtScanPartBarcode").focus();
                     alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                     Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                    
+
                     if (countHowManyScans > 0) {
                         countHowManyScans = countHowManyScans - 1;
                     }
@@ -569,7 +569,7 @@
                 alert("quantity of parts scanned exceded");
                 Errordescription = "No of part scanned exceded than the actual count";
                 SaveUserLogs();
-            }   
+            }
         }
     });
 
@@ -583,7 +583,7 @@
             splitpartNo = ddlpartNoText.split("-");
         }
 
-       
+
         if (partno.indexOf('.') > -1) {
             ////partno has '.' in it
         }
@@ -647,13 +647,15 @@
                                 var col = document.createElement('td'); // create column node
                                 var col2 = document.createElement('td'); // create second column node
                                 var col3 = document.createElement('td');
+                                var col4 = document.createElement('td');
                                 row.appendChild(col); // append first column to row
                                 row.appendChild(col2); // append second column to row
                                 row.appendChild(col3);
+                                row.appendChild(col4);
                                 col.innerHTML = partno; // put data in first column
                                 col2.innerHTML = partbatchcode; // put data in second column
                                 col3.innerHTML = partsrno;
-
+                                col4.innerHTML = newDMC;
                                 tblScanPartNo.appendChild(row); // append row to table
 
                                 $("#txtScanPartBarcode").val("");
@@ -694,34 +696,37 @@
                                         var col = document.createElement('td'); // create column node
                                         var col2 = document.createElement('td'); // create second column node
                                         var col3 = document.createElement('td');
+                                        var col4 = document.createElement('td');
                                         row.appendChild(col); // append first column to row
                                         row.appendChild(col2); // append second column to row
                                         row.appendChild(col3);
+                                        row.appendChild(col4);
                                         col.innerHTML = partno; // put data in first column
                                         col2.innerHTML = partbatchcode; // put data in second column
                                         col3.innerHTML = partsrno;
+                                        col4.innerHTML = newDMC;
                                         tblScanPartNo.appendChild(row);// append row to table
 
                                         $("#txtScanPartBarcode").val("");
                                         $("#txtScanPartBarcode").focus();
                                     }
                                     else if (status == 1) {
-                                       
+
                                         //$("#txtScanPartBarcode").val("");
                                         totalPartCount = totalPartCount - 1;
 
                                         $('#txtScanned').html(totalPartCount);
 
-                                        
+
                                         if (totalPartCount != document.getElementById('txtQtybox').value) {
                                             document.getElementById('btnBarcodePrint').disabled = true;
-                                            
+
                                             document.getElementById('btnVerify').disabled = true;
                                         }
                                         alert($("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part");  // this will be shown if scanned part is already in the dynamic html table on this view.
                                         Errordescription = $("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part";
 
-                                        
+
                                         $("#txtScanPartBarcode").val("");
                                         if (countHowManyScans > 0) {
                                             countHowManyScans = countHowManyScans - 1;
@@ -739,7 +744,7 @@
                                     $("#btnBarcodePrint").focus();
                                     totalPartCount = totalPartCount - 1;
                                     $('#txtScanned').html(totalPartCount);
-                                    
+
                                     if (countHowManyScans > 0) {
                                         countHowManyScans = countHowManyScans - 1;
                                     }
@@ -759,7 +764,7 @@
                             alert($("#txtScanPartBarcode").val() + " - This part packed already");
                             Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
 
-                            
+
                             if (countHowManyScans > 0) {
                                 countHowManyScans = countHowManyScans - 1;
                             }
@@ -780,7 +785,7 @@
             alert($("#txtScanPartBarcode").val() + " - Wrong part scanned");
             Errordescription = $("#txtScanPartBarcode").val() + " - Wrong part scanned";
 
-            
+
             if (countHowManyScans > 0) {
                 countHowManyScans = countHowManyScans - 1;
             }
@@ -793,7 +798,7 @@
     }
 
     function scanBarcodeNewDMC(newDMC) {
-
+        console.log('DMC', newDMC);
 	var flag = false;
         var partconfigurationID = $("#hdnDDLId").val();
         var ddlpartNoText = $("#hdnDDLText").val();
@@ -846,12 +851,15 @@
                                 var col = document.createElement('td'); // create column node
                                 var col2 = document.createElement('td'); // create second column node
                                 var col3 = document.createElement('td');
+                                var col4 = document.createElement('td');
                                 row.appendChild(col); // append first column to row
                                 row.appendChild(col2); // append second column to row
                                 row.appendChild(col3);
+                                row.appendChild(col4);
                                 col.innerHTML = partno; // put data in first column
                                 col2.innerHTML = partbatchcode; // put data in second column
                                 col3.innerHTML = partsrno;
+                                col4.innerHTML = newDMC;
 
                                 tblScanPartNo.appendChild(row); // append row to table
 
@@ -893,33 +901,36 @@
                                         var col = document.createElement('td'); // create column node
                                         var col2 = document.createElement('td'); // create second column node
                                         var col3 = document.createElement('td');
+                                        var col4 = document.createElement('td');
                                         row.appendChild(col); // append first column to row
                                         row.appendChild(col2); // append second column to row
                                         row.appendChild(col3);
+                                        row.appendChild(col4);
                                         col.innerHTML = partno; // put data in first column
                                         col2.innerHTML = partbatchcode; // put data in second column
                                         col3.innerHTML = partsrno;
+                                        col4.innerHTML = newDMC;
                                         tblScanPartNo.appendChild(row);// append row to table
 
                                         $("#txtScanPartBarcode").val("");
                                         $("#txtScanPartBarcode").focus();
                                     }
                                     else if (status == 1) {
-                                        
-                                        
+
+
                                         totalPartCount = totalPartCount - 1;
 
                                         $('#txtScanned').html(totalPartCount);
 
                                         if (totalPartCount != document.getElementById('txtQtybox').value) {
                                             document.getElementById('btnBarcodePrint').disabled = true;
-                                            
+
                                             document.getElementById('btnVerify').disabled = true;
                                         }
                                         alert($("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part");  // this will be shown if scanned part is already in the dynamic html table on this view.
                                         Errordescription = $("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part";
 
-                                        
+
                                         $("#txtScanPartBarcode").val("");
                                         if (countHowManyScans > 0) {
                                             countHowManyScans = countHowManyScans - 1;
@@ -937,7 +948,7 @@
                                     $("#btnBarcodePrint").focus();
                                     totalPartCount = totalPartCount - 1;
                                     $('#txtScanned').html(totalPartCount);
-                                    
+
                                     if (countHowManyScans > 0) {
                                         countHowManyScans = countHowManyScans - 1;
                                     }
@@ -952,12 +963,12 @@
                             $("#txtScanPartBarcode").focus();
 
                         }
-                        else {   
+                        else {
                             $("#txtScanPartBarcode").focus();
                             alert($("#txtScanPartBarcode").val() + " - This part packed already");
                             Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
 
-                            
+
                             if (countHowManyScans > 0) {
                                 countHowManyScans = countHowManyScans - 1;
                             }
@@ -978,7 +989,7 @@
             alert($("#txtScanPartBarcode").val() + " - Wrong part scanned");
             Errordescription = $("#txtScanPartBarcode").val() + " - Wrong part scanned";
 
-            
+
             if (countHowManyScans > 0) {
                 countHowManyScans = countHowManyScans - 1;
             }
@@ -1036,7 +1047,7 @@
         countHowManyScans = 0;
         document.getElementById('btnBarcodePrint').disabled = true;
 
-        
+
         //IdList.length = 0;
         $("#hdnDDLId").val("");
         $("#hdnDDLText").val("");
@@ -1081,10 +1092,12 @@
 
 
         let partsList = [];
+        let partBarcode = "";
         for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
             partNo = tblScanPartNo.rows[rowcount].cells[0].innerHTML;
             BatchCode = tblScanPartNo.rows[rowcount].cells[1].innerHTML;
             Serial = tblScanPartNo.rows[rowcount].cells[2].innerHTML;
+            partBarcode = tblScanPartNo.rows[rowcount].cells[3].innerHTML;
             let userId = @ViewData["User_Id"];
             let partObject = {
                 "PartId": partconfigurationID,
@@ -1093,7 +1106,8 @@
                 "PartBatchCode": BatchCode,
                 "PartSerialNo": Serial,
                 "Code": uniqueId,
-                "UserId": userId
+                "UserId": userId,
+                "PartBarcode": partBarcode
             }
 
             partsList.push(partObject);
@@ -1138,13 +1152,16 @@
         var col = document.createElement('td'); // create column node
         var col2 = document.createElement('td'); // create second column node
         var col3 = document.createElement('td');
+        var col4 = document.createElement('td');
         row.appendChild(col); // append first column to row
         row.appendChild(col2); // append second column to row
         row.appendChild(col3);
+        row.appendChild(col4);
         row.appendChild(thead);
         col.innerHTML = "Scanned Part No"; // put data in first column
         col2.innerHTML = "Batch No"  // put data in second column
         col3.innerHTML = "Serial No";
+        col4.innerHTML = "Part Barcode";
 
         tblScanPartNo.appendChild(row); // append row to table
     }
@@ -1166,140 +1183,140 @@
     <div class="col-lg-12">
         @using (Html.BeginForm())
         {
-            @Html.AntiForgeryToken()
+        @Html.AntiForgeryToken()
 
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <section class="panel">
-                <header class="panel-heading">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <section class="panel">
+            <header class="panel-heading">
 
-                    <table valign="middle">
-                        <tr>
-                            <td align="left" width="50%">
-                                Box Barcode Generation
-                            </td>
-                            <td align="right" width="50%" valign="middle">
+                <table valign="middle">
+                    <tr>
+                        <td align="left" width="50%">
+                            Box Barcode Generation
+                        </td>
+                        <td align="right" width="50%" valign="middle">
 
-                                <input type="button" id="btnClear" class="btn btn-default btn-sm" tabindex="9" title="Clear" value="Clear" />
-                            </td>
-                            <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnClear" class="btn btn-default btn-sm" tabindex="9" title="Clear" value="Clear" />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
 
-                                <input type="button" id="btnVerify" disabled="disabled" class="btn btn-default btn-sm" tabindex="9" title="Verify" value="Verify" />
-                            </td>
-                            <td align="right" width="50%" valign="middle">
-                                <input type="button" id="btnBarcodePrint" disabled="disabled" tabindex="8" class="btn btn-default btn-sm" title="Print Box Barcode" value="Print Barcode" />
-                            </td>
-                            <td align="right" width="50%" valign="middle">
-                                <a class="btn btn-default btn-sm" href="~/Home/Index" tabindex="10" title="Cancel">Cancel</a>
-                            </td>
+                            <input type="button" id="btnVerify" disabled="disabled" class="btn btn-default btn-sm" tabindex="9" title="Verify" value="Verify" />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <input type="button" id="btnBarcodePrint" disabled="disabled" tabindex="8" class="btn btn-default btn-sm" title="Print Box Barcode" value="Print Barcode" />
+                        </td>
+                        <td align="right" width="50%" valign="middle">
+                            <a class="btn btn-default btn-sm" href="~/Home/Index" tabindex="10" title="Cancel">Cancel</a>
+                        </td>
 
-                        </tr>
+                    </tr>
 
-                    </table>
-                </header>
-                <div class="panel-body">
-                    <form class="form-horizontal">
-                        <div class="form-group">
+                </table>
+            </header>
+            <div class="panel-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
 
-                            <div class="row">
+                        <div class="row">
 
-                                <div class="col-lg-6">
+                            <div class="col-lg-6">
 
-                                    <label class="col-lg-3 control-label">Part No</label>
-                                    <div class="col-lg-9" style="padding-right:15px;padding-left:0px;">
-                                        <select id="MST_PartConfiguration_ID" class="combobox form-control">
-                                            <option value="" selected="selected">-- Select --</option>
-                                        </select>
-
-                                    </div>
+                                <label class="col-lg-3 control-label">Part No</label>
+                                <div class="col-lg-9" style="padding-right:15px;padding-left:0px;">
+                                    <select id="MST_PartConfiguration_ID" class="combobox form-control">
+                                        <option value="" selected="selected">-- Select --</option>
+                                    </select>
 
                                 </div>
-                                <div class="col-lg-6">
-                                    <label class="col-lg-3 control-label">Part desc</label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtpartDesc" tabindex="2" disabled="disabled" class="form-control" />
-                                    </div>
 
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-lg-3 control-label">Part desc</label>
+                                <div class="col-lg-12">
+                                    <input type="text" id="txtpartDesc" tabindex="2" disabled="disabled" class="form-control" />
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <label class="col-lg-3 control-label">Qty per Box</label>
+                                <div class="col-lg-12">
+                                    <input type="text" id="txtQtybox" disabled="disabled" tabindex="3" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label class="col-lg-3 control-label">Customer Name</label>
+                                <div class="col-lg-12">
+                                    <input type="text" id="txtCustName" disabled="disabled" tabindex="4" class="form-control" />
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                    </div>
+                    <div class="form-group">
 
-                            <div class="row">
-
-                                <div class="col-lg-6">
-                                    <label class="col-lg-3 control-label">Qty per Box</label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtQtybox" disabled="disabled" tabindex="3" class="form-control" />
-                                    </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label class="col-lg-3 control-label">Customer Code</label>
+                                <div class="col-lg-12">
+                                    <input type="text" id="txtCustCode" disabled="disabled" tabindex="5" class="form-control" />
                                 </div>
+                            </div>
 
-                                <div class="col-lg-6">
-                                    <label class="col-lg-3 control-label">Customer Name</label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtCustName" disabled="disabled" tabindex="4" class="form-control" />
-                                    </div>
+                            <div class="col-lg-6">
+                                <label class="col-lg-3 control-label">Customer Index</label>
+                                <div class="col-lg-12">
+                                    <input type="text" id="txtCustIndex" disabled="disabled" tabindex="6" class="form-control" />
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                    </div>
 
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <label class="col-lg-3 control-label">Customer Code</label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtCustCode" disabled="disabled" tabindex="5" class="form-control" />
-                                    </div>
+                    @* New Div Added For Toyota*@
+                    <div class="form-group" id="divCustomerPartNo">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label id="lblCustPartNo" class="col-lg-3 control-label" style="color:firebrick; font-size:15px; font-weight:bold;"><span id="blinkCustomer" class="blink_me">Scan Customer Part No</span></label>
+                                <div class="col-lg-12">
+                                    <input type="text" id="txtScanCustPartBarcode" tabindex="9" class="form-control" />
                                 </div>
-
-                                <div class="col-lg-6">
-                                    <label class="col-lg-3 control-label">Customer Index</label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtCustIndex" disabled="disabled" tabindex="6" class="form-control" />
-                                    </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="col-lg-12">
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        @* New Div Added For Toyota*@
-                        <div class="form-group" id="divCustomerPartNo">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <label id="lblCustPartNo" class="col-lg-3 control-label" style="color:firebrick; font-size:15px; font-weight:bold;"><span id="blinkCustomer" class="blink_me">Scan Customer Part No</span></label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtScanCustPartBarcode" tabindex="9" class="form-control" />
-                                    </div>
+                    <div class="form-group" id="divBoschPartNo">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label class="col-lg-3 control-label">Scan Part No</label>
+                                <div class="col-lg-12">
+                                    <input type="text" id="txtScanPartBarcode" tabindex="7" disabled="disabled" class="form-control" />
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="col-lg-12">
-                                    </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-lg-3 control-label">No of Part Scanned</label>
+                                <div class="col-lg-12">
+                                    @*<input type="text" id="txtScanned" disabled="disabled" tabindex="6" class="form-control" />*@
+                                    <label class="col-lg-3 control-label" style="font-size: larger; font-weight: 500" id="txtScanned"></label>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="form-group" id="divBoschPartNo">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <label class="col-lg-3 control-label">Scan Part No</label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtScanPartBarcode" tabindex="7" disabled="disabled" class="form-control" />
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <label class="col-lg-3 control-label">No of Part Scanned</label>
-                                    <div class="col-lg-12">
-                                        @*<input type="text" id="txtScanned" disabled="disabled" tabindex="6" class="form-control" />*@
-                                        <label class="col-lg-3 control-label" style="font-size: larger; font-weight: 500" id="txtScanned"></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table" id="tblScanPartNo"></table>
-                        </div>
-                    </form>
-                </div>
-            </section>
+                    <div class="table-responsive">
+                        <table class="table" id="tblScanPartNo"></table>
+                    </div>
+                </form>
+            </div>
+        </section>
         }
     </div>
 </div>
