@@ -164,7 +164,6 @@ namespace FactoryMagix.Controllers
                 Logger.Info("Btn Verify Click:Start");
                 int result = 0;
                 User objuser = (User)Session["UserInfo"];
-                //var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
                 var query = PartRepository.SaveInTemp(Convert.ToInt32(PartConfigId), Convert.ToInt32(partqty), 1, Convert.ToInt32(objuser.User_ID), partno, partbatchcode, partserialno, Code);
                 if(query != null && query.Rows.Count > 0)
                 {
@@ -188,11 +187,11 @@ namespace FactoryMagix.Controllers
             {
                 User user = (User)Session["UserInfo"];
                 Logger.Info("Btn Verify Click:Start");
-               // int result = 0;
+               
                 string BoxNumber = "";
-                //var query = context.spInsertBoxLable_Verify(PartConfigId, partqty, 1, objuser.User_ID, partno, partbatchcode, partserialno, Code).ToList();
+                
                 DataTable dataTable = PartRepository.SaveInTempList(JSON);
-                if (dataTable != null && dataTable.Rows.Count > 0)
+                if (dataTable != null && dataTable.Rows.Count > 0 && dataTable.Columns.Count > 4)
                 {
                     BoxNumber = Convert.ToString(dataTable.Rows[0]["BoxSerial_No"]);
                     Logger.Info("Box Number = " + BoxNumber);
@@ -207,6 +206,11 @@ namespace FactoryMagix.Controllers
                     Logger.Info("Print Start");
                     BoxRepository.CreatePRNFile(folderPath, dataTable, (int)LabelType.Box, user.Login_ID);
                     Logger.Info("Print Start");
+                }
+
+                else
+                {
+                    BoxNumber = "Error. Please contact Administrator";
                 }
 
                // Logger.Info("Btn Verify Click:End");
