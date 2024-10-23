@@ -223,7 +223,7 @@
                                 $("#txtCustName").val(vdata.query[0].Customer_Name);
                                 $("#txtCustCode").val(vdata.query[0].Customer_Code);
                                 $("#txtCustIndex").val(vdata.query[0].Customer_Index);
-				$("#hdnCustomerPartNo").val(vdata.query[0].CustPart_No);
+				                $("#hdnCustomerPartNo").val(vdata.query[0].CustPart_No);
 
                                 if ($("#divBoschPartNo").is(":hidden")) {
                                     $("#divBoschPartNo").show();
@@ -392,8 +392,7 @@
             var keycode = (event.keyCode ? event.keyCode : event.which);
             var PartNo, partbatchcode, partsrno;
             if (keycode == 13) {
-
-                // Added by 92293
+                
                 countHowManyScans = countHowManyScans + 1;
 
                 if (countHowManyScans <= parseInt(document.getElementById('txtQtybox').value)) { // parseInt Added By Jayant
@@ -414,14 +413,12 @@
                         scannedBarcode = TempBarcode;
                     }
 
-                    //***********************END 1-1-2017: Kirti*************************************************
-
                     // **********************Added new condition for toyota  ******************************
                     if ($("#divCustomerPartNo").is(":visible")) {
                         var txtCustBarcodeValue = $("#txtScanCustPartBarcode").val();
 
                         if (txtCustBarcodeValue != null && txtCustBarcodeValue != "") {
-                            console.log('if (txtCustBarcodeValue != null && txtCustBarcodeValue != "")');
+                            
                             if (scannedBarcode.length == 52) {  // Bosch part barcode string length for Toyota is of 52 Char long
                                 var splitBoschBarcode = scannedBarcode.split(":");
 
@@ -581,7 +578,7 @@
                         // *********************End condition for toyota ******************************
 
                         // *********************START Other customers  ******************************
-                    else if (scannedBarcode.length >= 32) {
+                    else if (scannedBarcode.length >= 32) { //Booster Torishi code to be checked in below logic
                         var splitstrbarcode = scannedBarcode.split(":");
 
                         //*******************New Barcode Addition By Jayant Satkar *****************//
@@ -596,14 +593,12 @@
                                     }
                                     else if (splitstrbarcode[0].length == 3) {
 
-                                        //***********************2-2-2017: Kirti*************************************************
                                         if (TempPreviousBarcode.length == 3) {
                                             scanbarcode(splitstrbarcode[1], splitstrbarcode[3], splitstrbarcode[5])
                                         }
                                         else {
                                             scanbarcode(splitstrbarcode[1], splitstrbarcode[3] + ':' + splitstrbarcode[4], splitstrbarcode[5])
                                         }
-                                        //***********************2-2-2017: Kirti*************************************************
                                     }
                                 }
                                 else {
@@ -612,7 +607,7 @@
                                     alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                                     Errordescription = scannedBarcode + " - Part serial no. length is less than 6 characters.";
 
-                                    // Added by 92293
+                                    
                                     if (countHowManyScans > 0) {
                                         countHowManyScans = countHowManyScans - 1;
                                     }
@@ -629,7 +624,7 @@
                                 alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                                 Errordescription = scannedBarcode + " - Part serial no. length is greater than 9 characters.";
 
-                                // Added by 92293
+                                
                                 if (countHowManyScans > 0) {
                                     countHowManyScans = countHowManyScans - 1;
                                 }
@@ -655,7 +650,7 @@
                                 alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                                 Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                                // Added by 92293
+                                
                                 if (countHowManyScans > 0) {
                                     countHowManyScans = countHowManyScans - 1;
                                 }
@@ -672,7 +667,7 @@
                             alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                             Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                            // Added by 92293
+                            
                             if (countHowManyScans > 0) {
                                 countHowManyScans = countHowManyScans - 1;
                             }
@@ -683,7 +678,7 @@
                             SaveUserLogs();
                         }
                     }
-                        // Added by 92293  to consume new barcode format -------
+                         
                     else if (scannedBarcode.length == 29) {
                         var splitstrbarcode = scannedBarcode.split(":");
 
@@ -698,7 +693,7 @@
                                     alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                                     Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                                    // Added by 92293
+                                    
                                     if (countHowManyScans > 0) {
                                         countHowManyScans = countHowManyScans - 1;
                                     }
@@ -715,7 +710,7 @@
                                 alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                                 Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                                // Added by 92293
+                                
                                 if (countHowManyScans > 0) {
                                     countHowManyScans = countHowManyScans - 1;
                                 }
@@ -732,7 +727,7 @@
                             alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                             Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                            // Added by 92293
+                            
                             if (countHowManyScans > 0) {
                                 countHowManyScans = countHowManyScans - 1;
                             }
@@ -764,7 +759,7 @@
                         alert(scannedBarcode + " - Wrong barcode scanned. please scan correct barcode");
                         Errordescription = scannedBarcode + " - Wrong barcode scanned. please scan correct barcode";
 
-                        // Added by 92293
+                        
                         if (countHowManyScans > 0) {
                             countHowManyScans = countHowManyScans - 1;
                         }
@@ -937,13 +932,13 @@
 
                                             if (totalPartCount != document.getElementById('txtQtybox').value) {
                                                 document.getElementById('btnBarcodePrint').disabled = true;
-                                                // Added by 92293
+                                                
                                                 document.getElementById('btnVerify').disabled = true;
                                             }
                                             alert($("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part");  // this will be shown if scanned part is already in the dynamic html table on this view.
                                             Errordescription = $("#txtScanPartBarcode").val() + " - Part already scanned. please scan another part";
 
-                                            // Added by 92293
+                                            
                                             $("#txtScanPartBarcode").val("");
                                             if (countHowManyScans > 0) {
                                                 countHowManyScans = countHowManyScans - 1;
@@ -961,7 +956,7 @@
                                         $("#btnBarcodePrint").focus();
                                         totalPartCount = totalPartCount - 1;
                                         $('#txtScanned').html(totalPartCount);
-                                        // Added by 92293
+                                        
                                         if (countHowManyScans > 0) {
                                             countHowManyScans = countHowManyScans - 1;
                                         }
@@ -981,7 +976,7 @@
                                 alert($("#txtScanPartBarcode").val() + " - This part packed already");
                                 Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
 
-                                // Added by 92293
+                                
                                 if (countHowManyScans > 0) {
                                     countHowManyScans = countHowManyScans - 1;
                                 }
@@ -1002,7 +997,7 @@
                 alert($("#txtScanPartBarcode").val() + " - Wrong part scanned");
                 Errordescription = $("#txtScanPartBarcode").val() + " - Wrong part scanned";
 
-                // Added by 92293
+                
                 if (countHowManyScans > 0) {
                     countHowManyScans = countHowManyScans - 1;
                 }
@@ -1073,7 +1068,7 @@
             countHowManyScans = 0;
             document.getElementById('btnBarcodePrint').disabled = true;
 
-            // Added by 92293
+            
             //IdList.length = 0;
             $("#hdnDDLId").val("");
             $("#hdnDDLText").val("");
