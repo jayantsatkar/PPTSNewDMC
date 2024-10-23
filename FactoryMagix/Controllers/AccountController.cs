@@ -27,11 +27,7 @@ namespace FactoryMagix.Controllers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-
-
-        // BOSCH_PPTSEntities db = new BOSCH_PPTSEntities();
         List<SqlParameter> sqlParameters = new List<SqlParameter>();
-        // GET: Account
 
         public void EndExe()
         {
@@ -57,7 +53,6 @@ namespace FactoryMagix.Controllers
                 Logger.Error("Error",ex);
             }
 
-            // TempData["WronguserName"] = "1";
             return View();
         }
 
@@ -77,7 +72,6 @@ namespace FactoryMagix.Controllers
             userid = logindetails[0];
 
             password = Encryptdata(logindetails[1]);
-            // spGetUserInfo_Result objspGetUserInfo_Result = new spGetUserInfo_Result();
             User user = new User();
 
             sqlParameters.Clear();
@@ -85,14 +79,10 @@ namespace FactoryMagix.Controllers
             DBHelper.AddSqlParameter("@pUser_PWD", password, ref sqlParameters);
 
             var result = DBHelper.ExecuteProcedure("spValidateUserforLogin", sqlParameters);
-            //var result = db.spValidateUserforLogin(userid, password).ToList();
-            //DBHelper.ExecuteProcedure("ExecuteQuery",)
             if (result.Rows.Count > 0)
             {
                 if (Convert.ToInt64(result.Rows[0][0]) > 0)
                 {
-
-                    //objspGetUserInfo_Result = (db.spGetUserInfo(userid, password).ToList())[0];
                     sqlParameters.Clear();
                     DBHelper.AddSqlParameter("@pLoginID", userid, ref sqlParameters);
                     DBHelper.AddSqlParameter("@pPass", password, ref sqlParameters);
@@ -104,8 +94,6 @@ namespace FactoryMagix.Controllers
                         user.Login_ID = Convert.ToString(dataTableUser.Rows[0]["Login_ID"]);
                         user.Role_ID = Convert.ToInt64(dataTableUser.Rows[0]["Role_ID"]);  
                         user.First_Name = Convert.ToString(dataTableUser.Rows[0]["First_Name"]);
-                        //HttpCookie myCookie = new HttpCookie("UDID");
-                        //Response.Cookies.Clear();
                         Session.Add("UserId", Convert.ToInt64(result.Rows[0][0]));
                         Session.Add("UserInfo", user);
 
@@ -117,7 +105,6 @@ namespace FactoryMagix.Controllers
                 }
                 else
                 {
-                    //TempData["WronguserName"] = "0";
                     Session["UserId"] = null;
                     Session["UserInfo"] = null;
                     return View("Login");
@@ -125,7 +112,6 @@ namespace FactoryMagix.Controllers
             }
             else
             {
-                //TempData["WronguserName"] = "0";
                 Session["UserId"] = null;
                 Session["UserInfo"] = null;
                 return View("Login");
@@ -136,18 +122,6 @@ namespace FactoryMagix.Controllers
         public ActionResult LogOut()
         {
             Session.Clear();
-            //Process[] runingProcess = Process.GetProcesses();
-            //for (int i = 0; i < runingProcess.Length; i++)
-            //{
-            //    // compare equivalent process by their name
-            //    if (runingProcess[i].ProcessName == "ZK7500")
-            //    {
-            //        // kill  running process
-            //        runingProcess[i].Kill();
-            //    }
-
-            //}
-            //EndExe();
             FormsAuthentication.SignOut();
           
             return RedirectToAction("Login", "Account");
