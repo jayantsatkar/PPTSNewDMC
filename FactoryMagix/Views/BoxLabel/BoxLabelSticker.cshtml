@@ -1220,52 +1220,6 @@
             tblScanPartNo.appendChild(row); // append row to table
         }
 
-		@*function printBarcodeFromWebApp() {
-        Clear();
-        $.ajax({
-            url: '@Url.Action("GetuserData", "BoxLabel")',
-            type: "POST",
-            data: {},
-            success: function (data) {
-
-                if (data != null) {
-                    if (data.length > 0) {
-                        var vdata = data;       // data get the valus as  =>  1;ttladmin i.e. UserId, LoginId
-                        try {
-                            //= 1;ttladmin ; FingerValidationBox
-                            parameter = vdata + ";FingerValidationBox;" + parameter;
-                            CallLocalUSBPrinter(parameter);
-                            return 1;
-                        }
-                        catch (e) {
-                            alert('Error : ' + e.Message + '\n' + e.InnerException + '\n' + e.Source + '\n' + e.StackTrace);
-                            return 0;
-                        }
-                    }
-                }
-            }
-        });
-    }*@
-
-
-
-	//function CallLocalUSBPrinter(params) {
-
- //       try {
-
- //           var shell = new ActiveXObject("WScript.shell");
- //           shell.run("C:\\UserValidation\\PrintingLogicNET35\\LabelPrinting.exe " + parameter, 1, true);
- //           // Disable Print Button on successful barcode print: Start
-	//		document.getElementById('btnBarcodePrint').disabled = true;
-	//		// Disable Print Button on successful barcode print: End
- //           return 1;
- //       }
- //       catch (e) {
- //           alert('Error : ' + e.message + '\n' + e.stack);
- //           return 0;
- //       }
- //   }
-
     function printBarcode() {
         Clear();
         $.ajax({
