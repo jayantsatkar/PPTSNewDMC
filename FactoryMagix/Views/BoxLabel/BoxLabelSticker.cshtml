@@ -1154,48 +1154,6 @@
         });
 
     });
-                            // if (data != null) {
-                            //Clear();
-                            //var tempverify = data
-                            //if (tempverify == 1) {
-                            //    document.getElementById('btnBarcodePrint').disabled = false;
-                            //    document.getElementById('btnVerify').disabled = true;
-                            //    var CustomerName = document.getElementById('txtCustName').value;
-                            //    var PartDescription = document.getElementById('txtpartDesc').value;
-                            //    parameter = partconfigurationID + ";" + uniqueId + ";" + CustomerName + ";" + PartDescription;
-                            //    //+ ";" + PartDescription;
-                            //}
-                            //}
-
-
-
-            @*for (rowcount = 1; rowcount < tblScanPartNo.rows.length; rowcount++) {
-                partNo = tblScanPartNo.rows[rowcount].cells[0].innerHTML;
-                BatchCode = tblScanPartNo.rows[rowcount].cells[1].innerHTML;
-                Serial = tblScanPartNo.rows[rowcount].cells[2].innerHTML;
-                //var uniqueCode = Code;
-                $.ajax({
-                    url: '@Url.Action("SaveInTemp", "BoxLabel")',
-                    type: "POST",
-                    data: {
-                        "PartConfigId": partconfigurationID, "PartQty": totalPartCount, "partno": partNo, "partbatchcode": BatchCode, "partserialno": Serial, "Code": uniqueId
-                    },
-                    success: function (data) {
-                        if (data != null) {
-                            var tempverify = data
-                            if (tempverify == 1) {
-                                document.getElementById('btnBarcodePrint').disabled = false;
-                                document.getElementById('btnVerify').disabled = true;
-                                var CustomerName = document.getElementById('txtCustName').value;
-                                var PartDescription = document.getElementById('txtpartDesc').value;
-                                parameter = partconfigurationID + ";" + uniqueId + ";" + CustomerName + ";" + PartDescription;
-                                //+ ";" + PartDescription;
-                            }
-                        }
-                    }
-                });
-            }*@
-        //});
 
         $(document).on("click", "#btnBarcodePrint", function () {
             Clear();
