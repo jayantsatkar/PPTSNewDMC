@@ -397,12 +397,7 @@ $(document).on("keyup", "#txtScanPartBarcode", function (event) {
 
         if (countHowManyScans <= parseInt(document.getElementById('txtQtybox').value)) { // parseInt Added By Jayant
 
-            //scanned part no details
             var scannedBarcode = document.getElementById('txtScanPartBarcode').value;
-
-            console.log('Scanned Barcode:' + scannedBarcode);
-
-            //***********************START 1-1-2017: Kirti*************************************************
             var TempBarcode = scannedBarcode;
 
             TempBarcode = TempBarcode.split(":");
