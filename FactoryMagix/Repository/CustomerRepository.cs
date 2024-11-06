@@ -24,16 +24,28 @@ namespace FactoryMagix.Repository
                 {
                     customers.Add(new Customer
                     {
-                        MST_Customer_ID = Convert.ToInt64(dr["MST_Customer_ID"]),
-                        Customer_Code = Convert.ToString(dr["Customer_Code"]),
-                        Customer_Name = Convert.ToString(dr["Customer_Name"]),
-                        Customer_Index = Convert.ToString(dr["Customer_Index"]),
-                        Address_Line1 = Convert.ToString(dr["Address_Line1"]),
-                        Address_Line2 = Convert.ToString(dr["Address_Line2"]),
-                        PhoneNo = Convert.ToString(dr["PhoneNo"]),
-                        FaxNo = Convert.ToString(dr["FaxNo"]),
-                        EmailId = Convert.ToString(dr["EmailId"]),
-                        Created_By = Convert.ToInt64(dr["Created_By"])
+                        //MST_Customer_ID = Convert.ToInt64(dr["MST_Customer_ID"]),
+                        //Customer_Code = Convert.ToString(dr["Customer_Code"]),
+                        //Customer_Name = Convert.ToString(dr["Customer_Name"]),
+                        //Customer_Index = Convert.ToString(dr["Customer_Index"]),
+                        //Address_Line1 = Convert.ToString(dr["Address_Line1"]),
+                        //Address_Line2 = Convert.ToString(dr["Address_Line2"]),
+                        //PhoneNo = Convert.ToString(dr["PhoneNo"]),
+                        //FaxNo = Convert.ToString(dr["FaxNo"]),
+                        //EmailId = Convert.ToString(dr["EmailId"]),
+                        //Created_By = Convert.ToInt64(dr["Created_By"])
+
+                        MST_Customer_ID = dr["MST_Customer_ID"] == DBNull.Value ? 0 : Convert.ToInt64(dr["MST_Customer_ID"]),
+                        Customer_Code = dr["Customer_Code"] == DBNull.Value ? string.Empty : Convert.ToString(dr["Customer_Code"]),
+                        Customer_Name = dr["Customer_Name"] == DBNull.Value ? string.Empty : Convert.ToString(dr["Customer_Name"]),
+                        Customer_Index = dr["Customer_Index"] == DBNull.Value ? string.Empty : Convert.ToString(dr["Customer_Index"]),
+                        Address_Line1 = dr["Address_Line1"] == DBNull.Value ? string.Empty : Convert.ToString(dr["Address_Line1"]),
+                        Address_Line2 = dr["Address_Line2"] == DBNull.Value ? string.Empty : Convert.ToString(dr["Address_Line2"]),
+                        PhoneNo = dr["PhoneNo"] == DBNull.Value ? string.Empty : Convert.ToString(dr["PhoneNo"]),
+                        FaxNo = dr["FaxNo"] == DBNull.Value ? string.Empty : Convert.ToString(dr["FaxNo"]),
+                        EmailId = dr["EmailId"] == DBNull.Value ? string.Empty : Convert.ToString(dr["EmailId"]),
+                        Created_By = dr["Created_By"] == DBNull.Value ? 0 : Convert.ToInt64(dr["Created_By"])
+
                     });
                 }
 
