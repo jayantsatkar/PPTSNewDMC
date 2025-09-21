@@ -772,14 +772,14 @@ $(document).on("keyup", "#txtScanPartBarcode", function (event) {
             }
         }
         else {
-            //actual count and part scann count already equal so.
+           
             $("#txtScanPartBarcode").val("");
             $("#txtScanPartBarcode").focus();
             countHowManyScans = countHowManyScans - 1;
             alert("quantity of parts scanned exceded");
             Errordescription = "No of part scanned exceded than the actual count";
             SaveUserLogs();
-        }   // <= this line Added by 92293
+        }   
     }
 });
 
@@ -789,16 +789,15 @@ function scanbarcode(partno, partbatchcode, partsrno) {
     var ddlpartNoText = $("#hdnDDLText").val();
 
     if (ddlpartNoText) {
-        // ex :- 0204.823.985-5W9-208521-BOSCH CHASSIS SYSTEMS INDIA LIMITED-0204816690   //ddl selected value
+        
         splitpartNo = ddlpartNoText.split("-");
     }
 
-    //Added by 92293 to handle new barcode format
     if (partno.indexOf('.') > -1) {
-        ////partno has '.' in it
+       
     }
     else {
-        // add char '.' to the part no.
+       
         var newPartNo = "";
         var fCode = "";
         var sCode = "";
@@ -816,14 +815,14 @@ function scanbarcode(partno, partbatchcode, partsrno) {
             newPartNo = newPartNo + sCode;
 
             tCode = str.substr(7, 3);
-            // tCode += '.';
+           
             newPartNo = newPartNo + tCode;
 
             partno = newPartNo;
         }
-    }   //End  to handle new barcode format
+    }  
 
-    //Validate scanned part no with dropdown part no
+   
 
    
     if (splitpartNo[0].toUpperCase() === partno.toUpperCase() || splitpartNo[4].toUpperCase() === partno.toUpperCase()) {
@@ -922,14 +921,10 @@ function scanbarcode(partno, partbatchcode, partsrno) {
                                     $("#txtScanPartBarcode").focus();
                                 }
                                 else if (status == 1) {
-                                    // Commented below line and added new one by 92293
-                                    //$("#txtScanPartBarcode").val("");
+                                  
                                     totalPartCount = totalPartCount - 1;
 
                                     $('#txtScanned').html(totalPartCount);
-
-                                    // Commented below line and added new one by 92293
-                                    //$("#txtScanPartBarcode").val(totalPartCount);
 
                                     if (totalPartCount != document.getElementById('txtQtybox').value) {
                                         document.getElementById('btnBarcodePrint').disabled = true;
@@ -972,7 +967,7 @@ function scanbarcode(partno, partbatchcode, partsrno) {
                         $("#txtScanPartBarcode").focus();
 
                     }
-                    else {   // temp data === 1 failed
+                    else {   
                         $("#txtScanPartBarcode").focus();
                         alert($("#txtScanPartBarcode").val() + " - This part packed already");
                         Errordescription = $("#txtScanPartBarcode").val() + " - This part packed already";
@@ -1070,12 +1065,10 @@ function Clear() {
     document.getElementById('btnBarcodePrint').disabled = true;
 
 
-    //IdList.length = 0;
     $("#hdnDDLId").val("");
     $("#hdnDDLText").val("");
 
     $("#MST_PartConfiguration_IDundefined").val('');
-    //$("#MST_PartConfiguration_IDundefined")[0].selectedIndex = -1;
 
     $("#MST_PartConfiguration_IDundefined").focus();
 
@@ -1084,7 +1077,6 @@ function Clear() {
     }
     countHowManyScans = 0;
 
-    //Added for Toyota
     if ($("#divCustomerPartNo").is(":visible")) {
         $("#divCustomerPartNo").hide();
         $("#txtScanCustPartBarcode").val("");
@@ -1158,7 +1150,6 @@ $(document).on("click", "#btnVerify", function () {
 
 $(document).on("click", "#btnBarcodePrint", function () {
     Clear();
-    // printBarcode();
 
 });
 
