@@ -12,7 +12,7 @@ using System.Configuration;
 
 namespace FactoryMagix.Controllers
 {
-   // [Authorize(Roles = "Super Administrator, Administrator, Supervisor")]
+    [Authorize(Roles = "Super Administrator, Administrator, Supervisor")]
     public class BarCodeReprintController : Controller
     {
         // private FactoryMagix.Models.BOSCH_PPTSEntities db = new FactoryMagix.Models.BOSCH_PPTSEntities();
@@ -31,6 +31,45 @@ namespace FactoryMagix.Controllers
                 return View();
             }
         }
+
+        /// <summary>
+        /// Below 3 are content result examples
+        /// </summary>
+        /// <returns></returns>
+        public ContentResult Index()
+        {
+            return Content("Hello, World!");
+        }
+
+        public JsonResult GetJson()
+        {
+            return Json(new { Id = 1, Name = "John" });
+        }
+
+        public FileResult Download()
+        {
+            byte[] fileBytes = System.IO.File.ReadAllBytes("path/to/file");
+            return File(fileBytes, "application/pdf", "example.pdf");
+        }
+
+
+        /// <summary>
+        /// Redirection Results
+        /// </summary>
+        /// <returns></returns>
+
+        public RedirectResult RedirectToGoogle()
+        {
+            return Redirect("https://www.google.com");
+        }
+
+        //public RedirectToActionResult RedirectToHome()
+        //{
+        //    return RedirectToAction("Index", "Home");
+        //}
+
+
+
         [HttpPost]
         public ActionResult GetBarCodeReprint(String SerialNo, long flag)
         {
