@@ -584,7 +584,14 @@ $(document).on("keyup", "#txtScanPartBarcode", function (event) {
 
                         if (splitstrbarcode[5].length >= 6) {
                             if (splitstrbarcode[0].length > 3) {
-                                scanbarcode(splitstrbarcode[0], splitstrbarcode[3] + ':' + splitstrbarcode[4], splitstrbarcode[5])
+                                // scanbarcode(splitstrbarcode[0], splitstrbarcode[3] + ':' + splitstrbarcode[4], splitstrbarcode[5])
+                                if (splitstrbarcode[2].trim().toUpperCase() == '472108VD0A' || splitstrbarcode[2].trim().toUpperCase() == '472108VB0A' || splitstrbarcode[2].trim().toUpperCase() == '472108VB0B') {
+                                    scanbarcode(splitstrbarcode[2], splitstrbarcode[3] + ':' + splitstrbarcode[4], splitstrbarcode[5])
+                                }
+                                else {
+                                    scanbarcode(splitstrbarcode[0], splitstrbarcode[3] + ':' + splitstrbarcode[4], splitstrbarcode[5])
+                                }
+
                             }
                             else if (splitstrbarcode[0].length == 3) {
 
@@ -781,7 +788,6 @@ function scanbarcode(partno, partbatchcode, partsrno) {
     var partconfigurationID = $("#hdnDDLId").val();
     var ddlpartNoText = $("#hdnDDLText").val();
 
-    console.log('ddl Value:' + ddlpartNoText);
     if (ddlpartNoText) {
         // ex :- 0204.823.985-5W9-208521-BOSCH CHASSIS SYSTEMS INDIA LIMITED-0204816690   //ddl selected value
         splitpartNo = ddlpartNoText.split("-");
@@ -800,7 +806,7 @@ function scanbarcode(partno, partbatchcode, partsrno) {
         var str = "";
 
         var str = partno;
-        if (str.length == 10) {
+        if (str.length == 10 && partno != '472108VD0A' && partno != '472108VB0A' && partno != '472108VB0B') {
             fCode = str.substr(0, 4);
             fCode += '.';
             newPartNo = fCode;
@@ -819,7 +825,7 @@ function scanbarcode(partno, partbatchcode, partsrno) {
 
     //Validate scanned part no with dropdown part no
 
-    console.log('splitpartNo=' + splitpartNo + ',partno=' + partno);
+   
     if (splitpartNo[0].toUpperCase() === partno.toUpperCase() || splitpartNo[4].toUpperCase() === partno.toUpperCase()) {
 
         $.ajax({
